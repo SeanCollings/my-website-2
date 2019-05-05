@@ -17,18 +17,22 @@ const styles = theme => ({
 });
 
 class CredentialPage extends Component {
-  state = { signUpUser: false };
+  state = {
+    signUpUser: false
+  };
 
   signUpUser = () => {
-    this.setState({ signUpUser: !this.state.signUpUser });
-  }
+    this.setState({
+      signUpUser: !this.state.signUpUser
+    });
+  };
 
   render() {
     const { classes } = this.props;
     return (
       <div className={classes.pageFill}>
         <Header />
-        <SignIn signUpUser={this.state.signUpUser} />
+        <SignIn signUpUser={this.state.signUpUser} />{' '}
         <Grid
           container
           spacing={0}
@@ -39,15 +43,26 @@ class CredentialPage extends Component {
             minHeight: '10vh'
           }}
         >
-          <Typography style={{ marginTop: '10px' }}>
-            {this.state.signUpUser ? 'Got an account already?' : 'Don\'t have an account?'}
-          </Typography>
-          <Button style={{ alignItems: 'center', color: '#FF4136' }}
+          <Typography
+            style={{
+              marginTop: '10px'
+            }}
+          >
+            {' '}
+            {this.state.signUpUser
+              ? 'Got an account already?'
+              : "Don't have an account?"}{' '}
+          </Typography>{' '}
+          <Button
+            style={{
+              alignItems: 'center',
+              color: '#FF4136'
+            }}
             onClick={() => this.signUpUser()}
           >
-            {this.state.signUpUser ? 'Login instead' : 'Sign up instead'}
-          </Button>
-        </Grid>
+            {this.state.signUpUser ? 'Log In instead' : 'Sign up instead'}{' '}
+          </Button>{' '}
+        </Grid>{' '}
         <Footer />
       </div>
     );

@@ -13,6 +13,8 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 
+import GoogleImage from '../../images/google.png';
+
 const styles = theme => ({
   main: {
     width: 'auto',
@@ -37,6 +39,9 @@ const styles = theme => ({
     margin: theme.spacing.unit,
     // backgroundColor: theme.palette.secondary.main
     backgroundColor: '#FF4136'
+  },
+  googleAvatar: {
+    margin: 10
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -70,11 +75,18 @@ const styles = theme => ({
 });
 
 class SignIn extends Component {
-  state = { password: '', confirmPassword: '' };
+  state = {
+    password: '',
+    confirmPassword: ''
+  };
 
   signInClicked = () => {
     console.log('Sign In Clicked');
     console.log(this);
+  };
+
+  googleClicked = () => {
+    console.log('Google has been clicked!');
   };
 
   handleSubmit = event => {
@@ -89,9 +101,8 @@ class SignIn extends Component {
         console.log('Password no Match!');
       } else {
         // make API call
-        console.log('It\'s a match!');
+        console.log("It's a match!");
       }
-
     }
   };
 
@@ -100,14 +111,33 @@ class SignIn extends Component {
 
     return (
       <main className={classes.main}>
-        {/* <CssBaseline /> */}
         <Paper className={classes.paper}>
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
-            {signUpUser ? 'Sign Up' : 'Login'}
+          <Typography
+            component="h1"
+            variant="h5"
+            style={{ marginBottom: '5px' }}
+          >
+            {signUpUser ? 'Sign Up' : 'Log In'}
           </Typography>
+          <Button
+            fullWidth
+            variant="contained"
+            style={{
+              backgroundColor: 'white',
+              height: '50px'
+            }}
+            onClick={() => this.googleClicked()}
+          >
+            <Avatar
+              alt="Google Login"
+              src={GoogleImage}
+              // className={classes.googleAvatar}
+            />
+            Continue with Google
+          </Button>
           <form className={classes.form} onSubmit={this.handleSubmit}>
             <FormControl margin="normal" required fullWidth>
               <InputLabel
@@ -150,7 +180,8 @@ class SignIn extends Component {
               />
             </FormControl>
             <FormControl
-              margin="normal" fullWidth
+              margin="normal"
+              fullWidth
               required={signUpUser ? true : false}
               style={{
                 visibility: signUpUser ? 'visible' : 'hidden',
@@ -183,7 +214,9 @@ class SignIn extends Component {
                 <Checkbox
                   value="remember"
                   color="primary"
-                  style={{ color: '#FF4136' }}
+                  style={{
+                    color: '#FF4136'
+                  }}
                 />
               }
               label="Remember me"
@@ -193,9 +226,9 @@ class SignIn extends Component {
               fullWidth
               variant="contained"
               className={classes.submit}
-            // onClick={() => this.signInClicked()}
+              // onClick={() => this.signInClicked()}
             >
-              {signUpUser ? 'Sign Up' : 'Login'}
+              {signUpUser ? 'Sign Up' : 'Log In'}
             </Button>
           </form>
         </Paper>

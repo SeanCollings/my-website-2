@@ -8,11 +8,21 @@
     "npm": "6.1.0"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "client": "npm run start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
-  "author": "",
+  "author": "Sean Collings",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4"
+    "body-parser": "^1.19.0",
+    "concurrently": "^4.1.0",
+    "cookie-session": "^1.3.3",
+    "express": "^4.16.4",
+    "mongoose": "^5.5.5",
+    "nodemon": "^1.19.0",
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^2.0.0"
   }
 }
