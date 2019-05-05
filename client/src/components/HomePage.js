@@ -50,10 +50,7 @@ class HomePage extends Component {
       <div className={classes.pageFill}>
         <Header headerName="Welcome" />
         {/* <Loader loaded={this.state.loaded} /> */}
-        <Paper
-          title="Sean Collings"
-          content="Please, have a look around"
-        />
+        <Paper title="Sean Collings" content="Please, have a look around" />
         <div
           style={{
             alignItems: 'center',
@@ -94,7 +91,7 @@ class HomePage extends Component {
           style={this.state.mediaCards.length > 0 ? { height: '46px' } : {}}
         />
         <Footer />
-      </div >
+      </div>
     );
   }
 }
