@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
+import Link from '@material-ui/core/Link';
 
 import GoogleImage from '../../images/google.png';
 
@@ -122,22 +123,27 @@ class SignIn extends Component {
           >
             {signUpUser ? 'Sign Up' : 'Log In'}
           </Typography>
-          <Button
-            fullWidth
-            variant="contained"
-            style={{
-              backgroundColor: 'white',
-              height: '50px'
-            }}
-            onClick={() => this.googleClicked()}
+          <Link
+            href="/auth/google"
+            style={{ width: '100%', textDecoration: 'none' }}
           >
-            <Avatar
-              alt="Google Login"
-              src={GoogleImage}
-              // className={classes.googleAvatar}
-            />
-            Continue with Google
-          </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              style={{
+                backgroundColor: 'white',
+                height: '50px'
+              }}
+              onClick={() => this.googleClicked()}
+            >
+              <Avatar
+                alt="Google Login"
+                src={GoogleImage}
+                // className={classes.googleAvatar}
+              />
+              Continue with Google
+            </Button>
+          </Link>
           <form className={classes.form} onSubmit={this.handleSubmit}>
             <FormControl margin="normal" required fullWidth>
               <InputLabel
