@@ -4,6 +4,7 @@ import cookieSession from 'cookie-session';
 import passport from 'passport';
 import bodyParser from 'body-parser';
 import path from 'path';
+import sslRedirect from 'heroku-ssl-redirect';
 
 import './models/User';
 import './services/passport';
@@ -16,6 +17,7 @@ mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 const app = express();
 
 /* Middlewares start */
+app.use(sslRedirect());
 app.use(bodyParser.json());
 
 app.use(
