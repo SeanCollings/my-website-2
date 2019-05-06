@@ -50,7 +50,7 @@ class HomePage extends Component {
       <div className={classes.pageFill}>
         <Header headerName="Welcome" />
         {/* <Loader loaded={this.state.loaded} /> */}
-        <Paper title="Sean Collings" content="Please, have a look around" />
+        <Paper title="Welcome" content="Please, have a look around" />
         <div
           style={{
             alignItems: 'center',

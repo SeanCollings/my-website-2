@@ -1,15 +1,15 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cookieSession = require('cookie-session');
-const passport = require('passport');
-const bodyParser = require('body-parser');
-const path = require('path');
+import express from 'express';
+import mongoose from 'mongoose';
+import cookieSession from 'cookie-session';
+import passport from 'passport';
+import bodyParser from 'body-parser';
+import path from 'path';
 
-require('./models/User');
-require('./services/passport');
+import './models/User';
+import './services/passport';
 
-const keys = require('./config/keys');
-const authRoutes = require('./routes/authRoutes');
+import keys from './config/keys';
+import authRoutes from './routes/authRoutes';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
