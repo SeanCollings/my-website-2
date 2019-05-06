@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
@@ -20,7 +21,7 @@ const styles = theme => ({
 });
 
 class HomePage extends Component {
-  state = { loaded: false, mediaCards: [] };
+  state = { loaded: false, mediaCards: [], name: '' };
 
   addMediaCard() {
     const numCards = this.state.mediaCards.length;
@@ -43,13 +44,22 @@ class HomePage extends Component {
     });
   }
 
+  renderName() {
+    const { auth } = this.props;
+    if (auth) {
+      return `Welcome, ${auth.givenName}`;
+    }
+
+    return 'Welcome';
+  }
+
   render() {
     const { classes } = this.props;
     return (
       <div className={classes.pageFill}>
         {/* <Header /> */}
         {/* <Loader loaded={this.state.loaded} /> */}
-        <Paper title="Welcome" content="Please, have a look around" />
+        <Paper title={this.renderName()} content="Please, have a look around" />
         <div
           style={{
             alignItems: 'center',
@@ -95,4 +105,8 @@ class HomePage extends Component {
   }
 }
 
-export default withStyles(styles)(HomePage);
+function mapStateToProps({ auth }) {
+  return { auth };
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(HomePage));

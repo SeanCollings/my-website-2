@@ -88,10 +88,6 @@ class SignIn extends Component {
     console.log(this);
   };
 
-  // googleClicked = () => {
-  //   console.log('Google has been clicked!');
-  // };
-
   handleSubmit = event => {
     event.preventDefault();
 

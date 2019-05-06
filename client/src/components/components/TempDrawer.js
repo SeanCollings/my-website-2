@@ -49,26 +49,31 @@ class TemporaryDrawer extends React.Component {
     }
   }
 
+  renderMenu(item) {
+    if (item === 'Pereritto' && !this.props.pererittoUser) {
+      return null;
+    }
+
+    return (
+      <NavLink
+        key={item}
+        to={`/${item.toLowerCase()}`}
+        style={{ textDecoration: 'none' }}
+      >
+        <ListItem button>
+          <ListItemText primary={item} />
+        </ListItem>
+      </NavLink>
+    );
+  }
+
   render() {
     const { classes } = this.props;
 
     const sideList = (
       <div className={classes.list}>
         <List>
-          {this.props.menuList.map((text, index) => (
-            <NavLink
-              key={text}
-              to={`/${text.toLowerCase()}`}
-              style={{ textDecoration: 'none' }}
-            >
-              <ListItem button>
-                {/* <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon> */}
-                <ListItemText primary={text} />
-              </ListItem>
-            </NavLink>
-          ))}
+          {this.props.menuList.map((text, index) => this.renderMenu(text))}
         </List>
         <Divider />
         <List>{this.renderLoginLogout()}</List>

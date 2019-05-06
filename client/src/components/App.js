@@ -10,12 +10,36 @@ import ContactPage from './ContactPage';
 import ProfilePage from './ProfilePage';
 import ProjectsPage from './ProjectsPage';
 import CredentialPage from './CredentialPage';
+import PererittoPage from './PererittoPage';
+
 import Header from './components/Header';
 import Footer from './components/footer';
 
 class App extends Component {
   componentDidMount() {
     this.props.fetchUser();
+  }
+
+  renderPage() {
+    if (this.props.pererittoUser) {
+      return (
+        <Route
+          path="/pereritto"
+          render={props => (
+            <PererittoPage {...props} superUser={this.props.superUser} />
+          )}
+        />
+      );
+    }
+    return;
+  }
+
+  checkRedirect() {
+    if (this.props.pererittoUser !== null) {
+      return <Redirect from="/" to="/home" />;
+    }
+
+    return;
   }
 
   render() {
@@ -36,7 +60,7 @@ class App extends Component {
           backgroundStyle={{ backgroundColor: 'none' }}
           style={{ minHeight: '100vh' }}
         >
-          <Header />
+          <Header pererittoUser={this.props.pererittoUser} />
           <Switch>
             <Route
               path="/profile"
@@ -50,14 +74,15 @@ class App extends Component {
               path="/projects"
               render={props => <ProjectsPage {...props} />}
             />
-            {this.props.auth ? null : (
+            {this.renderPage()}
+            {this.props.auth !== false ? null : (
               <Route
                 path="/login"
                 render={props => <CredentialPage {...props} />}
               />
             )}
             <Route path="/home" render={props => <HomePage {...props} />} />
-            <Redirect from="/" to="/home" />
+            {this.checkRedirect()}
           </Switch>
           <Footer />
         </Loader>
@@ -67,7 +92,11 @@ class App extends Component {
 }
 
 function mapStateToProps({ auth }) {
-  return { auth };
+  return {
+    auth,
+    pererittoUser: auth ? auth.pererittoUser : null,
+    superUser: auth ? auth.superUser : null
+  };
 }
 
 export default connect(

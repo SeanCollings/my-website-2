@@ -36,7 +36,7 @@ const styles = {
   background: 'rgba(26,26,26,.95)'
 };
 
-const menuList = ['Profile', 'Projects', 'Contact'];
+const menuList = ['Profile', 'Projects', 'Contact', 'Pereritto'];
 
 class Header extends Component {
   state = { mobileWidth: false, openDrawer: false };
@@ -68,6 +68,10 @@ class Header extends Component {
     return menuList.map(item => {
       if (item === 'Login') {
         return this.renderLoginLogout();
+      }
+
+      if (item === 'Pereritto' && !this.props.pererittoUser) {
+        return null;
       }
 
       return (
@@ -131,7 +135,7 @@ class Header extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, location } = this.props;
     const pointer = { cursor: 'pointer' };
 
     return (
@@ -140,7 +144,8 @@ class Header extends Component {
           position="sticky"
           elevation={0}
           style={{
-            background: '#424242',
+            background:
+              location.pathname === '/pereritto' ? '#FF4136' : '#424242',
             height: this.mobileWidth() ? '56px' : '64px'
           }}
         >
@@ -191,6 +196,7 @@ class Header extends Component {
           openDrawer={this.state.openDrawer}
           onClick={this.toggleDrawer}
           menuList={menuList}
+          pererittoUser={this.props.pererittoUser}
         />
       </div>
     );
