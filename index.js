@@ -11,6 +11,7 @@ import './services/passport';
 
 import keys from './config/keys';
 import authRoutes from './routes/authRoutes';
+import pereRoutes from './routes/pererittoRoutes';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
@@ -32,6 +33,7 @@ app.use(passport.session());
 /* Middlewares end */
 
 authRoutes(app);
+pereRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));

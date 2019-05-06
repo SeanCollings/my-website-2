@@ -4,11 +4,11 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 // import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import Checkbox from '@material-ui/core/Checkbox';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+// import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -45,8 +45,7 @@ const styles = theme => ({
     margin: 10
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing.unit
+    width: '100%' // Fix IE 11 issue.
   },
   submit: {
     marginTop: theme.spacing.unit * 3,
@@ -72,6 +71,9 @@ const styles = theme => ({
     '&:after': {
       borderBottomColor: '#FF4136'
     }
+  },
+  hideSignUpContent: {
+    display: 'none'
   }
 });
 
@@ -86,9 +88,9 @@ class SignIn extends Component {
     console.log(this);
   };
 
-  googleClicked = () => {
-    console.log('Google has been clicked!');
-  };
+  // googleClicked = () => {
+  //   console.log('Google has been clicked!');
+  // };
 
   handleSubmit = event => {
     event.preventDefault();
@@ -96,14 +98,6 @@ class SignIn extends Component {
     // console.log(event);
     // this.props.signinUser({ username, password });
     if (this.props.signUpUser) {
-      const { password, confirmPassword } = this.state;
-
-      if (password !== confirmPassword) {
-        console.log('Password no Match!');
-      } else {
-        // make API call
-        console.log("It's a match!");
-      }
     }
   };
 
@@ -113,9 +107,9 @@ class SignIn extends Component {
     return (
       <main className={classes.main}>
         <Paper className={classes.paper}>
-          <Avatar className={classes.avatar}>
+          {/* <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
-          </Avatar>
+          </Avatar> */}
           <Typography
             component="h1"
             variant="h5"
@@ -134,7 +128,7 @@ class SignIn extends Component {
                 backgroundColor: 'white',
                 height: '50px'
               }}
-              onClick={() => this.googleClicked()}
+              // onClick={() => this.googleClicked()}
             >
               <Avatar
                 alt="Google Login"
@@ -145,6 +139,52 @@ class SignIn extends Component {
             </Button>
           </Link>
           <form className={classes.form} onSubmit={this.handleSubmit}>
+            <FormControl
+              margin="normal"
+              required={signUpUser ? true : false}
+              fullWidth
+              className={signUpUser ? '' : classes.hideSignUpContent}
+            >
+              <InputLabel
+                htmlFor="name"
+                classes={{
+                  root: classes.cssLabel,
+                  focused: classes.cssFocused
+                }}
+              >
+                First Name
+              </InputLabel>
+              <Input
+                id="firstName"
+                name="firstName"
+                classes={{
+                  underline: classes.cssUnderline
+                }}
+              />
+            </FormControl>
+            <FormControl
+              margin="normal"
+              required={signUpUser ? true : false}
+              fullWidth
+              className={signUpUser ? '' : classes.hideSignUpContent}
+            >
+              <InputLabel
+                htmlFor="name"
+                classes={{
+                  root: classes.cssLabel,
+                  focused: classes.cssFocused
+                }}
+              >
+                Last Name
+              </InputLabel>
+              <Input
+                id="lastName"
+                name="lastName"
+                classes={{
+                  underline: classes.cssUnderline
+                }}
+              />
+            </FormControl>
             <FormControl margin="normal" required fullWidth>
               <InputLabel
                 htmlFor="email"
@@ -159,7 +199,6 @@ class SignIn extends Component {
                 id="email"
                 name="email"
                 autoComplete="email"
-                autoFocus
                 classes={{
                   underline: classes.cssUnderline
                 }}
@@ -185,34 +224,7 @@ class SignIn extends Component {
                 }}
               />
             </FormControl>
-            <FormControl
-              margin="normal"
-              fullWidth
-              required={signUpUser ? true : false}
-              style={{
-                visibility: signUpUser ? 'visible' : 'hidden',
-                height: '0px'
-              }}
-            >
-              <InputLabel
-                htmlFor="password"
-                classes={{
-                  root: classes.cssLabel,
-                  focused: classes.cssFocused
-                }}
-              >
-                Confirm Password
-              </InputLabel>
-              <Input
-                name="confirmPassword"
-                type="password"
-                id="confirmPassword"
-                classes={{
-                  underline: classes.cssUnderline
-                }}
-              />
-            </FormControl>
-            <FormControlLabel
+            {/* <FormControlLabel
               style={{
                 visibility: signUpUser ? 'hidden' : 'visible'
               }}
@@ -226,7 +238,7 @@ class SignIn extends Component {
                 />
               }
               label="Remember me"
-            />
+            /> */}
             <Button
               type="submit"
               fullWidth

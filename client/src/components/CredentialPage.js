@@ -29,10 +29,12 @@ class CredentialPage extends Component {
 
   render() {
     const { classes } = this.props;
+    const { signUpUser } = this.state;
+
     return (
       <div className={classes.pageFill}>
         <Header />
-        <SignIn signUpUser={this.state.signUpUser} />{' '}
+        <SignIn signUpUser={signUpUser} />{' '}
         <Grid
           container
           spacing={0}
@@ -49,18 +51,19 @@ class CredentialPage extends Component {
             }}
           >
             {' '}
-            {this.state.signUpUser
+            {signUpUser
               ? 'Got an account already?'
               : "Don't have an account?"}{' '}
           </Typography>{' '}
           <Button
             style={{
               alignItems: 'center',
-              color: '#FF4136'
+              color: '#FF4136',
+              marginBottom: signUpUser ? '60px' : ''
             }}
             onClick={() => this.signUpUser()}
           >
-            {this.state.signUpUser ? 'Log In instead' : 'Sign up instead'}{' '}
+            {signUpUser ? 'Log In instead' : 'Sign up instead'}{' '}
           </Button>{' '}
         </Grid>{' '}
         <Footer />

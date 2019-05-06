@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import Avatar from './avatar';
 // import LongMenu from './LongMenu';
@@ -37,7 +38,7 @@ const styles = {
 
 const menuList = ['Profile', 'Projects', 'Contact', 'Login'];
 
-class Header extends React.Component {
+class Header extends Component {
   state = { mobileWidth: false, openDrawer: false };
   updateDimensions = this.updateDimensions.bind(this);
   myDiv = React.createRef();
@@ -88,6 +89,37 @@ class Header extends React.Component {
     this.setState({ openDrawer: open });
   };
 
+  renderContent() {
+    switch (this.props.auth) {
+      case null:
+        return;
+      case false:
+        return (
+          <Button
+            style={{ color: '#DEDEDE' }}
+            onClick={e => {
+              this.handleClick('login', e);
+            }}
+          >
+            Login
+          </Button>
+        );
+      default:
+        return (
+          <Button style={{ color: '#DEDEDE' }}>
+            <Link
+              color="inherit"
+              underline="none"
+              href="/api/logout"
+              style={{ cursor: 'pointer' }}
+            >
+              Logout
+            </Link>
+          </Button>
+        );
+    }
+  }
+
   render() {
     const { classes } = this.props;
     const pointer = { cursor: 'pointer' };
@@ -103,22 +135,6 @@ class Header extends React.Component {
           }}
         >
           <Toolbar>
-            {/* <IconButton
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="Menu"
-          >
-            <MenuIcon />
-          </IconButton> */}
-            {/* <Typography variant="h6" color="inherit" className={classes.grow}>
-            <Link
-              className="nav-link"
-              to="/"
-              style={{ textDecoration: 'none' }}
-            >
-              Home
-            </Link>
-          </Typography> */}
             <Typography style={{ display: 'inline-block' }} component={'span'}>
               <Link
                 style={pointer}
@@ -158,8 +174,9 @@ class Header extends React.Component {
                 <MenuIcon />
               </IconButton>
             ) : (
-                this.renderMenuItems()
-              )}
+              this.renderMenuItems()
+            )}
+            {this.renderContent()}
           </Toolbar>
         </AppBar>
         <TempDrawer
@@ -176,4 +193,8 @@ Header.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withRouter(withStyles(styles)(Header));
+function mapStateToProps({ auth }) {
+  return { auth };
+}
+
+export default connect(mapStateToProps)(withRouter(withStyles(styles)(Header)));
