@@ -39,6 +39,10 @@ class App extends Component {
       return <Redirect from="/" to="/home" />;
     }
 
+    if (!this.props.auth) {
+      return <Redirect from="/" to="/home" />;
+    }
+
     return;
   }
 
