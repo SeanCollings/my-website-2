@@ -36,7 +36,7 @@ const styles = {
   background: 'rgba(26,26,26,.95)'
 };
 
-const menuList = ['Profile', 'Projects', 'Contact', 'Login'];
+const menuList = ['Profile', 'Projects', 'Contact'];
 
 class Header extends Component {
   state = { mobileWidth: false, openDrawer: false };
@@ -66,6 +66,10 @@ class Header extends Component {
 
   renderMenuItems() {
     return menuList.map(item => {
+      if (item === 'Login') {
+        return this.renderLoginLogout();
+      }
+
       return (
         <Button
           key={item}
@@ -89,13 +93,19 @@ class Header extends Component {
     this.setState({ openDrawer: open });
   };
 
-  renderContent() {
+  renderLoginLogout() {
     switch (this.props.auth) {
       case null:
         return;
+      // (
+      //   <Button key={'login'} style={{ color: '#DEDEDE' }}>
+      //     {''}
+      //   </Button>
+      // );
       case false:
         return (
           <Button
+            key={'login'}
             style={{ color: '#DEDEDE' }}
             onClick={e => {
               this.handleClick('login', e);
@@ -106,14 +116,14 @@ class Header extends Component {
         );
       default:
         return (
-          <Button style={{ color: '#DEDEDE' }}>
+          <Button key={'login'} style={{ color: '#DEDEDE' }}>
             <Link
               color="inherit"
               underline="none"
               href="/api/logout"
               style={{ cursor: 'pointer' }}
             >
-              Logout
+              Log out
             </Link>
           </Button>
         );
@@ -162,9 +172,7 @@ class Header extends Component {
                 Home
               </Link>
             </Typography>
-
             {this.mobileWidth() ? (
-              // <LongMenu options={menuList} />
               <IconButton
                 aria-label="More"
                 aria-haspopup="true"
@@ -176,7 +184,7 @@ class Header extends Component {
             ) : (
               this.renderMenuItems()
             )}
-            {this.renderContent()}
+            {this.mobileWidth() ? '' : this.renderLoginLogout()}
           </Toolbar>
         </AppBar>
         <TempDrawer

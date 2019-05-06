@@ -1,14 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, NavLink } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 // import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
-// import Divider from '@material-ui/core/Divider';
+import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { Link } from '@material-ui/core';
 
 const styles = {
   list: {
@@ -23,6 +25,29 @@ class TemporaryDrawer extends React.Component {
   // static getDerivedStateFromProps(props, state) {
   //   return { ...state, openDrawer: props.openDrawer };
   // }
+
+  renderLoginLogout() {
+    switch (this.props.auth) {
+      case null:
+        return;
+      case false:
+        return (
+          <ListItem button>
+            <NavLink to="/login" style={{ textDecoration: 'none' }}>
+              <ListItemText primary="Login" />
+            </NavLink>
+          </ListItem>
+        );
+      default:
+        return (
+          <ListItem button>
+            <Link href="/api/logout">
+              <ListItemText primary="Log out" />
+            </Link>
+          </ListItem>
+        );
+    }
+  }
 
   render() {
     const { classes } = this.props;
@@ -45,14 +70,8 @@ class TemporaryDrawer extends React.Component {
             </NavLink>
           ))}
         </List>
-        {/* <Divider />
-        <List>
-          {['About'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List> */}
+        <Divider />
+        <List>{this.renderLoginLogout()}</List>
       </div>
     );
 
@@ -80,4 +99,10 @@ TemporaryDrawer.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withRouter(withStyles(styles)(TemporaryDrawer));
+function mapStateToProps({ auth }) {
+  return { auth };
+}
+
+export default connect(mapStateToProps)(
+  withRouter(withStyles(styles)(TemporaryDrawer))
+);

@@ -3,20 +3,19 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 
-import Header from './components/Header';
+// import Header from './components/Header';
 // import Loader from './loaderCircular';
 // import Loader from './components/loaderLinear';
 import Paper from './components/paper';
 import MediaCard from './components/MediaCard';
-import Footer from './components/footer';
+// import Footer from './components/footer';
 
 const styles = theme => ({
   margin: {
     marginTop: '30px'
   },
   pageFill: {
-    minHeight: '98vh',
-    position: 'relative'
+    paddingBottom: '2.5rem'
   }
 });
 
@@ -48,7 +47,7 @@ class HomePage extends Component {
     const { classes } = this.props;
     return (
       <div className={classes.pageFill}>
-        <Header headerName="Welcome" />
+        {/* <Header /> */}
         {/* <Loader loaded={this.state.loaded} /> */}
         <Paper title="Welcome" content="Please, have a look around" />
         <div
@@ -88,9 +87,9 @@ class HomePage extends Component {
         </div>
         {this.displayCards()}
         <div
-          style={this.state.mediaCards.length > 0 ? { height: '46px' } : {}}
+          style={this.state.mediaCards.length > 0 ? { height: '20px' } : {}}
         />
-        <Footer />
+        {/* <Footer /> */}
       </div>
     );
   }

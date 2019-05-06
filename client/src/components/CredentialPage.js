@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 
-import Header from './components/Header';
 import SignIn from './components/SignIn';
-import Footer from './components/footer';
 
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -11,8 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
   pageFill: {
-    minHeight: '98vh',
-    position: 'relative'
+    paddingBottom: '2.5rem'
   }
 });
 
@@ -33,8 +30,7 @@ class CredentialPage extends Component {
 
     return (
       <div className={classes.pageFill}>
-        <Header />
-        <SignIn signUpUser={signUpUser} />{' '}
+        <SignIn signUpUser={signUpUser} />
         <Grid
           container
           spacing={0}
@@ -50,11 +46,8 @@ class CredentialPage extends Component {
               marginTop: '10px'
             }}
           >
-            {' '}
-            {signUpUser
-              ? 'Got an account already?'
-              : "Don't have an account?"}{' '}
-          </Typography>{' '}
+            {signUpUser ? 'Got an account already?' : "Don't have an account?"}
+          </Typography>
           <Button
             style={{
               alignItems: 'center',
@@ -63,10 +56,9 @@ class CredentialPage extends Component {
             }}
             onClick={() => this.signUpUser()}
           >
-            {signUpUser ? 'Log In instead' : 'Sign up instead'}{' '}
-          </Button>{' '}
-        </Grid>{' '}
-        <Footer />
+            {signUpUser ? 'Log In instead' : 'Sign up instead'}
+          </Button>
+        </Grid>
       </div>
     );
   }
