@@ -24,6 +24,7 @@ class App extends Component {
 
   componentDidMount() {
     this.props.fetchUser();
+    // this.props.verifyUser('pereritto');
 
     setTimeout(
       function() {
@@ -97,7 +98,6 @@ class App extends Component {
     );
 
     if (this.props.auth === null && !this.state.render) {
-      console.log('This loader');
       return <Loader show message={spinner} style={{ minHeight: '100vh' }} />;
     }
 

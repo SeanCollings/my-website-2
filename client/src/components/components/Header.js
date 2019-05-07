@@ -29,10 +29,6 @@ const styles = {
   headerHeight: {
     marginTop: '100px'
   },
-  // menuButton: {
-  //   marginLeft: -12,
-  //   marginRight: 20
-  // },
   background: 'rgba(26,26,26,.95)'
 };
 
