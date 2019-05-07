@@ -23,13 +23,14 @@ class App extends Component {
   state = { pereritto: false, render: false };
 
   componentDidMount() {
-    this.props.fetchUser();
+    // this.props.fetchUser();
     // this.props.verifyUser('pereritto');
 
     setTimeout(
       function() {
         this.setState({ render: true });
         // this.props.fetchUser();
+        this.props.fetchUser();
       }.bind(this),
       2000
     );
@@ -73,17 +74,21 @@ class App extends Component {
   checkRoute() {
     if (this.props.location.pathname === PERERITTO_PATH) {
       return {
-        minHeight: '100vh',
+        minHeight: '98vh',
         backgroundColor: 'white',
-        backgroundImage: 'linear-gradient(#FF4136, white 50%)'
+        backgroundImage: 'linear-gradient(#FF4136, white 50%)',
+        backgroundSize: 'auto 98vh',
+        backgroundRepeat: 'no-repeat'
       };
     }
 
     return {
-      minHeight: '100vh',
+      minHeight: '98vh',
       backgroundColor: 'white',
       // backgroundImage: 'linear-gradient(#424242, white 50%, #444444 90%)'
-      backgroundImage: 'linear-gradient(#424242, white 50%)'
+      backgroundImage: 'linear-gradient(#424242, white 50%)',
+      backgroundSize: 'auto 98vh',
+      backgroundRepeat: 'no-repeat'
     };
   }
 
@@ -98,7 +103,7 @@ class App extends Component {
     );
 
     if (this.props.auth === null && !this.state.render) {
-      return <Loader show message={spinner} style={{ minHeight: '100vh' }} />;
+      return <Loader show message={spinner} style={{ minHeight: '98vh' }} />;
     }
 
     return (
@@ -109,7 +114,7 @@ class App extends Component {
         // messageStyle={{ color: 'darkGrey' }}
         contentBlur={1}
         backgroundStyle={{ backgroundColor: 'none' }}
-        style={{ minHeight: '100vh' }}
+        style={{ minHeight: '98vh' }}
       >
         <Header pererittoUser={this.props.pererittoUser} />
         <Switch>

@@ -8,6 +8,7 @@ import sslRedirect from 'heroku-ssl-redirect';
 
 import './models/User';
 import './services/passport';
+import './models/PererittoUser';
 
 import keys from './config/keys';
 import authRoutes from './routes/authRoutes';

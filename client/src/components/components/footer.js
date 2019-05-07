@@ -14,8 +14,8 @@ const styles = {
     // backgroundColor: '#444444',
     backgroundColor: 'White',
     // backgroundImage: 'linear-gradient(white, #444444 90%)',
-    textAlign: 'center',
-    height: '2.5rem'
+    textAlign: 'center'
+    // height: '2.5rem'
     // paddingTop: '10px'
   }
 };
