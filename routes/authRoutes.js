@@ -19,7 +19,7 @@ export default app => {
 
   app.get('/api/logout', (req, res) => {
     req.logout();
-    res.redirect('/');
+    res.redirect('/home');
   });
 
   app.get('/api/current_user', (req, res) => {

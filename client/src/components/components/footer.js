@@ -11,31 +11,40 @@ const styles = {
     left: 0,
     bottom: 0,
     width: '100%',
-    backgroundColor: '#444444',
+    // backgroundColor: '#444444',
+    backgroundColor: 'White',
+    // backgroundImage: 'linear-gradient(white, #444444 90%)',
     textAlign: 'center',
-    height: '2.5rem',
-    paddingTop: '10px'
+    height: '2.5rem'
+    // paddingTop: '10px'
   }
 };
 
 function footer(props) {
   const { classes } = props;
-  // const v = `${version.mainVersion}.${version.subVersion}`;
+  // const ver = version.version;
 
   return (
     <footer className={classes.footer}>
-      <Typography style={{ color: '#DEDEDE' }}>
-        © 2019 Sean Collings. All rights reserved.
-      </Typography>
-      {/* <Typography
+      <Typography
         style={{
-          color: '#DEDEDE',
-          textAlign: 'right',
-          marginRight: '10px'
+          // color: '#DEDEDE',
+          color: '#444444',
+          alignItems: 'center'
         }}
+        component="div"
       >
-        version {v}
-      </Typography> */}
+        © 2019 Sean Collings. All rights reserved.
+        {/* <Typography
+          style={{
+            color: '#DEDEDE',
+            float: 'right',
+            marginRight: '10px'
+          }}
+        >
+          version {ver}
+        </Typography> */}
+      </Typography>
     </footer>
   );
 }

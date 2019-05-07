@@ -135,7 +135,7 @@ class Header extends Component {
   }
 
   render() {
-    const { classes, location } = this.props;
+    const { classes } = this.props;
     const pointer = { cursor: 'pointer' };
 
     return (
@@ -144,8 +144,11 @@ class Header extends Component {
           position="sticky"
           elevation={0}
           style={{
-            background:
-              location.pathname === '/pereritto' ? '#FF4136' : '#424242',
+            background: 'transparent',
+            //   this.props.auth !== null && location.pathname === '/pereritto'
+            //     ? '#FF4136'
+            //     : 'transparent',
+            // // : '#424242',
             height: this.mobileWidth() ? '56px' : '64px'
           }}
         >

@@ -19,10 +19,12 @@ const styles = {
     paddingTop: '5%',
     paddingBottom: '5%',
     marginTop: '10px',
-    backgroundColor: '#DEDEDE'
+    backgroundColor: '#DEDEDE',
+    marginLeft: '5%',
+    marginRight: '5%'
   },
   media: {
-    height: 280,
+    height: 250,
     filter: 'grayscale(70%)',
     webkitFilter: 'grayscale(70%)'
   }

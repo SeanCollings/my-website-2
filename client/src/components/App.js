@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Loader from 'react-loader-advanced';
 import { ScaleLoader } from 'halogenium';
@@ -14,23 +14,42 @@ import PererittoPage from './PererittoPage';
 
 import Header from './components/Header';
 import Footer from './components/footer';
+import { PERERITTO_PATH } from '../utils/constants';
+import loadingMessages from '../utils/loadingMessages';
+
+import { Typography } from '@material-ui/core';
 
 class App extends Component {
+  state = { pereritto: false, render: false };
+
   componentDidMount() {
     this.props.fetchUser();
+
+    setTimeout(
+      function() {
+        this.setState({ render: true });
+        // this.props.fetchUser();
+      }.bind(this),
+      2000
+    );
   }
 
   renderPage() {
     if (this.props.pererittoUser) {
       return (
         <Route
-          path="/pereritto"
+          path={PERERITTO_PATH}
           render={props => (
-            <PererittoPage {...props} superUser={this.props.superUser} />
+            <PererittoPage
+              {...props}
+              superUser={this.props.superUser}
+              pereritto={this.state.pereritto}
+            />
           )}
         />
       );
     }
+
     return;
   }
 
@@ -39,58 +58,79 @@ class App extends Component {
       return <Redirect from="/" to="/home" />;
     }
 
-    if (!this.props.auth) {
-      return <Redirect from="/" to="/home" />;
+    if (this.props.auth === false) {
+      return <Redirect to="/home" />;
+    }
+
+    if (this.props.auth === null) {
+      return;
     }
 
     return;
+  }
+
+  checkRoute() {
+    if (this.props.location.pathname === PERERITTO_PATH) {
+      return {
+        minHeight: '100vh',
+        backgroundColor: 'white',
+        backgroundImage: 'linear-gradient(#FF4136, white 50%)'
+      };
+    }
+
+    return {
+      minHeight: '100vh',
+      backgroundColor: 'white',
+      // backgroundImage: 'linear-gradient(#424242, white 50%, #444444 90%)'
+      backgroundImage: 'linear-gradient(#424242, white 50%)'
+    };
   }
 
   render() {
     const spinner = (
       <span>
         <ScaleLoader color="#424242" size="33px" margin="2px" />
+        <Typography style={{ color: '#424242' }}>
+          {loadingMessages[Math.floor(Math.random() * loadingMessages.length)]}
+        </Typography>
       </span>
     );
 
+    if (this.props.auth === null && !this.state.render) {
+      console.log('This loader');
+      return <Loader show message={spinner} style={{ minHeight: '100vh' }} />;
+    }
+
     return (
-      <BrowserRouter>
-        <Loader
-          contentStyle={{ minHeight: '100vh' }}
-          show={this.props.auth !== null ? false : true}
-          message={spinner}
-          messageStyle={{ color: 'darkGrey' }}
-          contentBlur={1}
-          backgroundStyle={{ backgroundColor: 'none' }}
-          style={{ minHeight: '100vh' }}
-        >
-          <Header pererittoUser={this.props.pererittoUser} />
-          <Switch>
+      <Loader
+        contentStyle={this.checkRoute()}
+        show={false}
+        // message={spinner}
+        // messageStyle={{ color: 'darkGrey' }}
+        contentBlur={1}
+        backgroundStyle={{ backgroundColor: 'none' }}
+        style={{ minHeight: '100vh' }}
+      >
+        <Header pererittoUser={this.props.pererittoUser} />
+        <Switch>
+          <Route path="/profile" render={props => <ProfilePage {...props} />} />
+          <Route path="/contact" render={props => <ContactPage {...props} />} />
+          <Route
+            path="/projects"
+            render={props => <ProjectsPage {...props} />}
+          />
+          {this.renderPage()}
+          {this.props.auth !== false ? null : (
             <Route
-              path="/profile"
-              render={props => <ProfilePage {...props} />}
+              path="/login"
+              render={props => <CredentialPage {...props} />}
             />
-            <Route
-              path="/contact"
-              render={props => <ContactPage {...props} />}
-            />
-            <Route
-              path="/projects"
-              render={props => <ProjectsPage {...props} />}
-            />
-            {this.renderPage()}
-            {this.props.auth !== false ? null : (
-              <Route
-                path="/login"
-                render={props => <CredentialPage {...props} />}
-              />
-            )}
-            <Route path="/home" render={props => <HomePage {...props} />} />
-            {this.checkRedirect()}
-          </Switch>
-          <Footer />
-        </Loader>
-      </BrowserRouter>
+          )}
+          <Route path="/home" render={props => <HomePage {...props} />} />
+          {this.checkRedirect()}
+        </Switch>
+        <Footer />
+      </Loader>
     );
   }
 }
@@ -103,7 +143,9 @@ function mapStateToProps({ auth }) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  actions
-)(App);
+export default withRouter(
+  connect(
+    mapStateToProps,
+    actions
+  )(App)
+);

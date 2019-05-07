@@ -75,8 +75,8 @@ class HomePage extends Component {
               backgroundColor: '#DEDEDE',
               // backgroundColor: '#FF4136',
               color: '#424242',
-              marginRight: '10px',
-              width: '50%'
+              marginRight: '5%',
+              width: '30%'
             }}
           >
             Add Card
@@ -89,7 +89,7 @@ class HomePage extends Component {
               backgroundColor: '#DEDEDE',
               // color: '#FF4136',
               color: '#424242',
-              width: '50%'
+              width: '30%'
             }}
           >
             Remove
