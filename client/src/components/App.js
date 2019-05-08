@@ -11,10 +11,11 @@ import ProfilePage from './ProfilePage';
 import ProjectsPage from './ProjectsPage';
 import CredentialPage from './CredentialPage';
 import PererittoPage from './PererittoPage';
+import MaintenancePage from './maintenancePage';
 
 import Header from './components/Header';
 import Footer from './components/footer';
-import { PERERITTO_PATH } from '../utils/constants';
+import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import loadingMessages from '../utils/loadingMessages';
 
 import { Typography } from '@material-ui/core';
@@ -36,7 +37,7 @@ class App extends Component {
     );
   }
 
-  renderPage() {
+  renderPereritto() {
     if (this.props.pererittoUser) {
       return (
         <Route
@@ -48,6 +49,19 @@ class App extends Component {
               pereritto={this.state.pereritto}
             />
           )}
+        />
+      );
+    }
+
+    return;
+  }
+
+  renderMaintance() {
+    if (this.props.superUser) {
+      return (
+        <Route
+          path={MAINTENANCE_PATH}
+          render={props => <MaintenancePage {...props} />}
         />
       );
     }
@@ -76,19 +90,29 @@ class App extends Component {
       return {
         minHeight: '98vh',
         backgroundColor: 'white',
-        backgroundImage: 'linear-gradient(#FF4136, white 50%)',
+        // backgroundImage: 'linear-gradient(#424242, white 50%, #444444 90%)'
         backgroundSize: 'auto 98vh',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: 'linear-gradient(#FF4136, white 50%)'
+      };
+    }
+
+    if (this.props.location.pathname === MAINTENANCE_PATH) {
+      return {
+        minHeight: '98vh',
+        backgroundColor: 'white',
+        backgroundSize: 'auto 98vh',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: 'linear-gradient(#0074D9, white 50%)'
       };
     }
 
     return {
       minHeight: '98vh',
       backgroundColor: 'white',
-      // backgroundImage: 'linear-gradient(#424242, white 50%, #444444 90%)'
-      backgroundImage: 'linear-gradient(#424242, white 50%)',
       backgroundSize: 'auto 98vh',
-      backgroundRepeat: 'no-repeat'
+      backgroundRepeat: 'no-repeat',
+      backgroundImage: 'linear-gradient(#424242, white 50%)'
     };
   }
 
@@ -124,7 +148,8 @@ class App extends Component {
             path="/projects"
             render={props => <ProjectsPage {...props} />}
           />
-          {this.renderPage()}
+          {this.renderPereritto()}
+          {this.renderMaintance()}
           {this.props.auth !== false ? null : (
             <Route
               path="/login"

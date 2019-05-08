@@ -19,7 +19,6 @@ class LongMenu extends React.Component {
   };
 
   handleClose = event => {
-    // console.log(event.currentTarget.value);
     this.setState({ anchorEl: null });
   };
 

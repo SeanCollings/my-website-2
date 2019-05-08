@@ -32,7 +32,7 @@ const styles = {
   background: 'rgba(26,26,26,.95)'
 };
 
-const menuList = ['Profile', 'Projects', 'Contact', 'Pereritto'];
+const menuList = ['Profile', 'Projects', 'Contact', 'Pereritto', 'Maintenance'];
 
 class Header extends Component {
   state = { mobileWidth: false, openDrawer: false };
@@ -64,6 +64,10 @@ class Header extends Component {
     return menuList.map(item => {
       if (item === 'Login') {
         return this.renderLoginLogout();
+      }
+
+      if (item === 'Pereritto' && !this.props.pererittoUser) {
+        return null;
       }
 
       if (item === 'Pereritto' && !this.props.pererittoUser) {

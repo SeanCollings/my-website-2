@@ -13,18 +13,9 @@ import Avatar from '@material-ui/core/Avatar';
 // import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
 
 import Paper from './components/paper';
-
-function TabContainer(props) {
-  console.log(props);
-  return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
-      {props.children}
-    </Typography>
-  );
-}
+import TabContainer from './components/tabContainer';
 
 const styles = theme => ({
   pageFill: {
@@ -78,15 +69,19 @@ class ProjectsPage extends Component {
       const backgroundColour = Math.floor(Math.random() * 16777215).toString(
         16
       );
-      const textColour = Math.floor(Math.random() * 16777215).toString(16);
 
       return (
-        <ListItem key={player.name} stlye={{ alignItems: 'center' }}>
+        <ListItem
+          key={player.name}
+          style={{
+            backgroundColor: player.lastWinner ? 'rgb(255, 170, 0, 0.2)' : ''
+          }}
+        >
           <ListItemAvatar>
             <Avatar
               style={{
-                backgroundColor: `#${backgroundColour}`,
-                color: `#${textColour}`
+                backgroundColor:
+                  player.colour !== '' ? player.colour : `#${backgroundColour}`
               }}
             >
               {firstLetter}
@@ -116,20 +111,6 @@ class ProjectsPage extends Component {
       <div className={classes.pageFill}>
         <Paper title="Pereritto Winners" content="Habanero Roulette" />
         <div className={classes.tabBar}>
-          {/* <Button className={classes.buttonColour}>Players</Button>
-          <Button className={classes.buttonColour}>Calendar</Button>
-          <Button
-            className={classes.superUser}
-            style={
-              this.props !== null
-                ? this.props.superUser
-                  ? {}
-                  : { display: 'none' }
-                : { display: 'none' }
-            }
-          >
-            Edit
-          </Button> */}
           <Tabs
             value={value}
             onChange={this.handleChange}
@@ -138,7 +119,7 @@ class ProjectsPage extends Component {
           >
             <Tab label="Players" />
             <Tab label="Calendar" />
-            <Tab label="Edit" />
+            <Tab label="Update" disabled={!this.props.superUser} />
           </Tabs>
           <div className={classes.centered}>
             {value === 0 && (
@@ -155,9 +136,10 @@ class ProjectsPage extends Component {
   }
 }
 
-function mapStateToProps({ pererittoUsers }) {
+function mapStateToProps({ auth, pererittoUsers }) {
   return {
-    pererittoUsers
+    pererittoUsers,
+    superUser: auth.superUser
   };
 }
 

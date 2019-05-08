@@ -54,6 +54,10 @@ class TemporaryDrawer extends React.Component {
       return null;
     }
 
+    if (item === 'Maintenance') {
+      return null;
+    }
+
     return (
       <NavLink
         key={item}
@@ -67,6 +71,22 @@ class TemporaryDrawer extends React.Component {
     );
   }
 
+  renderMaintenance() {
+    if (this.props.superUser) {
+      return (
+        <List>
+          <ListItem button>
+            <NavLink to="/maintenance" style={{ textDecoration: 'none' }}>
+              <ListItemText primary="Maintenance" />
+            </NavLink>
+          </ListItem>
+        </List>
+      );
+    }
+
+    return null;
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -75,6 +95,8 @@ class TemporaryDrawer extends React.Component {
         <List>
           {this.props.menuList.map((text, index) => this.renderMenu(text))}
         </List>
+        {this.props.superUser && <Divider />}
+        {this.renderMaintenance()}
         <Divider />
         <List>{this.renderLoginLogout()}</List>
       </div>
@@ -105,7 +127,7 @@ TemporaryDrawer.propTypes = {
 };
 
 function mapStateToProps({ auth }) {
-  return { auth };
+  return { auth, superUser: auth !== null ? auth.superUser : null };
 }
 
 export default connect(mapStateToProps)(
