@@ -13,6 +13,7 @@ import './models/PererittoUser';
 import keys from './config/keys';
 import authRoutes from './routes/authRoutes';
 import pereRoutes from './routes/pererittoRoutes';
+import userRoutes from './routes/userRoutes';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
@@ -35,6 +36,7 @@ app.use(passport.session());
 
 authRoutes(app);
 pereRoutes(app);
+userRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));

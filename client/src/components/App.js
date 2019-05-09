@@ -74,6 +74,10 @@ class App extends Component {
       return <Redirect from="/" to="/home" />;
     }
 
+    if (this.props.superUser !== null) {
+      return <Redirect from="/" to="/home" />;
+    }
+
     if (this.props.auth === false) {
       return <Redirect to="/home" />;
     }

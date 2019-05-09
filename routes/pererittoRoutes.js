@@ -19,12 +19,12 @@ export default app => {
       if (existingUser.length > 0) {
         res.send({ error: 'User already exists!' });
       } else {
-        const user = await new PererittoUser({
+        new PererittoUser({
           name: req.query.name,
-          colour: req.query.colour
+          colour: `#${req.query.colour}`
         }).save();
 
-        res.sendStatus(200);
+        res.status(200).send({ success: 'User successfully added!' });
       }
     }
   );
@@ -33,4 +33,46 @@ export default app => {
     const users = await PererittoUser.find().sort({ count: -1 });
     res.send(users);
   });
+
+  app.get(
+    '/api/update_pereritto',
+    requireLogin,
+    requireSuperAccess,
+    async (req, res) => {
+      const user = await PererittoUser.findOne({ name: req.query.name });
+
+      if (user === null) {
+        res.send({ error: 'That user does not exist!' });
+      } else {
+        let newCount =
+          req.query.checked === '1' ? user.count + 1 : user.count - 1;
+
+        if (newCount < 0) newCount = 0;
+
+        await PererittoUser.updateOne(user, {
+          $set: { count: newCount }
+        });
+
+        res.status(200).send({ success: 'User successfully updated!' });
+      }
+    }
+  );
+
+  app.get(
+    '/api/delete_pereritto',
+    requireLogin,
+    requireSuperAccess,
+    async (req, res) => {
+      const user = await PererittoUser.findOne({ name: req.query.name });
+
+      if (user === null) {
+        res.send({ error: 'That user does not exist!' });
+      } else if (user.count > 0) {
+        res.send({ error: 'User is already on the board!' });
+      } else {
+        await PererittoUser.deleteOne(user);
+        res.status(200).send({ success: 'User successfully deleted!' });
+      }
+    }
+  );
 };
