@@ -79,7 +79,9 @@ class ProjectsPage extends Component {
                 <PererittoPlayers />
               </TabContainer>
             )}
-            {value === 1 && <TabContainer>Calendar</TabContainer>}
+            {value === 1 && (
+              <TabContainer>[Pretend this is a calendar]</TabContainer>
+            )}
             {value === 2 && (
               <TabContainer>
                 <UpdatePererittoPlayer />

@@ -18,12 +18,13 @@ class UpdateUsers extends Component {
   renderAllUsers() {
     const { users } = this.props;
 
-    if (users !== null) {
+    if (users !== null && users.length > 1) {
       console.log('UpdateUser', users);
+
       return users.map((user, index) => {
         const details = `${index + 1}. ${user.givenName} ${user.familyName} - ${
           user.emailAddress
-        }`;
+        } ${user.pererittoUser ? '1' : '0'}`;
         return (
           <Grid key={index}>
             <Typography>{details}</Typography>
