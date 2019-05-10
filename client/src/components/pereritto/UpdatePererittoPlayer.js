@@ -11,8 +11,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 const styles = theme => ({
   root: {
-    width: '100%',
-    maxWidth: 360
+    maxWidth: '100%',
+    width: '360px'
   },
   rootChecked: {
     color: '#001f3f',
@@ -20,7 +20,11 @@ const styles = theme => ({
       color: '#001f3f'
     }
   },
-  checked: {}
+  checked: {},
+  textField: {
+    maxWidth: '80%',
+    width: '400px'
+  }
 });
 
 class UpdatePererittoPlayer extends Component {
@@ -55,7 +59,7 @@ class UpdatePererittoPlayer extends Component {
     const { classes } = this.props;
 
     return (
-      <Grid>
+      <Grid className={classes.root}>
         <Grid item style={{ textAlign: 'center' }}>
           <Button
             style={{

@@ -12,6 +12,10 @@ import Typography from '@material-ui/core/Typography';
 const styles = theme => ({
   colourSelectError: {
     color: 'red'
+  },
+  textField: {
+    maxWidth: '100%',
+    width: '400px'
   }
 });
 
@@ -75,7 +79,6 @@ class AddRemovePererittoPlayer extends Component {
   };
 
   renderMessage() {
-    // console.log('errorcolor', this.state.errorColour);
     return (
       <Typography
         style={{

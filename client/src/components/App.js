@@ -117,22 +117,34 @@ class App extends Component {
       backgroundColor: 'white',
       backgroundSize: 'auto 98vh',
       backgroundRepeat: 'no-repeat',
-      backgroundImage: 'linear-gradient(#424242, white 50%)'
+      // backgroundImage: 'linear-gradient(#424242, white 50%)'
+      backgroundImage: 'linear-gradient(#B8860B, white 50%)'
     };
   }
 
   render() {
+    const colour = '#673A00'; //'#424242'
     const spinner = (
       <span>
-        <ScaleLoader color="#424242" size="33px" margin="2px" />
-        <Typography style={{ color: '#424242' }}>
+        <ScaleLoader color={colour} size="33px" margin="2px" />
+        <Typography style={{ color: colour }}>
           {loadingMessages[Math.floor(Math.random() * loadingMessages.length)]}
         </Typography>
       </span>
     );
 
     if (this.props.auth === null && !this.state.render) {
-      return <Loader show message={spinner} style={{ minHeight: '98vh' }} />;
+      return (
+        <Loader
+          show
+          message={spinner}
+          style={{ minHeight: '98vh' }}
+          backgroundStyle={{
+            backgroundColor: '#B8860B',
+            backgroundImage: 'linear-gradient(#B8860B, #ffde91)'
+          }}
+        />
+      );
     }
 
     return (
@@ -141,9 +153,10 @@ class App extends Component {
         show={false}
         // message={spinner}
         // messageStyle={{ color: 'darkGrey' }}
-        contentBlur={1}
-        backgroundStyle={{ backgroundColor: 'none' }}
-        style={{ minHeight: '98vh' }}
+        // contentBlur={1}
+        // backgroundStyle={{ backgroundColor: '#B8860B' }}
+        // style={{ minHeight: '98vh', backgroundColor: 'red' }}
+        // foregroundStyle={{ color: 'white' }}
       >
         <Header pererittoUser={this.props.pererittoUser} />
         <Switch>

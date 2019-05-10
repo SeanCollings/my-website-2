@@ -4,7 +4,6 @@ import * as actions from '../actions';
 
 import Paper from './components/paper';
 import TabContainer from './components/tabContainer';
-import SnackBar from './components/SnackBar';
 import AddRemovePererittoPlayer from './maintenace/AddRemovePererittoPlayer';
 import UpdateUsers from './maintenace/UpdateUsers';
 
@@ -19,10 +18,6 @@ import Tab from '@material-ui/core/Tab';
 const styles = theme => ({
   pageFill: {
     paddingBottom: '2.5rem'
-  },
-  textField: {
-    width: '100%',
-    maxWidth: '500px'
   }
 });
 
@@ -31,32 +26,6 @@ class ContactsPage extends Component {
 
   renderPereritto() {
     return <AddRemovePererittoPlayer />;
-  }
-
-  renderSnackBar() {
-    const { maintenance } = this.props;
-
-    if (maintenance && maintenance.error) {
-      // this.setState({ openSnackBar: true });
-
-      // setTimeout(() => {
-      //   this.setState({ openSnackBar: false });
-      // }, 4000);
-
-      return (
-        <SnackBar
-          variant={'error'}
-          open={this.state.openSnackBar}
-          message={maintenance.error}
-        />
-      );
-    }
-
-    if (maintenance) {
-      // console.log(maintenance);
-    }
-
-    return null;
   }
 
   renderUsers() {
@@ -85,7 +54,6 @@ class ContactsPage extends Component {
         </Tabs>
         {value === 0 && <TabContainer>{this.renderUsers()}</TabContainer>}
         {value === 1 && <TabContainer>{this.renderPereritto()}</TabContainer>}
-        {this.renderSnackBar()}
       </div>
     );
   }

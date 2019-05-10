@@ -91,7 +91,6 @@ class SignIn extends Component {
   handleSubmit = event => {
     event.preventDefault();
 
-    // console.log(event);
     // this.props.signinUser({ username, password });
     if (this.props.signUpUser) {
     }

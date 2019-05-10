@@ -15,7 +15,8 @@ import UpdatePererittoPlayer from './pereritto/UpdatePererittoPlayer';
 
 const styles = theme => ({
   pageFill: {
-    paddingBottom: '2.5rem'
+    paddingBottom: '2.5rem',
+    maxWidth: '100%'
     // backgroundColor: '#FF4136'
   },
   buttonColour: {
@@ -24,15 +25,10 @@ const styles = theme => ({
     width: '25%',
     marginLeft: '10px'
   },
-  superUser: {
-    backgroundColor: '#2ECC40',
-    width: '25%',
-    marginLeft: '10px'
-  },
-  root: {
-    width: '100%',
-    maxWidth: 360
-  },
+  // root: {
+  //   width: '100%',
+  //   maxWidth: 360
+  // },
   tabBar: {
     flexGrow: 1
   },
@@ -83,9 +79,7 @@ class ProjectsPage extends Component {
               <TabContainer>[Pretend this is a calendar]</TabContainer>
             )}
             {value === 2 && (
-              <TabContainer>
-                <UpdatePererittoPlayer />
-              </TabContainer>
+              <TabContainer children={<UpdatePererittoPlayer />} />
             )}
           </div>
         </div>

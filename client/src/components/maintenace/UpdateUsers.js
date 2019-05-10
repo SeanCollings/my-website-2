@@ -19,8 +19,6 @@ class UpdateUsers extends Component {
     const { users } = this.props;
 
     if (users !== null && users.length > 1) {
-      console.log('UpdateUser', users);
-
       return users.map((user, index) => {
         const details = `${index + 1}. ${user.givenName} ${user.familyName} - ${
           user.emailAddress

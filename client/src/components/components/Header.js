@@ -49,7 +49,7 @@ class Header extends Component {
   }
 
   updateDimensions() {
-    if (window.innerWidth < 520) {
+    if (window.innerWidth < 700) {
       this.setState({ mobileWidth: true });
     } else {
       this.setState({ mobileWidth: false });

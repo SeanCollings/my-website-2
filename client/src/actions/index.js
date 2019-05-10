@@ -3,9 +3,7 @@ import {
   FETCH_USER,
   VERIFY_USER,
   GET_PERERITTO_USERS,
-  DELETE_PERERITTO_USER,
   FETCH_All_USERS,
-  UPDATE_PERERITTO_USER,
   SHOW_MESSAGE
 } from './types';
 
@@ -48,11 +46,11 @@ export const updatePererittoUser = (name, checked) => async dispatch => {
     `/api/update_pereritto?name=${name}&checked=${checked}`
   );
 
-  dispatch({ type: UPDATE_PERERITTO_USER, payload: res.data });
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
 export const deletePererittoUser = name => async dispatch => {
   const res = await axios.get(`/api/delete_pereritto?name=${name}`);
 
-  dispatch({ type: DELETE_PERERITTO_USER, payload: res.data });
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };

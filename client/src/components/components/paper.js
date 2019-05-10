@@ -11,6 +11,9 @@ const styles = theme => ({
     paddingBottom: theme.spacing.unit * 2,
     textAlign: 'center',
     backgroundColor: 'transparent'
+  },
+  goldColour: {
+    color: '#673A00'
   }
 });
 
@@ -20,10 +23,12 @@ function PaperSheet(props) {
   return (
     <div>
       <Paper className={classes.root} elevation={0}>
-        <Typography variant="h5" component="h3">
+        <Typography variant="h5" component="h3" className={classes.goldColour}>
           {props.title}
         </Typography>
-        <Typography component="p">{props.content}</Typography>
+        <Typography component="p" className={classes.goldColour}>
+          {props.content}
+        </Typography>
       </Paper>
     </div>
   );
