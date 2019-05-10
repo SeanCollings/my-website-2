@@ -51,7 +51,7 @@ class UpdateUsers extends Component {
 }
 
 function mapStateToProps({ maintenance }) {
-  return { users: maintenance };
+  return { users: maintenance.users };
 }
 
 export default connect(

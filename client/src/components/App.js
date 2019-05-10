@@ -15,6 +15,7 @@ import MaintenancePage from './maintenancePage';
 
 import Header from './components/Header';
 import Footer from './components/footer';
+import SnackBar from './components/SnackBar';
 import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import loadingMessages from '../utils/loadingMessages';
 
@@ -163,6 +164,7 @@ class App extends Component {
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}
         </Switch>
+        <SnackBar />
         <Footer />
       </Loader>
     );

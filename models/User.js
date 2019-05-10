@@ -6,7 +6,7 @@ const userSchema = new Schema({
   familyName: String,
   emailAddress: String,
   superUser: { type: Boolean, default: false },
-  pererittoUser: { type: Boolean, default: true } /* Default to false after */
+  pererittoUser: { type: Boolean, default: false }
 });
 
 mongoose.model('users', userSchema);

@@ -3,10 +3,10 @@ import {
   FETCH_USER,
   VERIFY_USER,
   GET_PERERITTO_USERS,
-  ADD_PERERITTO_USER,
   DELETE_PERERITTO_USER,
   FETCH_All_USERS,
-  UPDATE_PERERITTO_USER
+  UPDATE_PERERITTO_USER,
+  SHOW_MESSAGE
 } from './types';
 
 export const fetchUser = () => async dispatch => {
@@ -38,7 +38,7 @@ export const addPererittoUser = (name, colour) => async dispatch => {
     `/api/add_pereritto?name=${name}&colour=${colour.substring(1)}`
   );
 
-  dispatch({ type: ADD_PERERITTO_USER, payload: res.data });
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
 export const updatePererittoUser = (name, checked) => async dispatch => {

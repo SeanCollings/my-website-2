@@ -1,5 +1,6 @@
 import requireLogin from '../middlewares/requireLogin';
 import requireSuperAccess from '../middlewares/requireSuperAccess';
+import { MessageTypeEnum } from '../client/src/utils/constants';
 
 const mongoose = require('mongoose');
 const PererittoUser = mongoose.model('pererittos');
@@ -17,14 +18,20 @@ export default app => {
       const existingUser = await PererittoUser.find({ name: req.query.name });
 
       if (existingUser.length > 0) {
-        res.send({ error: 'User already exists!' });
+        res.status(200).send({
+          type: MessageTypeEnum.error,
+          message: 'User already exists!'
+        });
       } else {
         new PererittoUser({
           name: req.query.name,
           colour: `#${req.query.colour}`
         }).save();
 
-        res.status(200).send({ success: 'User successfully added!' });
+        res.status(200).send({
+          type: MessageTypeEnum.success,
+          message: 'User successfully added!'
+        });
       }
     }
   );
@@ -42,7 +49,10 @@ export default app => {
       const user = await PererittoUser.findOne({ name: req.query.name });
 
       if (user === null) {
-        res.send({ error: 'That user does not exist!' });
+        res.send({
+          type: MessageTypeEnum.error,
+          message: 'That user does not exist!'
+        });
       } else {
         let newCount =
           req.query.checked === '1' ? user.count + 1 : user.count - 1;
@@ -53,7 +63,10 @@ export default app => {
           $set: { count: newCount }
         });
 
-        res.status(200).send({ success: 'User successfully updated!' });
+        res.status(200).send({
+          type: MessageTypeEnum.success,
+          message: 'User successfully updated!'
+        });
       }
     }
   );
@@ -66,12 +79,21 @@ export default app => {
       const user = await PererittoUser.findOne({ name: req.query.name });
 
       if (user === null) {
-        res.send({ error: 'That user does not exist!' });
+        res.send({
+          type: MessageTypeEnum.error,
+          message: 'That user does not exist!'
+        });
       } else if (user.count > 0) {
-        res.send({ error: 'User is already on the board!' });
+        res.send({
+          type: MessageTypeEnum.error,
+          message: 'User is already on the board!'
+        });
       } else {
         await PererittoUser.deleteOne(user);
-        res.status(200).send({ success: 'User successfully deleted!' });
+        res.status(200).send({
+          type: MessageTypeEnum.success,
+          message: 'User successfully deleted!'
+        });
       }
     }
   );

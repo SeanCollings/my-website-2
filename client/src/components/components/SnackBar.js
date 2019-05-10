@@ -1,4 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { removeMessage } from '../../actions/snackBarActions';
+import { MessageTypeEnum } from '../../utils/constants';
+
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -21,16 +25,16 @@ const variantIcon = {
 };
 
 const styles1 = theme => ({
-  success: {
+  [MessageTypeEnum.success]: {
     backgroundColor: green[600]
   },
-  error: {
+  [MessageTypeEnum.error]: {
     backgroundColor: theme.palette.error.dark
   },
-  info: {
+  [MessageTypeEnum.error.info]: {
     backgroundColor: theme.palette.primary.dark
   },
-  warning: {
+  [MessageTypeEnum.error.warning]: {
     backgroundColor: amber[700]
   },
   icon: {
@@ -81,7 +85,12 @@ MySnackbarContent.propTypes = {
   className: PropTypes.string,
   message: PropTypes.node,
   onClose: PropTypes.func,
-  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired
+  variant: PropTypes.oneOf([
+    MessageTypeEnum.success,
+    MessageTypeEnum.warning,
+    MessageTypeEnum.error,
+    MessageTypeEnum.info
+  ]).isRequired
 };
 
 const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
@@ -97,19 +106,16 @@ class CustomizedSnackbars extends React.Component {
     open: false
   };
 
-  handleClick = () => {
-    this.setState({ open: true });
-  };
-
   handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+    // if (reason === 'clickaway') {
+    //   return;
+    // }
 
-    this.setState({ open: false });
+    this.props.removeMessage();
   };
 
   render() {
+    console.log(this.props.snackBar);
     return (
       <div>
         <Snackbar
@@ -117,14 +123,14 @@ class CustomizedSnackbars extends React.Component {
             vertical: 'bottom',
             horizontal: 'left'
           }}
-          open={this.props.open}
+          open={this.props.snackBar.open}
           autoHideDuration={4000}
           onClose={this.handleClose}
         >
           <MySnackbarContentWrapper
             onClose={this.handleClose}
-            variant={this.props.variant}
-            message={this.props.message}
+            variant={this.props.snackBar.type}
+            message={this.props.snackBar.message}
           />
         </Snackbar>
       </div>
@@ -132,4 +138,11 @@ class CustomizedSnackbars extends React.Component {
   }
 }
 
-export default withStyles(styles2)(CustomizedSnackbars);
+function mapStateToProps({ snackBar }) {
+  return { snackBar };
+}
+
+export default connect(
+  mapStateToProps,
+  { removeMessage }
+)(withStyles(styles2)(CustomizedSnackbars));

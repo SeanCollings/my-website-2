@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import { /*TwitterPicker*/ CirclePicker } from 'react-color';
 import * as actions from '../../actions';
 
-import SnackBar from '../components/SnackBar';
-
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -43,41 +41,6 @@ class AddRemovePererittoPlayer extends Component {
     color: this.state.errorColour ? 'red' : 'blue'
   };
 
-  static getDerivedStateFromProps(props, state) {
-    // const { maintenance } = props;
-
-    // if ((maintenance !== null && maintenance.error) || maintenance.success) {
-    //   console.log(maintenance.error);
-    //   console.log(maintenance.success);
-    //   // this.setState({ openSnackBar: true });
-    //   return {
-    //     cachedSomeProp: nextProps.someProp
-    //   };
-    // } else {
-    //   // this.setState({ openSnackBar: false });
-    // }
-
-    return null;
-  }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   // console.log('nextProps', nextProps);
-  //   // console.log('nextState', nextState);
-
-  //   const { maintenance } = nextProps;
-
-  //   if ((maintenance !== null && maintenance.error) || maintenance.success) {
-  //     console.log(maintenance.error);
-  //     console.log(maintenance.success);
-
-  //     this.setState({ openSnackBar: true });
-  //     return true;
-  //   } else {
-  //     this.setState({ openSnackBar: false });
-  //     return false;
-  //   }
-  // }
-
   handleColourPickerChange = colour => {
     this.setState({ playerColour: colour.hex, errorColour: false });
   };
@@ -94,7 +57,6 @@ class AddRemovePererittoPlayer extends Component {
     } else if (this.state.playerColour === '') {
       console.log('Select a colour');
       return;
-      // this.setState({showSnackBar: true, snackBarMessage: 'Select a colour', snackBarVairant: 'error'});
     }
 
     this.props.addPererittoUser(this.state.playerName, this.state.playerColour);
@@ -124,34 +86,6 @@ class AddRemovePererittoPlayer extends Component {
         Select an avatar colour for new player
       </Typography>
     );
-  }
-
-  renderSnackBar() {
-    const { maintenance } = this.props;
-
-    if (maintenance !== null) {
-      if (maintenance.error) {
-        console.log(maintenance.error);
-        return (
-          <SnackBar
-            open={this.state.openSnackBar}
-            variant="error"
-            message={maintenance.error}
-          />
-        );
-      } else if (maintenance.success) {
-        console.log(maintenance.success);
-        return (
-          <SnackBar
-            open={this.state.openSnackBar}
-            variant="success"
-            message={maintenance.success}
-          />
-        );
-      }
-    }
-
-    return null;
   }
 
   render() {
@@ -239,7 +173,6 @@ class AddRemovePererittoPlayer extends Component {
             }}
           />
         </Grid>
-        {this.renderSnackBar()}
       </Grid>
     );
   }
