@@ -9,7 +9,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
   pageFill: {
-    paddingBottom: '2.5rem'
+    // paddingBottom: '2.5rem',
   }
 });
 
@@ -43,7 +43,7 @@ class CredentialPage extends Component {
         >
           <Typography
             style={{
-              marginTop: '10px'
+              color: '#DEDEDE'
             }}
           >
             {signUpUser ? 'Got an account already?' : "Don't have an account?"}
@@ -51,7 +51,8 @@ class CredentialPage extends Component {
           <Button
             style={{
               alignItems: 'center',
-              color: '#FF4136',
+              // color: '#FFC300',
+              color: '#FFC300',
               marginBottom: signUpUser ? '60px' : ''
             }}
             onClick={() => this.signUpUser()}

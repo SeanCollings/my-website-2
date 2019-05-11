@@ -12,11 +12,11 @@ const styles = {
     bottom: 0,
     width: '100%',
     // backgroundColor: '#444444',
-    backgroundColor: 'White',
+    backgroundColor: 'transparent',
     // backgroundImage: 'linear-gradient(white, #444444 90%)',
-    textAlign: 'center'
+    textAlign: 'center',
     // height: '2.5rem'
-    // paddingTop: '10px'
+    paddingBottom: '10px'
   }
 };
 
@@ -29,7 +29,7 @@ function footer(props) {
       <Typography
         style={{
           // color: '#DEDEDE',
-          color: '#444444',
+          color: '#DEDEDE',
           alignItems: 'center'
         }}
         component="div"

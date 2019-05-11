@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 import Paper from './components/paper';
-import Footer from './components/footer';
 
 const styles = theme => ({
   pageFill: {
@@ -22,7 +21,6 @@ class ProfilePage extends Component {
           Home
         </Button> */}
         <Paper title="My Profile" content="Probably some important stuff" />
-        <Footer />
       </div>
     );
   }

@@ -35,30 +35,7 @@ const styles = {
 const menuList = ['Profile', 'Projects', 'Contact', 'Pereritto', 'Maintenance'];
 
 class Header extends Component {
-  state = { mobileWidth: false, openDrawer: false };
-  updateDimensions = this.updateDimensions.bind(this);
-  myDiv = React.createRef();
-
-  componentDidMount() {
-    this.updateDimensions();
-    window.addEventListener('resize', this.updateDimensions);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateDimensions);
-  }
-
-  updateDimensions() {
-    if (window.innerWidth < 700) {
-      this.setState({ mobileWidth: true });
-    } else {
-      this.setState({ mobileWidth: false });
-    }
-  }
-
-  mobileWidth() {
-    return this.state.mobileWidth;
-  }
+  state = { openDrawer: false };
 
   renderMenuItems() {
     return menuList.map(item => {
@@ -68,9 +45,7 @@ class Header extends Component {
 
       if (item === 'Pereritto' && !this.props.pererittoUser) {
         return null;
-      }
-
-      if (item === 'Pereritto' && !this.props.pererittoUser) {
+      } else if (item === 'Maintenance' && !this.props.superUser) {
         return null;
       }
 
@@ -145,11 +120,12 @@ class Header extends Component {
           elevation={0}
           style={{
             background: 'transparent',
+            paddingTop: '10px',
             //   this.props.auth !== null && location.pathname === '/pereritto'
             //     ? '#FF4136'
             //     : 'transparent',
             // // : '#424242',
-            height: this.mobileWidth() ? '56px' : '64px'
+            height: this.props.resizeScreen ? '56px' : '64px'
           }}
         >
           <Toolbar>
@@ -180,7 +156,7 @@ class Header extends Component {
                 Home
               </Link>
             </Typography>
-            {this.mobileWidth() ? (
+            {this.props.resizeScreen ? (
               <IconButton
                 aria-label="More"
                 aria-haspopup="true"
@@ -192,7 +168,7 @@ class Header extends Component {
             ) : (
               this.renderMenuItems()
             )}
-            {this.mobileWidth() ? '' : this.renderLoginLogout()}
+            {this.props.resizeScreen ? '' : this.renderLoginLogout()}
           </Toolbar>
         </AppBar>
         <TempDrawer
@@ -210,8 +186,8 @@ Header.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-function mapStateToProps({ auth }) {
-  return { auth };
+function mapStateToProps({ auth, resizeScreen }) {
+  return { auth, resizeScreen };
 }
 
 export default connect(mapStateToProps)(withRouter(withStyles(styles)(Header)));

@@ -7,3 +7,5 @@ export const MessageTypeEnum = {
   warning: 'warning',
   info: 'info'
 };
+
+export const MOBILE_SCREEN_SIZE = 700;

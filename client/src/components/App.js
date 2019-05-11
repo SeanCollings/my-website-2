@@ -11,13 +11,14 @@ import ProfilePage from './ProfilePage';
 import ProjectsPage from './ProjectsPage';
 import CredentialPage from './CredentialPage';
 import PererittoPage from './PererittoPage';
-import MaintenancePage from './maintenancePage';
+import MaintenancePage from './MaintenancePage';
 
+import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import Header from './components/Header';
 import Footer from './components/footer';
 import SnackBar from './components/SnackBar';
-import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import loadingMessages from '../utils/loadingMessages';
+// import MobileView from './components/MobileView.1';
 
 import { Typography } from '@material-ui/core';
 
@@ -93,37 +94,33 @@ class App extends Component {
   checkRoute() {
     if (this.props.location.pathname === PERERITTO_PATH) {
       return {
-        minHeight: '98vh',
+        minHeight: '100vh',
         backgroundColor: 'white',
-        // backgroundImage: 'linear-gradient(#424242, white 50%, #444444 90%)'
-        backgroundSize: 'auto 98vh',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'linear-gradient(#FF4136, white 50%)'
+        backgroundImage: 'linear-gradient(#FF4136 10%, #FFC300)'
       };
     }
 
     if (this.props.location.pathname === MAINTENANCE_PATH) {
       return {
-        minHeight: '98vh',
-        backgroundColor: 'white',
-        backgroundSize: 'auto 98vh',
+        minHeight: '100vh',
+        backgroundColor: '#0074D9',
         backgroundRepeat: 'no-repeat',
         backgroundImage: 'linear-gradient(#0074D9, white 50%)'
       };
     }
 
     return {
-      minHeight: '98vh',
-      backgroundColor: 'white',
-      backgroundSize: 'auto 98vh',
+      minHeight: '100vh',
+      backgroundColor: '#900C3F',
       backgroundRepeat: 'no-repeat',
-      // backgroundImage: 'linear-gradient(#424242, white 50%)'
-      backgroundImage: 'linear-gradient(#B8860B, white 50%)'
+      // backgroundImage: 'linear-gradient(#900C3F, #FF5733)'
+      backgroundImage: 'linear-gradient(155deg, #581845, #900C3F, #FF5733)'
     };
   }
 
   render() {
-    const colour = '#673A00'; //'#424242'
+    const colour = '#FFC300'; //'#424242'
     const spinner = (
       <span>
         <ScaleLoader color={colour} size="33px" margin="2px" />
@@ -138,27 +135,21 @@ class App extends Component {
         <Loader
           show
           message={spinner}
-          style={{ minHeight: '98vh' }}
+          style={{ minHeight: '100vh' }}
           backgroundStyle={{
             backgroundColor: '#B8860B',
-            backgroundImage: 'linear-gradient(#B8860B, #ffde91)'
+            backgroundImage: 'linear-gradient(#900C3F, #FF5733)'
           }}
         />
       );
     }
 
     return (
-      <Loader
-        contentStyle={this.checkRoute()}
-        show={false}
-        // message={spinner}
-        // messageStyle={{ color: 'darkGrey' }}
-        // contentBlur={1}
-        // backgroundStyle={{ backgroundColor: '#B8860B' }}
-        // style={{ minHeight: '98vh', backgroundColor: 'red' }}
-        // foregroundStyle={{ color: 'white' }}
-      >
-        <Header pererittoUser={this.props.pererittoUser} />
+      <Loader contentStyle={this.checkRoute()} show={false}>
+        <Header
+          pererittoUser={this.props.pererittoUser}
+          superUser={this.props.superUser}
+        />
         <Switch>
           <Route path="/profile" render={props => <ProfilePage {...props} />} />
           <Route path="/contact" render={props => <ContactPage {...props} />} />
@@ -179,6 +170,7 @@ class App extends Component {
         </Switch>
         <SnackBar />
         <Footer />
+        {/* <MobileView /> */}
       </Loader>
     );
   }

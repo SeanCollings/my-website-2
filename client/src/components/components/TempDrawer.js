@@ -14,10 +14,14 @@ import { Link } from '@material-ui/core';
 
 const styles = {
   list: {
-    width: 250
+    width: 250,
+    color: '#581845'
   },
   fullList: {
     width: 'auto'
+  },
+  color: {
+    backgroundColor: 'blue'
   }
 };
 
@@ -107,6 +111,9 @@ class TemporaryDrawer extends React.Component {
         <Drawer
           open={this.props.openDrawer}
           onClose={() => this.props.onClick(false)}
+          PaperProps={{
+            style: { backgroundColor: '#DEDEDE' }
+          }}
         >
           <div
             tabIndex={0}

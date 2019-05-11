@@ -3,10 +3,12 @@ import authreducer from './authReducer';
 import pererittoReducer from './pererittoReducer';
 import maintenanceReducer from './maintenanceReducer';
 import snackBarReducer from './snackBarReducer';
+import resizeScreenReducer from './resizeScreenReducer';
 
 export default combineReducers({
   auth: authreducer,
   pererittoUsers: pererittoReducer,
   maintenance: maintenanceReducer,
-  snackBar: snackBarReducer
+  snackBar: snackBarReducer,
+  resizeScreen: resizeScreenReducer
 });

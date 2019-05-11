@@ -5,3 +5,5 @@ export const GET_PERERITTO_USERS = 'get_pereritto_users';
 
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';
+
+export const RESIZE_SCREEN = 'resize_screen';

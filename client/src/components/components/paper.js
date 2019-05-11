@@ -7,13 +7,13 @@ import Typography from '@material-ui/core/Typography';
 const styles = theme => ({
   root: {
     ...theme.mixins.gutters(),
-    paddingTop: theme.spacing.unit * 2,
+    paddingTop: '10px',
     paddingBottom: theme.spacing.unit * 2,
     textAlign: 'center',
     backgroundColor: 'transparent'
   },
-  goldColour: {
-    color: '#673A00'
+  textColour: {
+    color: '#DEDEDE'
   }
 });
 
@@ -23,10 +23,10 @@ function PaperSheet(props) {
   return (
     <div>
       <Paper className={classes.root} elevation={0}>
-        <Typography variant="h5" component="h3" className={classes.goldColour}>
+        <Typography variant="h5" component="h3" className={classes.textColour}>
           {props.title}
         </Typography>
-        <Typography component="p" className={classes.goldColour}>
+        <Typography component="p" className={classes.textColour}>
           {props.content}
         </Typography>
       </Paper>

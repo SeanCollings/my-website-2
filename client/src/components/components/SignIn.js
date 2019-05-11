@@ -29,12 +29,13 @@ const styles = theme => ({
     }
   },
   paper: {
-    marginTop: theme.spacing.unit * 2,
+    // marginTop: theme.spacing.unit * 2,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme
-      .spacing.unit * 3}px`
+      .spacing.unit * 3}px`,
+    backgroundColor: 'transparent'
   },
   avatar: {
     margin: theme.spacing.unit,
@@ -62,18 +63,23 @@ const styles = theme => ({
     color: '#FF4136'
   },
   cssLabel: {
+    color: '#DEDEDE',
     '&$cssFocused': {
       color: '#FF4136'
     }
   },
   cssFocused: {},
   cssUnderline: {
+    borderBottomColor: '#DEDEDE',
     '&:after': {
       borderBottomColor: '#FF4136'
     }
   },
   hideSignUpContent: {
     display: 'none'
+  },
+  input: {
+    color: '#FFC300'
   }
 });
 
@@ -101,14 +107,14 @@ class SignIn extends Component {
 
     return (
       <main className={classes.main}>
-        <Paper className={classes.paper}>
+        <Paper className={classes.paper} elevation={0}>
           {/* <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar> */}
           <Typography
             component="h1"
             variant="h5"
-            style={{ marginBottom: '5px' }}
+            style={{ marginBottom: '20px', color: '#DEDEDE' }}
           >
             {signUpUser ? 'Sign Up' : 'Log In'}
           </Typography>
@@ -153,7 +159,8 @@ class SignIn extends Component {
                 id="firstName"
                 name="firstName"
                 classes={{
-                  underline: classes.cssUnderline
+                  underline: classes.cssUnderline,
+                  input: classes.input
                 }}
               />
             </FormControl>
@@ -176,11 +183,17 @@ class SignIn extends Component {
                 id="lastName"
                 name="lastName"
                 classes={{
-                  underline: classes.cssUnderline
+                  underline: classes.cssUnderline,
+                  input: classes.input
                 }}
               />
             </FormControl>
-            <FormControl margin="normal" required fullWidth>
+            <FormControl
+              margin="normal"
+              required
+              fullWidth
+              style={{ color: 'blue' }}
+            >
               <InputLabel
                 htmlFor="email"
                 classes={{
@@ -195,7 +208,8 @@ class SignIn extends Component {
                 name="email"
                 autoComplete="email"
                 classes={{
-                  underline: classes.cssUnderline
+                  underline: classes.cssUnderline,
+                  input: classes.input
                 }}
               />
             </FormControl>
@@ -206,6 +220,7 @@ class SignIn extends Component {
                   root: classes.cssLabel,
                   focused: classes.cssFocused
                 }}
+                In
               >
                 Password
               </InputLabel>
@@ -215,7 +230,8 @@ class SignIn extends Component {
                 id="password"
                 autoComplete="current-password"
                 classes={{
-                  underline: classes.cssUnderline
+                  underline: classes.cssUnderline,
+                  input: classes.input
                 }}
               />
             </FormControl>
