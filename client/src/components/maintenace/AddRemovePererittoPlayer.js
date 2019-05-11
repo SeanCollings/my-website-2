@@ -55,11 +55,13 @@ class AddRemovePererittoPlayer extends Component {
 
   addPlayerClick = () => {
     if (this.state.playerName === '') {
+      return this.setState({ errorName: true });
+    } else if (this.state.errorName) {
+      this.setState({ errorName: false });
+    }
+
+    if (this.state.playerColour === '') {
       this.setState({ errorColour: true });
-      console.log('Select a name');
-      return;
-    } else if (this.state.playerColour === '') {
-      console.log('Select a colour');
       return;
     }
 
@@ -121,6 +123,7 @@ class AddRemovePererittoPlayer extends Component {
         <Grid item style={{ textAlign: 'center' }}>
           <form onSubmit={this.onFormSubmit}>
             <TextField
+              error={this.state.errorName}
               id="outlined-uncontrolled"
               label="Name"
               className={classes.textField}

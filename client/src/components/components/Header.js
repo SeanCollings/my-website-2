@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import { MENU_LIST } from '../../utils/constants';
+
 import Avatar from './avatar';
 // import LongMenu from './LongMenu';
 import TempDrawer from './TempDrawer';
@@ -26,19 +28,14 @@ const styles = {
   grow: {
     flexGrow: 1
   },
-  headerHeight: {
-    marginTop: '100px'
-  },
   background: 'rgba(26,26,26,.95)'
 };
-
-const menuList = ['Profile', 'Projects', 'Contact', 'Pereritto', 'Maintenance'];
 
 class Header extends Component {
   state = { openDrawer: false };
 
   renderMenuItems() {
-    return menuList.map(item => {
+    return MENU_LIST.map(item => {
       if (item === 'Login') {
         return this.renderLoginLogout();
       }
@@ -120,7 +117,7 @@ class Header extends Component {
           elevation={0}
           style={{
             background: 'transparent',
-            paddingTop: '10px',
+            paddingTop: '5px',
             //   this.props.auth !== null && location.pathname === '/pereritto'
             //     ? '#FF4136'
             //     : 'transparent',
@@ -174,7 +171,7 @@ class Header extends Component {
         <TempDrawer
           openDrawer={this.state.openDrawer}
           onClick={this.toggleDrawer}
-          menuList={menuList}
+          menuList={MENU_LIST}
           pererittoUser={this.props.pererittoUser}
         />
       </div>

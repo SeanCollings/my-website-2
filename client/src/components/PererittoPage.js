@@ -35,6 +35,9 @@ const styles = theme => ({
   centered: {
     display: 'flex',
     justifyContent: 'center'
+  },
+  indicator: {
+    backgroundColor: '#C70039'
   }
 });
 
@@ -64,6 +67,7 @@ class ProjectsPage extends Component {
             onChange={this.handleChange}
             centered
             style={{ backgroundColor: '' }}
+            classes={{ indicator: classes.indicator }}
           >
             <Tab label="Players" />
             <Tab label="Calendar" />

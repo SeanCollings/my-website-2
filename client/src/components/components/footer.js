@@ -3,6 +3,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
+import { MAINTENANCE_PATH } from '../../utils/constants';
 // import version from '../../utils/version.js';
 
 const styles = {
@@ -21,7 +22,7 @@ const styles = {
 };
 
 function footer(props) {
-  const { classes } = props;
+  const { classes, pathName } = props;
   // const ver = version.version;
 
   return (
@@ -29,7 +30,7 @@ function footer(props) {
       <Typography
         style={{
           // color: '#DEDEDE',
-          color: '#DEDEDE',
+          color: pathName === MAINTENANCE_PATH ? '#154360' : '#DEDEDE',
           alignItems: 'center'
         }}
         component="div"

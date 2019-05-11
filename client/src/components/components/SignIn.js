@@ -220,7 +220,6 @@ class SignIn extends Component {
                   root: classes.cssLabel,
                   focused: classes.cssFocused
                 }}
-                In
               >
                 Password
               </InputLabel>
@@ -255,7 +254,7 @@ class SignIn extends Component {
               fullWidth
               variant="contained"
               className={classes.submit}
-              // onClick={() => this.signInClicked()}
+              onClick={() => this.signInClicked()}
             >
               {signUpUser ? 'Sign Up' : 'Log In'}
             </Button>

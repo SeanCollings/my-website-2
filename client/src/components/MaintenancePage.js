@@ -18,6 +18,9 @@ import Tab from '@material-ui/core/Tab';
 const styles = theme => ({
   pageFill: {
     paddingBottom: '2.5rem'
+  },
+  indicator: {
+    backgroundColor: '#154360'
   }
 });
 
@@ -48,6 +51,7 @@ class ContactsPage extends Component {
           onChange={this.handleChange}
           centered
           style={{ backgroundColor: '' }}
+          classes={{ indicator: classes.indicator }}
         >
           <Tab label="Users" />
           <Tab label="Pereritto" />

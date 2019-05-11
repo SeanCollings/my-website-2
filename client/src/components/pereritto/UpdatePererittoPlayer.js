@@ -28,7 +28,7 @@ const styles = theme => ({
 });
 
 class UpdatePererittoPlayer extends Component {
-  state = { playerName: '', checked: true };
+  state = { playerName: '', checked: true, errorName: false };
   componentDidMount() {
     this.props.getPererittoUsers();
   }
@@ -47,7 +47,7 @@ class UpdatePererittoPlayer extends Component {
 
   updatePlayerClick = () => {
     if (this.state.playerName === '') {
-      this.setState({ errorColour: true });
+      this.setState({ errorName: true });
       console.log('Select a name');
       return;
     }
@@ -91,12 +91,13 @@ class UpdatePererittoPlayer extends Component {
         <Grid item style={{ textAlign: 'center' }}>
           <form onSubmit={this.onFormSubmit}>
             <TextField
+              error={this.state.errorName ? true : false}
               id="outlined-uncontrolled"
               label="Name"
-              className={classes.textField}
               margin="normal"
               variant="outlined"
               onChange={this.onInputChange}
+              className={classes.textField}
             />
           </form>
         </Grid>

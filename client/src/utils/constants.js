@@ -1,5 +1,14 @@
+export const MENU_LIST = [
+  'Profile',
+  'Projects',
+  'Contact',
+  'Pereritto',
+  'Maintenance'
+];
 export const PERERITTO_PATH = '/pereritto';
 export const MAINTENANCE_PATH = '/maintenance';
+
+export const MOBILE_SCREEN_SIZE = 700;
 
 export const MessageTypeEnum = {
   success: 'success',
@@ -7,5 +16,3 @@ export const MessageTypeEnum = {
   warning: 'warning',
   info: 'info'
 };
-
-export const MOBILE_SCREEN_SIZE = 700;

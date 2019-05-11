@@ -26,14 +26,12 @@ class App extends Component {
   state = { pereritto: false, render: false };
 
   componentDidMount() {
-    // this.props.fetchUser();
+    this.props.fetchUser();
     // this.props.verifyUser('pereritto');
 
     setTimeout(
       function() {
         this.setState({ render: true });
-        // this.props.fetchUser();
-        this.props.fetchUser();
       }.bind(this),
       2000
     );
@@ -97,7 +95,8 @@ class App extends Component {
         minHeight: '100vh',
         backgroundColor: 'white',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'linear-gradient(#FF4136 10%, #FFC300)'
+        backgroundImage:
+          'linear-gradient(135deg, #C70039 10%, #FF4136 50%, #FFC300)'
       };
     }
 
@@ -106,13 +105,15 @@ class App extends Component {
         minHeight: '100vh',
         backgroundColor: '#0074D9',
         backgroundRepeat: 'no-repeat',
-        backgroundImage: 'linear-gradient(#0074D9, white 50%)'
+        // backgroundImage: 'linear-gradient(#0074D9, white 50%)'
+        backgroundImage: 'linear-gradient(155deg, #154360,#2980B9, #D4E6F1)'
       };
     }
 
     return {
       minHeight: '100vh',
       backgroundColor: '#900C3F',
+      // backgroundSize: 'auto 100vh',
       backgroundRepeat: 'no-repeat',
       // backgroundImage: 'linear-gradient(#900C3F, #FF5733)'
       backgroundImage: 'linear-gradient(155deg, #581845, #900C3F, #FF5733)'
@@ -130,7 +131,7 @@ class App extends Component {
       </span>
     );
 
-    if (this.props.auth === null && !this.state.render) {
+    if (!this.state.render) {
       return (
         <Loader
           show
@@ -169,7 +170,7 @@ class App extends Component {
           {this.checkRedirect()}
         </Switch>
         <SnackBar />
-        <Footer />
+        <Footer pathName={this.props.location.pathname} />
         {/* <MobileView /> */}
       </Loader>
     );
