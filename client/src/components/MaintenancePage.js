@@ -56,8 +56,14 @@ class ContactsPage extends Component {
           <Tab label="Users" style={{ minWidth: '100px' }} />
           <Tab label="Pereritto" style={{ minWidth: '100px' }} />
         </Tabs>
+        <div style={{ paddingTop: '24px' }}>
+          {value === 0 && (
+            <TabContainer style={{ paddingTop: '24px', width: '100%' }}>
+              {this.renderUsers()}
+            </TabContainer>
+          )}
+        </div>
         <div style={{ padding: '24px' }}>
-          {value === 0 && <TabContainer>{this.renderUsers()}</TabContainer>}
           {value === 1 && <TabContainer>{this.renderPereritto()}</TabContainer>}
         </div>
       </div>
