@@ -53,21 +53,19 @@ class ContactsPage extends Component {
           style={{ backgroundColor: '' }}
           classes={{ indicator: classes.indicator }}
         >
-          <Tab label="Users" />
-          <Tab label="Pereritto" />
+          <Tab label="Users" style={{ minWidth: '100px' }} />
+          <Tab label="Pereritto" style={{ minWidth: '100px' }} />
         </Tabs>
-        {value === 0 && <TabContainer>{this.renderUsers()}</TabContainer>}
-        {value === 1 && <TabContainer>{this.renderPereritto()}</TabContainer>}
+        <div style={{ padding: '24px' }}>
+          {value === 0 && <TabContainer>{this.renderUsers()}</TabContainer>}
+          {value === 1 && <TabContainer>{this.renderPereritto()}</TabContainer>}
+        </div>
       </div>
     );
   }
 }
 
-function mapStateToProps({ maintenance }) {
-  return { maintenance };
-}
-
 export default connect(
-  mapStateToProps,
+  null,
   actions
 )(withStyles(styles)(ContactsPage));

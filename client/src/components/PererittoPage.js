@@ -73,7 +73,7 @@ class ProjectsPage extends Component {
             <Tab label="Calendar" />
             <Tab label="Update" disabled={!this.props.superUser} />
           </Tabs>
-          <div className={classes.centered}>
+          <div className={classes.centered} style={{ padding: '24px' }}>
             {value === 0 && (
               <TabContainer>
                 <PererittoPlayers />

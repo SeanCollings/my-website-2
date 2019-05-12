@@ -23,9 +23,13 @@ import loadingMessages from '../utils/loadingMessages';
 import { Typography } from '@material-ui/core';
 
 class App extends Component {
-  state = { pereritto: false, render: false };
+  state = { pereritto: false, render: false, welcomeMessage: '' };
 
   componentDidMount() {
+    this.setState({
+      welcomeMessage:
+        loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
+    });
     this.props.fetchUser();
     // this.props.verifyUser('pereritto');
 
@@ -126,7 +130,7 @@ class App extends Component {
       <span>
         <ScaleLoader color={colour} size="33px" margin="2px" />
         <Typography style={{ color: colour }}>
-          {loadingMessages[Math.floor(Math.random() * loadingMessages.length)]}
+          {this.state.welcomeMessage}
         </Typography>
       </span>
     );

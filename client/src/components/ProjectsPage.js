@@ -4,8 +4,8 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 import Paper from './components/paper';
-// import ComplexCard from './components/ComplexCard';
-// import Grid from '@material-ui/core/Grid';
+import ComplexCard from './components/ComplexCard';
+import Grid from '@material-ui/core/Grid';
 
 const styles = theme => ({
   pageFill: {
@@ -26,11 +26,12 @@ class ProjectsPage extends Component {
           title="My Projects"
           content="Just some of the projects I have worked on"
         />
-        {/* <Grid>
-          <Grid item style={{ textAlign: 'center' }}>
+        <Grid>
+          <Grid item >
             <ComplexCard className={classes.card} />
           </Grid>
-        </Grid> */}
+        </Grid>
+        <div style={{ height: '40px' }} />
       </div>
     );
   }

@@ -12,23 +12,26 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import red from '@material-ui/core/colors/red';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
+// import FavoriteIcon from '@material-ui/icons/Favorite';
+// import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+// import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-import image from '../../images/keyboard.jpg';
+import image from '../../images/project_page.png';
 
 const styles = theme => ({
   card: {
-    maxWidth: 400
+    maxWidth: 700,
+    margin: 'auto'
   },
   media: {
     height: 0,
     paddingTop: '56.25%' // 16:9
   },
   actions: {
-    display: 'flex'
+    display: 'flex',
+    paddingTop: '0px',
+    paddingBottom: '0px'
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -60,36 +63,36 @@ class RecipeReviewCard extends React.Component {
         <CardHeader
           avatar={
             <Avatar aria-label="Recipe" className={classes.avatar}>
-              R
+              SC
             </Avatar>
           }
-          action={
-            <IconButton>
-              <MoreVertIcon />
-            </IconButton>
-          }
-          title="Shrimp and Chorizo Paella"
-          subheader="September 14, 2016"
+          // action={
+          //   <IconButton>
+          //     <MoreVertIcon />
+          //   </IconButton>
+          // }
+          title="seancollings.herokuapp.com"
+          subheader="May 2019"
         />
         <CardMedia
           className={classes.media}
           image={image}
           title="Paella dish"
         />
-        <CardContent>
+        <CardContent style={{ paddingBottom: '10px' }}>
           <Typography component="p">
-            This impressive paella is a perfect party dish and a fun meal to
-            cook together with your guests. Add 1 cup of frozen peas along with
-            the mussels, if you like.
+            Built from the ground up using sprinklings of Material-ui, this app
+            incorporates a ReactJS + Redux frontend, NodeJS backend and a
+            MongoDB database.
           </Typography>
         </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
-          <IconButton aria-label="Add to favorites">
+          {/* <IconButton aria-label="Add to favorites">
             <FavoriteIcon />
           </IconButton>
           <IconButton aria-label="Share">
             <ShareIcon />
-          </IconButton>
+          </IconButton> */}
           <IconButton
             className={classnames(classes.expand, {
               [classes.expandOpen]: this.state.expanded
@@ -102,7 +105,14 @@ class RecipeReviewCard extends React.Component {
           </IconButton>
         </CardActions>
         <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
-          <CardContent>
+          <CardContent style={{ paddingTop: '0px' }}>
+            <Typography paragraph>ReactJS + Redux:</Typography>
+            <Typography paragraph>
+              Authentication from the backend determines which screens, pages
+              and functionality gets seen by the user.
+            </Typography>
+          </CardContent>
+          <CardContent style={{ display: 'none' }}>
             <Typography paragraph>Method:</Typography>
             <Typography paragraph>
               Heat 1/2 cup of the broth in a pot until simmering, add saffron

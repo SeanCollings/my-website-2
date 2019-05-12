@@ -103,7 +103,8 @@ class AddRemovePererittoPlayer extends Component {
             style={{
               marginRight: '10px',
               color: 'white',
-              backgroundColor: '#001f3f'
+              backgroundColor: '#001f3f',
+              minWidth: '125px'
             }}
             onClick={this.addPlayerClick}
           >
@@ -113,7 +114,8 @@ class AddRemovePererittoPlayer extends Component {
             style={{
               marginLeft: '10px',
               color: 'white',
-              backgroundColor: '#FF4136'
+              backgroundColor: '#FF4136',
+              minWidth: '125px'
             }}
             onClick={this.deletePlayerClick}
           >
