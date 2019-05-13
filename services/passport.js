@@ -32,17 +32,30 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const existingUser = await User.findOne({ googleId: profile.id });
+        const { id, name, emails } = profile;
+        const existingUser = await User.findOne({ googleId: id });
 
         if (existingUser) {
           return done(null, existingUser);
         }
 
+        let upperGivenName = '';
+        let upperFamilyName = '';
+
+        if (name) {
+          upperGivenName = name.givenName
+            ? name.givenName.replace(/^\w/, c => c.toUpperCase())
+            : '';
+          upperFamilyName = name.familyName
+            ? name.familyName.replace(/^\w/, c => c.toUpperCase())
+            : '';
+        }
+
         const user = await new User({
-          googleId: profile.id,
-          givenName: profile.name ? profile.name.givenName : '',
-          familyName: profile.name ? profile.name.familyName : '',
-          emailAddress: profile.emails ? profile.emails[0].value : ''
+          googleId: id,
+          givenName: upperGivenName,
+          familyName: upperFamilyName,
+          emailAddress: emails ? emails[0].value : ''
         }).save();
         done(null, user);
       } catch (error) {
