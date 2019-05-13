@@ -31,10 +31,10 @@ const styles1 = theme => ({
   [MessageTypeEnum.error]: {
     backgroundColor: theme.palette.error.dark
   },
-  [MessageTypeEnum.error.info]: {
+  [MessageTypeEnum.info]: {
     backgroundColor: theme.palette.primary.dark
   },
-  [MessageTypeEnum.error.warning]: {
+  [MessageTypeEnum.warning]: {
     backgroundColor: amber[700]
   },
   icon: {

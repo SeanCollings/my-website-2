@@ -9,11 +9,6 @@ import Grid from '@material-ui/core/Grid';
 // import Typography from '@material-ui/core/Typography';
 // import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
-// import List from '@material-ui/core/List';
-// import ListItem from '@material-ui/core/ListItem';
-// import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-// import ListItemText from '@material-ui/core/ListItemText';
-// import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 
 const styles = theme => ({
   disabledButton: {
@@ -36,7 +31,8 @@ class UpdateUsers extends Component {
     const tableStyle = {
       width: '1px',
       whiteSpace: 'nowrap',
-      padding: '1px'
+      padding: '0px',
+      paddingRight: '10px'
     };
 
     const columns = [
@@ -94,29 +90,6 @@ class UpdateUsers extends Component {
               // },
               render: rowData => {
                 return <UpdateUser data={rowData} />;
-                // <Typography style={{ paddingLeft: '24px' }}>
-                //   Name: {rowData.name}
-                //   {rowData.surame}
-                //   {rowData.email}
-                // </Typography>
-                /*<Grid>
-                <List>
-                  <ListItem dense key={rowData.email}>
-                    <ListItemText primary={'Name'} />
-                    <ListItemSecondaryAction>
-                      <ListItemText primary={rowData.name} />
-                    </ListItemSecondaryAction>
-                    <ListItemText primary={`Surname: ${rowData.surname}`} />
-                    <ListItemSecondaryAction>
-                      <ListItemText primary={rowData.name} />
-                    </ListItemSecondaryAction>
-                    <ListItemText primary={`Email Address: ${rowData.email}`} />
-                    <ListItemSecondaryAction>
-                      <ListItemText primary={rowData.name} />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </List>
-              </Grid>*/
               }
             }
           ]}

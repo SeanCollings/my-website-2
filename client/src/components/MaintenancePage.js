@@ -27,14 +27,6 @@ const styles = theme => ({
 class ContactsPage extends Component {
   state = { value: 0 };
 
-  renderPereritto() {
-    return <AddRemovePererittoPlayer />;
-  }
-
-  renderUsers() {
-    return <UpdateUsers />;
-  }
-
   handleChange = (event, value) => {
     this.setState({ value });
   };
@@ -59,12 +51,14 @@ class ContactsPage extends Component {
         <div style={{ paddingTop: '24px' }}>
           {value === 0 && (
             <TabContainer style={{ width: '100%' }}>
-              {this.renderUsers()}
+              <UpdateUsers />
             </TabContainer>
           )}
         </div>
         {value === 1 && (
-          <TabContainer padding={'24px'}>{this.renderPereritto()}</TabContainer>
+          <TabContainer padding={'24px'}>
+            <AddRemovePererittoPlayer />
+          </TabContainer>
         )}
       </div>
     );

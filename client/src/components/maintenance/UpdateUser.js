@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import * as actions from '../../actions';
 
 import Grid from '@material-ui/core/Grid';
 // import Typography from '@material-ui/core/Typography';
@@ -11,6 +13,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Input from '@material-ui/core/Input';
 import Checkbox from '@material-ui/core/Checkbox';
+import green from '@material-ui/core/colors/green';
 
 const styles = theme => ({
   disabledButton: {
@@ -20,34 +23,41 @@ const styles = theme => ({
     color: 'red'
   },
   table: {
-    // minWidth: 700
+    borderBottom: '0px'
   },
   tableRow: {
     height: '1px',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    borderBottom: 'none'
   },
   tableCellLeft: {
     paddingRight: '24px',
     width: '50%'
   },
   tableCellRight: {
-    width: '50%'
+    width: '50%',
+    paddingLeft: '15px'
   },
-  cssUnderline: {
-    borderBottomColor: '#DEDEDE',
-    '&:after': {
-      borderBottomColor: '#FF4136'
+  rootCheckbox: {
+    color: green[600],
+    '&$checked': {
+      color: green[500]
     }
   },
-  input: {
-    color: '#FFC300'
+  checked: {},
+  rootInput: {
+    padding: '0px',
+    fontSize: '0.8125rem'
   }
 });
 
 class UpdateUser extends Component {
   constructor(props) {
     super(props);
-    this.state = { updateEnabled: false };
+    this.state = {
+      updateEnabled: false,
+      preventSave: false
+    };
 
     this.nameInput = React.createRef();
     this.surnameInput = React.createRef();
@@ -60,13 +70,35 @@ class UpdateUser extends Component {
     this.setState({ updateEnabled: !this.state.updateEnabled });
   };
 
+  preventSave() {
+    if (this.nameInput.current.value.length === 0)
+      return this.setState({ preventSave: true });
+    else if (this.surnameInput.current.value.length === 0)
+      return this.setState({ preventSave: true });
+    else if (this.emailInput.current.value.length === 0)
+      return this.setState({ preventSave: true });
+
+    return this.setState({ preventSave: false });
+  }
+
   saveClick = () => {
     this.setState({ updateEnabled: false });
-    console.log(this.nameInput.current.value);
-    console.log(this.surnameInput.current.value);
-    console.log(this.emailInput.current.value);
-    console.log(this.superUserInput.current.checked);
-    console.log(this.pererittoInput.current.checked);
+
+    const attributes = {
+      id: this.props.data.id,
+      body: {
+        givenName: this.nameInput.current.value,
+        familyName: this.surnameInput.current.value,
+        emailAddress: this.emailInput.current.value,
+        superUser: this.superUserInput.current.checked,
+        pererittoUser: this.pererittoInput.current.checked
+      }
+    };
+
+    if (!this.state.preventSave) {
+      this.props.updateUser(attributes);
+      this.props.fetchAllUsers();
+    }
   };
 
   editField = (reference, field) => {
@@ -74,35 +106,42 @@ class UpdateUser extends Component {
 
     return (
       <Input
+        disableUnderline
+        readOnly={this.state.updateEnabled ? false : true}
         classes={{
-          underline: classes.cssUnderline,
-          input: classes.input
+          input: classes.input,
+          root: classes.rootInput
+        }}
+        style={{
+          color: !this.state.updateEnabled ? '#AAAAAA' : '',
+          height: '0px'
         }}
         defaultValue={field}
         inputProps={{ ref: reference }}
+        onChange={() => this.preventSave()}
       />
     );
   };
 
   editCheckBox = (reference, value) => {
-    // const {classes} = this.props;
+    const { classes } = this.props;
 
     return (
       <Checkbox
+        disabled={!this.state.updateEnabled}
+        style={{ height: '0px' }}
         defaultChecked={value}
         inputProps={{ ref: reference }}
-        // disabled
-        // classes={{
-        //   underline: classes.cssUnderline,
-        //   input: classes.input
-        // }}
+        classes={{
+          root: this.state.updateEnabled ? classes.rootCheckbox : '',
+          checked: classes.checked
+        }}
       />
     );
   };
 
   renderContent(data) {
     const { classes } = this.props;
-    const { updateEnabled } = this.state;
 
     return (
       <Table className={classes.table}>
@@ -113,13 +152,15 @@ class UpdateUser extends Component {
               scope="row"
               align="right"
               className={classes.tableCellLeft}
+              classes={{ root: classes.table }}
             >
-              Name
+              Name:
             </TableCell>
-            <TableCell className={classes.tableCellRight}>
-              {updateEnabled
-                ? this.editField(this.nameInput, data.name)
-                : data.name}
+            <TableCell
+              className={classes.tableCellRight}
+              classes={{ root: classes.table }}
+            >
+              {this.editField(this.nameInput, data.name)}
             </TableCell>
           </TableRow>
           <TableRow className={classes.tableRow}>
@@ -128,13 +169,15 @@ class UpdateUser extends Component {
               scope="row"
               align="right"
               className={classes.tableCellLeft}
+              classes={{ root: classes.table }}
             >
-              Surname
+              Surname:
             </TableCell>
-            <TableCell className={classes.tableCellRight}>
-              {updateEnabled
-                ? this.editField(this.surnameInput, data.surname)
-                : data.surname}
+            <TableCell
+              className={classes.tableCellRight}
+              classes={{ root: classes.table }}
+            >
+              {this.editField(this.surnameInput, data.surname)}
             </TableCell>
           </TableRow>
           <TableRow className={classes.tableRow}>
@@ -143,13 +186,15 @@ class UpdateUser extends Component {
               scope="row"
               align="right"
               className={classes.tableCellLeft}
+              classes={{ root: classes.table }}
             >
-              Email Address
+              Email Address:
             </TableCell>
-            <TableCell className={classes.tableCellRight}>
-              {updateEnabled
-                ? this.editField(this.emailInput, data.email)
-                : data.email}
+            <TableCell
+              className={classes.tableCellRight}
+              classes={{ root: classes.table }}
+            >
+              {this.editField(this.emailInput, data.email)}
             </TableCell>
           </TableRow>
           <TableRow className={classes.tableRow}>
@@ -158,15 +203,16 @@ class UpdateUser extends Component {
               scope="row"
               align="right"
               className={classes.tableCellLeft}
+              classes={{ root: classes.table }}
             >
-              Super User
+              Super User:
             </TableCell>
-            <TableCell className={classes.tableCellRight}>
-              {updateEnabled
-                ? this.editCheckBox(this.superUserInput, data.superUser)
-                : data.superUser
-                ? 'Yes'
-                : 'No'}
+            <TableCell
+              className={classes.tableCellRight}
+              style={{ paddingLeft: 'inherit' }}
+              classes={{ root: classes.table }}
+            >
+              {this.editCheckBox(this.superUserInput, data.superUser)}
             </TableCell>
           </TableRow>
           <TableRow className={classes.tableRow}>
@@ -175,15 +221,16 @@ class UpdateUser extends Component {
               scope="row"
               align="right"
               className={classes.tableCellLeft}
+              classes={{ root: classes.table }}
             >
-              Pereritto User
+              Pereritto User:
             </TableCell>
-            <TableCell className={classes.tableCellRight}>
-              {updateEnabled
-                ? this.editCheckBox(this.pererittoInput, data.pererittoUser)
-                : data.pererittoUser
-                ? 'Yes'
-                : 'No'}
+            <TableCell
+              className={classes.tableCellRight}
+              classes={{ root: classes.table }}
+              style={{ paddingLeft: 'inherit' }}
+            >
+              {this.editCheckBox(this.pererittoInput, data.pererittoUser)}
             </TableCell>
           </TableRow>
         </TableBody>
@@ -195,7 +242,7 @@ class UpdateUser extends Component {
     const { classes, data } = this.props;
 
     return (
-      <Grid>
+      <Grid style={{ paddingRight: '10px' }}>
         {this.renderContent(data)}
         <Grid
           item
@@ -209,7 +256,9 @@ class UpdateUser extends Component {
             size="small"
             style={{
               color: 'white',
-              backgroundColor: '#001f3f',
+              backgroundColor: !this.state.updateEnabled
+                ? '#001f3f'
+                : '#FF4136',
               marginRight: '10px',
               minWidth: '100px'
             }}
@@ -218,7 +267,10 @@ class UpdateUser extends Component {
             {this.state.updateEnabled ? 'Cancel' : 'Update'}
           </Button>
           <Button
-            disabled={this.state.updateEnabled ? false : true}
+            disabled={
+              (this.state.preventSave ? true : false) ||
+              (this.state.updateEnabled ? false : true)
+            }
             size="small"
             style={{
               marginLeft: '10px',
@@ -237,4 +289,7 @@ class UpdateUser extends Component {
   }
 }
 
-export default withStyles(styles)(UpdateUser);
+export default connect(
+  null,
+  actions
+)(withStyles(styles)(UpdateUser));

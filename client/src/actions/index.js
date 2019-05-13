@@ -19,6 +19,15 @@ export const fetchAllUsers = () => async dispatch => {
   dispatch({ type: FETCH_All_USERS, payload: res.data });
 };
 
+export const updateUser = attributes => async dispatch => {
+  const res = await axios.post('/api/update_user', {
+    id: attributes.id,
+    body: attributes.body
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
 export const verifyUser = route => async dispatch => {
   const res = await axios.get(`/api/${route}`);
 
