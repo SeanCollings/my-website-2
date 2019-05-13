@@ -12,8 +12,10 @@ import Avatar from '@material-ui/core/Avatar';
 
 const styles = theme => ({
   root: {
-    width: '100%',
-    maxWidth: 360
+    minWidth: '100%',
+    maxWidth: '600px',
+    backgroundImage: 'linear-gradient(#FFA07A, #FFDAB9 60%)',
+    borderRadius: '35px'
   }
 });
 
@@ -36,7 +38,8 @@ class PererittoPlayers extends Component {
         <ListItem
           key={player.name}
           style={{
-            backgroundColor: player.lastWinner ? 'rgb(255, 170, 0, 0.2)' : ''
+            backgroundColor: player.lastWinner ? 'rgb(210, 105, 3, 0.5)' : '',
+            borderRadius: '50px'
           }}
         >
           <ListItemAvatar>
@@ -61,16 +64,21 @@ class PererittoPlayers extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, resizeScreen } = this.props;
 
-    return <List className={classes.root}>{this.renderPlayers()} </List>;
+    return (
+      <div style={{ paddingTop: '24px', width: resizeScreen ? '' : '600px' }}>
+        <List className={classes.root}>{this.renderPlayers()} </List>
+      </div>
+    );
   }
 }
 
-function mapStateToProps({ auth, pererittoUsers }) {
+function mapStateToProps({ auth, pererittoUsers, resizeScreen }) {
   return {
     pererittoUsers,
-    superUser: auth.superUser
+    superUser: auth.superUser,
+    resizeScreen
   };
 }
 

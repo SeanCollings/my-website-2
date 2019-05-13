@@ -12,6 +12,7 @@ import Paper from './components/paper';
 import TabContainer from './components/tabContainer';
 import PererittoPlayers from './pereritto/PererittoPlayers';
 import UpdatePererittoPlayer from './pereritto/UpdatePererittoPlayer';
+import { Typography } from '@material-ui/core';
 
 const styles = theme => ({
   pageFill: {
@@ -58,6 +59,23 @@ class ProjectsPage extends Component {
     const { classes } = this.props;
     const { value } = this.state;
 
+    if (!this.props.pererittoUsers) {
+      return (
+        <Typography
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            textAlign: 'center',
+            minHeight: '80vh',
+            color: '#FFC300'
+          }}
+        >
+          Loading players...
+        </Typography>
+      );
+    }
+
     return (
       <div className={classes.pageFill}>
         <Paper title="Pereritto Winners" content="Habanero Roulette" />
@@ -73,17 +91,17 @@ class ProjectsPage extends Component {
             <Tab label="Calendar" />
             <Tab label="Update" disabled={!this.props.superUser} />
           </Tabs>
-          <div className={classes.centered} style={{ padding: '24px' }}>
-            {value === 0 && (
+          <div className={classes.centered}>
+            {value === 0 && <PererittoPlayers />}
+            {value === 1 && (
               <TabContainer>
-                <PererittoPlayers />
+                <div style={{ paddingTop: '24px' }}>
+                  [Pretend this is a calendar]
+                </div>
               </TabContainer>
             )}
-            {value === 1 && (
-              <TabContainer>[Pretend this is a calendar]</TabContainer>
-            )}
             {value === 2 && (
-              <TabContainer children={<UpdatePererittoPlayer />} />
+              <TabContainer style={{}} children={<UpdatePererittoPlayer />} />
             )}
           </div>
         </div>
