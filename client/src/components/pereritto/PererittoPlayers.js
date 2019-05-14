@@ -22,63 +22,109 @@ const styles = theme => ({
 class PererittoPlayers extends Component {
   componentDidMount() {
     this.props.getPererittoUsers();
+    this.props.getWinners();
   }
 
-  renderPlayers() {
-    const { pererittoUsers } = this.props;
-
-    if (pererittoUsers === null) {
-      return null;
-    }
-
-    return pererittoUsers.map(player => {
-      const firstLetter = player.name.charAt(0).toUpperCase();
+  renderPlayers = (playerTally, lastWinDate) => {
+    console.log('FINALLLLLLL');
+    return Object.keys(playerTally).map((key, index) => {
+      const firstLetter = key.charAt(0).toUpperCase();
 
       return (
         <ListItem
-          key={player.name}
+          key={key}
           style={{
-            backgroundColor: player.lastWinner ? 'rgb(210, 105, 3, 0.5)' : '',
+            backgroundColor:
+              playerTally[key].lastWinDate === lastWinDate
+                ? 'rgb(210, 105, 3, 0.5)'
+                : '',
             borderRadius: '50px'
           }}
         >
           <ListItemAvatar>
             <Avatar
               style={{
-                backgroundColor: player.colour
+                backgroundColor: playerTally[key].colour
               }}
             >
               {firstLetter}
             </Avatar>
           </ListItemAvatar>
-          <ListItemText
-            primary={player.name}
-            style={{ paddingRight: '120px' }}
-          />
+          <ListItemText primary={key} style={{ paddingRight: '120px' }} />
           <ListItemSecondaryAction>
-            <ListItemText primary={player.count} />
+            <ListItemText primary={playerTally[key].count} />
           </ListItemSecondaryAction>
         </ListItem>
       );
     });
-  }
+  };
+
+  renderPlayerList = (playerTally, lastWinDate) => {
+    const { classes } = this.props;
+
+    console.log('playerTally UNORDERED', playerTally);
+    let orderedTally = {};
+
+    console.log('orderedTally NICE!!!!!', orderedTally);
+
+    return (
+      <List className={classes.root}>
+        {this.renderPlayers(playerTally, lastWinDate)}
+      </List>
+    );
+  };
+
+  buildPlayerTally = () => {
+    const { pererittoUsers, winners } = this.props;
+    const playerTally = [];
+    let OverallWinDate = new Date(0);
+
+    if (pererittoUsers === null || winners === null) {
+      return null;
+    }
+
+    pererittoUsers.map(user => {
+      return (playerTally[user.name] = {
+        name: user.name,
+        count: 0,
+        colour: user.colour,
+        lastWinDate: OverallWinDate
+      });
+    });
+
+    if (winners !== null) {
+      winners.map(winner => {
+        let playerWinDate = new Date(winner.date);
+        if (playerWinDate > OverallWinDate) OverallWinDate = playerWinDate;
+
+        if (playerTally[winner._winner.name].lastWinDate < playerWinDate) {
+          playerTally[winner._winner.name].lastWinDate = playerWinDate;
+        }
+
+        return (playerTally[winner._winner.name].count += 1);
+      });
+    }
+
+    return this.renderPlayerList(playerTally, OverallWinDate);
+  };
 
   render() {
-    const { classes, resizeScreen } = this.props;
+    const { resizeScreen } = this.props;
 
     return (
       <div style={{ paddingTop: '24px', width: resizeScreen ? '' : '600px' }}>
-        <List className={classes.root}>{this.renderPlayers()} </List>
+        {this.buildPlayerTally()}
       </div>
     );
   }
 }
 
-function mapStateToProps({ auth, pererittoUsers, resizeScreen }) {
+function mapStateToProps({ auth, pererittoUsers, resizeScreen, winners }) {
   return {
     pererittoUsers,
     superUser: auth.superUser,
-    resizeScreen
+    resizeScreen,
+    winners
   };
 }
 

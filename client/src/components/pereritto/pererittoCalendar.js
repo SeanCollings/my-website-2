@@ -9,7 +9,7 @@ class PererittoCalendar extends Component {
     this.props.getWinners();
   }
   render() {
-    return <DatePicker data={this.props.winners} />;
+    return <DatePicker data={this.props.winners} preventSelection={true} />;
   }
 }
 

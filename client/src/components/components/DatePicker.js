@@ -27,9 +27,10 @@ class DatePicker extends Component {
   handleDayClick = (day, { selected }) => {
     let date = day.toString().substring(0, 15);
     this.setState({
-      selectedDay: selected ? undefined : new Date(date)
+      selectedDay: selected ? null : new Date(date)
     });
-    this.props.selectedDate(date);
+
+    this.props.selectedDate(selected ? null : date);
   };
 
   renderDay = day => {
@@ -72,7 +73,7 @@ class DatePicker extends Component {
         <ReactDayPicker
           todayButton="Today"
           selectedDays={this.state.selectedDay}
-          onDayClick={this.handleDayClick}
+          onDayClick={this.props.preventSelection ? null : this.handleDayClick}
           modifiers={modifiers}
           modifiersStyles={modifiersStyles}
           classNames={dayPickerClassNames}

@@ -69,6 +69,11 @@
   color: #f0f8ff;
 }
 
+.Custom-Day.outside {
+  visibility: hidden;
+  cursor: default;
+}
+
 .Custom-Footer {
   padding-top: 0.5em;
   text-align: center;

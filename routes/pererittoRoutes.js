@@ -58,7 +58,6 @@ export default app => {
         const year = parseInt(req.body.date.substring(11));
         const winnerDateCheck = await WinnerDates.find({ date: req.body.date });
 
-        console.log(winnerDateCheck);
         if (winnerDateCheck.length > 0) {
           res.send({
             type: MessageTypeEnum.error,

@@ -123,6 +123,7 @@ class UpdatePererittoPlayer extends Component {
           </Grid>
           <Grid item style={{ textAlign: 'center' }}>
             <DatePicker
+              preventSelection={false}
               selectedDate={date => this.setState({ selectedDate: date })}
             />
           </Grid>
