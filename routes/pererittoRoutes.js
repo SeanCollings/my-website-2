@@ -38,7 +38,7 @@ export default app => {
   );
 
   app.get('/api/get_pereritto', requireLogin, async (req, res) => {
-    const users = await PererittoUser.find().sort({ count: -1 });
+    const users = await PererittoUser.find().sort({ name: 1 });
     res.send(users);
   });
 
@@ -85,13 +85,14 @@ export default app => {
     requireSuperAccess,
     async (req, res) => {
       const user = await PererittoUser.findOne({ name: req.query.name });
+      const userInWinner = await WinnerDates.findOne({ _winner: user._id });
 
       if (user === null) {
         res.send({
           type: MessageTypeEnum.error,
           message: 'That user does not exist!'
         });
-      } else if (user.count > 0) {
+      } else if (userInWinner) {
         res.send({
           type: MessageTypeEnum.error,
           message: 'User is already on the board!'

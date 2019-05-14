@@ -55,10 +55,6 @@ export const updatePererittoUser = (name, date) => async dispatch => {
     date
   });
 
-  // const res = await axios.post(
-  //   `/api/update_pereritto?name=${name}&checked=${checked}`
-  // );
-
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 

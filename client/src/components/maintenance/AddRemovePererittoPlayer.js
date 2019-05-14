@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { /*TwitterPicker*/ CirclePicker } from 'react-color';
 import * as actions from '../../actions';
+import { showMessage } from '../../actions/snackBarActions';
+
+import { MessageTypeEnum } from '../../utils/constants';
 
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -11,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
   colourSelectError: {
-    color: 'red'
+    color: '#FF4136'
   },
   textField: {
     maxWidth: '100%',
@@ -55,25 +58,28 @@ class AddRemovePererittoPlayer extends Component {
 
   addPlayerClick = () => {
     if (this.state.playerName === '') {
+      this.props.showMessage(MessageTypeEnum.error, 'Select a name!');
       return this.setState({ errorName: true });
     } else if (this.state.errorName) {
       this.setState({ errorName: false });
     }
 
     if (this.state.playerColour === '') {
-      this.setState({ errorColour: true });
-      return;
+      this.props.showMessage(MessageTypeEnum.error, 'Select a colour!');
+      return this.setState({ errorColour: true });
     }
 
     this.props.addPererittoUser(this.state.playerName, this.state.playerColour);
+    this.props.getPererittoUsers();
+    this.props.getWinners();
   };
 
   deletePlayerClick = () => {
     if (this.state.playerName === '') {
-      console.log('Select a name');
+      this.props.showMessage(MessageTypeEnum.error, 'Select a name!');
+    } else {
+      this.props.deletePererittoUser(this.state.playerName);
     }
-
-    this.props.deletePererittoUser(this.state.playerName);
   };
 
   onFormSubmit = event => {
@@ -85,7 +91,7 @@ class AddRemovePererittoPlayer extends Component {
       <Typography
         style={{
           marginTop: '10px',
-          color: this.state.errorColour ? 'red' : ''
+          color: this.state.errorColour ? '#FF4136' : ''
         }}
       >
         Select an avatar colour for new player
@@ -192,5 +198,5 @@ function mapStateToProps({ maintenance }) {
 
 export default connect(
   mapStateToProps,
-  actions
+  { ...actions, showMessage }
 )(withStyles(styles)(AddRemovePererittoPlayer));

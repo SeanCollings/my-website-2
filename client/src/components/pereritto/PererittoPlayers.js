@@ -26,16 +26,16 @@ class PererittoPlayers extends Component {
   }
 
   renderPlayers = (playerTally, lastWinDate) => {
-    console.log('FINALLLLLLL');
-    return Object.keys(playerTally).map((key, index) => {
-      const firstLetter = key.charAt(0).toUpperCase();
+    return playerTally.map(player => {
+      const firstLetter = player.name.charAt(0).toUpperCase();
 
       return (
         <ListItem
-          key={key}
+          key={player.name}
           style={{
             backgroundColor:
-              playerTally[key].lastWinDate === lastWinDate
+              player.lastWinDate === lastWinDate &&
+              player.lastWinDate.toString() !== new Date(0).toString()
                 ? 'rgb(210, 105, 3, 0.5)'
                 : '',
             borderRadius: '50px'
@@ -44,28 +44,47 @@ class PererittoPlayers extends Component {
           <ListItemAvatar>
             <Avatar
               style={{
-                backgroundColor: playerTally[key].colour
+                backgroundColor: player.colour
               }}
             >
               {firstLetter}
             </Avatar>
           </ListItemAvatar>
-          <ListItemText primary={key} style={{ paddingRight: '120px' }} />
+          <ListItemText
+            primary={player.name}
+            style={{ paddingRight: '120px' }}
+          />
           <ListItemSecondaryAction>
-            <ListItemText primary={playerTally[key].count} />
+            <ListItemText primary={player.count} />
           </ListItemSecondaryAction>
         </ListItem>
       );
     });
   };
 
+  dynamicSort = property => {
+    let sortOrder = 1;
+
+    if (property[0] === '-') {
+      sortOrder = -1;
+      property = property.substr(1);
+    }
+
+    return (a, b) => {
+      if (sortOrder === -1) {
+        return b[property].localeCompare(a[property]);
+      } else {
+        return a[property].localeCompare(b[property]);
+      }
+    };
+  };
+
   renderPlayerList = (playerTally, lastWinDate) => {
     const { classes } = this.props;
 
-    console.log('playerTally UNORDERED', playerTally);
-    let orderedTally = {};
-
-    console.log('orderedTally NICE!!!!!', orderedTally);
+    playerTally.sort(function(a, b) {
+      return b.count - a.count;
+    });
 
     return (
       <List className={classes.root}>
@@ -76,10 +95,10 @@ class PererittoPlayers extends Component {
 
   buildPlayerTally = () => {
     const { pererittoUsers, winners } = this.props;
-    const playerTally = [];
+    const playerTally = {};
     let OverallWinDate = new Date(0);
 
-    if (pererittoUsers === null || winners === null) {
+    if (pererittoUsers === null) {
       return null;
     }
 
@@ -97,15 +116,24 @@ class PererittoPlayers extends Component {
         let playerWinDate = new Date(winner.date);
         if (playerWinDate > OverallWinDate) OverallWinDate = playerWinDate;
 
-        if (playerTally[winner._winner.name].lastWinDate < playerWinDate) {
-          playerTally[winner._winner.name].lastWinDate = playerWinDate;
+        if (playerTally[winner._winner.name]) {
+          if (playerTally[winner._winner.name].lastWinDate < playerWinDate) {
+            playerTally[winner._winner.name].lastWinDate = playerWinDate;
+          }
+
+          playerTally[winner._winner.name].count += 1;
         }
 
-        return (playerTally[winner._winner.name].count += 1);
+        return null;
       });
     }
 
-    return this.renderPlayerList(playerTally, OverallWinDate);
+    let concatPlayerList = [];
+    Object.keys(playerTally).forEach(key => {
+      concatPlayerList = concatPlayerList.concat(playerTally[key]);
+    });
+
+    return this.renderPlayerList(concatPlayerList, OverallWinDate);
   };
 
   render() {
