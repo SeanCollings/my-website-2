@@ -4,7 +4,8 @@ import {
   VERIFY_USER,
   GET_PERERITTO_USERS,
   FETCH_All_USERS,
-  SHOW_MESSAGE
+  SHOW_MESSAGE,
+  GET_WINNERS
 } from './types';
 
 export const fetchUser = () => async dispatch => {
@@ -48,12 +49,15 @@ export const addPererittoUser = (name, colour) => async dispatch => {
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
-export const updatePererittoUser = (name, checked) => async dispatch => {
-  checked = checked ? 1 : 0;
+export const updatePererittoUser = (name, date) => async dispatch => {
+  const res = await axios.post('/api/update_pereritto', {
+    name,
+    date
+  });
 
-  const res = await axios.get(
-    `/api/update_pereritto?name=${name}&checked=${checked}`
-  );
+  // const res = await axios.post(
+  //   `/api/update_pereritto?name=${name}&checked=${checked}`
+  // );
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
@@ -62,4 +66,10 @@ export const deletePererittoUser = name => async dispatch => {
   const res = await axios.get(`/api/delete_pereritto?name=${name}`);
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const getWinners = () => async dispatch => {
+  const res = await axios.get(`/api/get_winners`);
+
+  dispatch({ type: GET_WINNERS, payload: res.data });
 };

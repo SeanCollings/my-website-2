@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
+import { showMessage } from '../../actions/snackBarActions';
 
 import DatePicker from '../components/DatePicker';
+import { MessageTypeEnum } from '../../utils/constants';
 
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+// import TextField from '@material-ui/core/TextField';
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
 // import Checkbox from '@material-ui/core/Checkbox';
+import MenuItem from '@material-ui/core/MenuItem';
+// import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui//core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const styles = theme => ({
   root: {
@@ -26,11 +32,16 @@ const styles = theme => ({
   textField: {
     maxWidth: '80%',
     width: '400px'
+  },
+  formControl: {
+    margin: theme.spacing.unit,
+    minWidth: 120
   }
 });
 
 class UpdatePererittoPlayer extends Component {
-  state = { playerName: '', checked: true, errorName: false };
+  state = { playerName: '', selectedDate: null, errorName: false };
+
   componentDidMount() {
     this.props.getPererittoUsers();
   }
@@ -39,22 +50,37 @@ class UpdatePererittoPlayer extends Component {
     event.preventDefault();
   };
 
-  handleChange = () => {
-    this.setState({ checked: !this.state.checked });
-  };
-
-  onInputChange = event => {
+  handleChange = event => {
     this.setState({ playerName: event.target.value });
   };
 
   updatePlayerClick = () => {
-    if (this.state.playerName === '') {
+    const { playerName, selectedDate } = this.state;
+
+    if (playerName === '') {
       this.setState({ errorName: true });
-      console.log('Select a name');
-      return;
+      return this.props.showMessage(MessageTypeEnum.error, 'Select a name!');
     }
 
-    this.props.updatePererittoUser(this.state.playerName, this.state.checked);
+    if (selectedDate === null || selectedDate === '')
+      return this.props.showMessage(MessageTypeEnum.error, 'Select a date!');
+
+    return this.props.updatePererittoUser(playerName, selectedDate);
+  };
+
+  renderPlayers = () => {
+    const { pererittoUsers } = this.props;
+    if (pererittoUsers.length > 0) {
+      return pererittoUsers.map(user => {
+        return (
+          <MenuItem key={user.name} value={user.name}>
+            {user.name}
+          </MenuItem>
+        );
+      });
+    }
+
+    return null;
   };
 
   render() {
@@ -65,7 +91,7 @@ class UpdatePererittoPlayer extends Component {
         <Grid className={classes.root}>
           <Grid item style={{ textAlign: 'center' }}>
             <Button
-              size={resizeScreen ? 'small' : ''}
+              size={resizeScreen ? 'small' : 'medium'}
               style={{
                 marginRight: '10px',
                 color: 'white',
@@ -75,38 +101,30 @@ class UpdatePererittoPlayer extends Component {
             >
               Update Player
             </Button>
-            {/* <Grid item style={{ textAlign: 'center' }}>
-            <FormControlLabel
-            control={
-              <Checkbox
-              checked={this.state.checked}
-              onChange={this.handleChange}
-              value="checked"
-              classes={{
-                root: classes.rootChecked,
-                checked: classes.checked
-              }}
-              />
-            }
-            label="Winner?"
-            />
-          </Grid> */}
           </Grid>
           <Grid item style={{ textAlign: 'center' }}>
             <form onSubmit={this.onFormSubmit}>
-              <TextField
-                error={this.state.errorName ? true : false}
-                id="outlined-uncontrolled"
-                label="Name"
-                margin="normal"
-                variant="outlined"
-                onChange={this.onInputChange}
-                className={classes.textField}
-              />
+              <FormControl className={classes.formControl}>
+                <Select
+                  value={this.state.playerName}
+                  onChange={this.handleChange}
+                  displayEmpty
+                  style={{
+                    opacity: this.state.playerName === '' ? '0.5' : '1'
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Player
+                  </MenuItem>
+                  {this.renderPlayers()}
+                </Select>
+              </FormControl>
             </form>
           </Grid>
           <Grid item style={{ textAlign: 'center' }}>
-            <DatePicker />
+            <DatePicker
+              selectedDate={date => this.setState({ selectedDate: date })}
+            />
           </Grid>
         </Grid>
       </div>
@@ -124,5 +142,5 @@ function mapStateToProps({ auth, pererittoUsers, resizeScreen }) {
 
 export default connect(
   mapStateToProps,
-  actions
+  { ...actions, showMessage }
 )(withStyles(styles)(UpdatePererittoPlayer));

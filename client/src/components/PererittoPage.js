@@ -7,12 +7,13 @@ import { withStyles } from '@material-ui/core/styles';
 // import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import { Typography } from '@material-ui/core';
 
 import Paper from './components/paper';
 import TabContainer from './components/tabContainer';
 import PererittoPlayers from './pereritto/PererittoPlayers';
 import UpdatePererittoPlayer from './pereritto/UpdatePererittoPlayer';
-import { Typography } from '@material-ui/core';
+import PererittoCalendar from './pereritto/pererittoCalendar';
 
 const styles = theme => ({
   pageFill: {
@@ -96,7 +97,7 @@ class ProjectsPage extends Component {
             {value === 1 && (
               <TabContainer>
                 <div style={{ paddingTop: '24px' }}>
-                  [Pretend this is a calendar]
+                  <PererittoCalendar />
                 </div>
               </TabContainer>
             )}

@@ -4,11 +4,13 @@ import pererittoReducer from './pererittoReducer';
 import maintenanceReducer from './maintenanceReducer';
 import snackBarReducer from './snackBarReducer';
 import resizeScreenReducer from './resizeScreenReducer';
+import winnersReducer from './winnerReducer';
 
 export default combineReducers({
   auth: authreducer,
   pererittoUsers: pererittoReducer,
   maintenance: maintenanceReducer,
   snackBar: snackBarReducer,
-  resizeScreen: resizeScreenReducer
+  resizeScreen: resizeScreenReducer,
+  winners: winnersReducer
 });

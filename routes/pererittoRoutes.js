@@ -4,6 +4,7 @@ import { MessageTypeEnum } from '../client/src/utils/constants';
 
 const mongoose = require('mongoose');
 const PererittoUser = mongoose.model('pererittos');
+const WinnerDates = mongoose.model('winnerDates');
 
 export default app => {
   app.get('/api/pereritto', requireLogin, (req, res) => {
@@ -41,12 +42,12 @@ export default app => {
     res.send(users);
   });
 
-  app.get(
+  app.post(
     '/api/update_pereritto',
     requireLogin,
     requireSuperAccess,
     async (req, res) => {
-      const user = await PererittoUser.findOne({ name: req.query.name });
+      const user = await PererittoUser.findOne({ name: req.body.name });
 
       if (user === null) {
         res.send({
@@ -54,19 +55,27 @@ export default app => {
           message: 'That user does not exist!'
         });
       } else {
-        let newCount =
-          req.query.checked === '1' ? user.count + 1 : user.count - 1;
+        const year = parseInt(req.body.date.substring(11));
+        const winnerDateCheck = await WinnerDates.find({ date: req.body.date });
 
-        if (newCount < 0) newCount = 0;
+        console.log(winnerDateCheck);
+        if (winnerDateCheck.length > 0) {
+          res.send({
+            type: MessageTypeEnum.error,
+            message: 'That date already has a winner!'
+          });
+        } else {
+          await new WinnerDates({
+            date: req.body.date,
+            year,
+            _winner: user
+          }).save();
 
-        await PererittoUser.updateOne(user, {
-          $set: { count: newCount }
-        });
-
-        res.status(200).send({
-          type: MessageTypeEnum.success,
-          message: 'User successfully updated!'
-        });
+          res.status(200).send({
+            type: MessageTypeEnum.success,
+            message: 'Pereritto user successfully updated!'
+          });
+        }
       }
     }
   );

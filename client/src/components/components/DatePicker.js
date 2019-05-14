@@ -10,43 +10,73 @@ const dayPickerClassNames = {
   weekday: 'Custom-Weekday',
   weekdays: 'Custom-Weekdays',
   todayButton: 'Custom-TodayButton',
-  day: 'Custom-Day'
+  day: 'Custom-Day',
+  wrapper: 'Custom-Wrapper',
+  footer: 'Custom-Footer',
+  navButtonNext: 'Custom-NavButton Custom-NavButton--next',
+  navButtonPrev: 'Custom-NavButton Custom-NavButton--prev'
 };
 
 class DatePicker extends Component {
   state = { selectedDay: null };
 
-  modifiers = {
-    holiday: new Date(
-      'Fri May 01 2019 12:00:00 GMT+0200 (South Africa Standard Time)'
-    )
-  };
-  modifiersStyles = {
-    holiday: {
-      color: 'white',
-      backgroundColor: 'blue'
-    }
-  };
+  componentDidMount() {
+    // this.props.
+  }
 
   handleDayClick = (day, { selected }) => {
-    let date = new Date(day);
-    console.log(day, date);
+    let date = day.toString().substring(0, 15);
     this.setState({
-      selectedDay: selected ? undefined : day
+      selectedDay: selected ? undefined : new Date(date)
     });
+    this.props.selectedDate(date);
+  };
+
+  renderDay = day => {
+    const { data } = this.props;
+    let dateToRender = day.toString().substring(0, 15);
+
+    const date = day.getDate();
+
+    const renderDates = () => {
+      if (data) {
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].date === dateToRender)
+            return <div>{data[i]._winner.name.charAt(0).toUpperCase()}</div>;
+        }
+      }
+
+      return <div>{date}</div>;
+    };
+
+    return <div>{renderDates()}</div>;
   };
 
   render() {
+    const { data } = this.props;
+    let modifiers = {};
+    let modifiersStyles = {};
+
+    if (data) {
+      data.forEach(d => {
+        modifiers[d._id] = new Date(d.date);
+        modifiersStyles[d._id] = {
+          color: 'white',
+          backgroundColor: d._winner.colour
+        };
+      });
+    }
+
     return (
-      <div style={{ backgroundImage: 'linear-gradient(#FFA07A, #FFDAB9 60%)' }}>
+      <div>
         <ReactDayPicker
           todayButton="Today"
-          onTodayButtonClick={day => console.log(day)}
           selectedDays={this.state.selectedDay}
           onDayClick={this.handleDayClick}
-          modifiers={this.modifiers}
-          modifiersStyles={this.modifiersStyles}
+          modifiers={modifiers}
+          modifiersStyles={modifiersStyles}
           classNames={dayPickerClassNames}
+          renderDay={this.renderDay}
         />
       </div>
     );

@@ -31,6 +31,7 @@ class App extends Component {
         loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
     });
     this.props.fetchUser();
+    this.props.getWinners();
     // this.props.verifyUser('pereritto');
 
     setTimeout(

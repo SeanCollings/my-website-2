@@ -1,6 +1,18 @@
 /* react-day-picker\lib\style.css */
 /* https://github.com/gpbl/react-day-picker/blob/master/src/classNames.js */
 
+.Custom-Wrapper {
+  position: relative;
+  flex-direction: row;
+  padding-bottom: 1em;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: linear-gradient(#ffa07a, #ffdab9 60%);
+  /* background-color: burlywood; */
+}
+
 .Custom-TodayButton {
   border: none;
   background-color: transparent;
@@ -41,6 +53,13 @@
 .Custom-Day.today {
   color: #d0021b;
   font-weight: 700;
+  /* background-image: url('../../images/habanero.png');
+  background-repeat: no-repeat;
+  position: absolute;
+  height: 49px;
+  width: 38px;
+  background-size: 33px 32px;
+  color: white; */
 }
 
 .Custom-Day.selected {
@@ -48,4 +67,39 @@
 
   background-color: #ff4136;
   color: #f0f8ff;
+}
+
+.Custom-Footer {
+  padding-top: 0.5em;
+  text-align: center;
+}
+
+.Custom-NavButton:hover {
+  opacity: 0.8;
+}
+
+.Custom-NavButton--next {
+  /* background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAwCAYAAAB5R9gVAAAABGdBTUEAALGPC/xhBQAAAXRJREFUWAnN119ugjAcwPHWzJ1gnmxzB/BBE0n24m4xfNkTaOL7wOtsl3AXMMb+Vjaa1BG00N8fSEibPpAP3xAKKs2yjzTPH9RAjhEo9WzPr/Vm8zgE0+gXATAxxuxtqeJ9t5tIwv5AtQAApsfT6TPdbp+kUBcgVwvO51KqVhMkXKsVJFXrOkigVhCIs1Y4iKlWZxB1rX4gwlpRIIpa8SDkWmggrFq4IIRaJKCYWnSgnrXIQV1r8YD+1Vrn+bReagysIFfLABRt31v8oBu1xEBttfRbltmfjgEcWh9snUS2kNdBK6WN1vrOWxObWsz+fjxevsxmB1GQDfINWiev83nhaoiB/CoOU438oPrhXS0WpQ9xc1ZQWxWHqUYe0I0qrKCQKjygDlXIQV2r0IF6ViEBxVTBBSFUQQNhVYkHIVeJAtkNsbQ7c1LtzP6FsObhb2rCKv7NBIGoq4SDmKoEgTirXAcJVGkFSVVpgoSrXICGUMUH/QBZNSUy5XWUhwAAAABJRU5ErkJggg=='); */
+  background-image: url('../../images/chilli3.png');
+  background-repeat: no-repeat;
+  position: absolute;
+  height: 49px;
+  width: 38px;
+  background-size: 33px 32px;
+  left: 214px;
+  top: 5px;
+}
+
+.Custom-NavButton--prev {
+  /* margin-right: 1.5em; */
+  /* background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAwCAYAAAB5R9gVAAAABGdBTUEAALGPC/xhBQAAAVVJREFUWAnN2G0KgjAYwPHpGfRkaZeqvgQaK+hY3SUHrk1YzNLay/OiEFp92I+/Mp2F2Mh2lLISWnflFjzH263RQjzMZ19wgs73ez0o1WmtW+dgA01VxrE3p6l2GLsnBy1VYQOtVSEH/atCCgqpQgKKqYIOiq2CBkqtggLKqQIKgqgCBjpJ2Y5CdJ+zrT9A7HHSTA1dxUdHgzCqJIEwq0SDsKsEg6iqBIEoq/wEcVRZBXFV+QJxV5mBtlDFB5VjYTaGZ2sf4R9PM7U9ZU+lLuaetPP/5Die3ToO1+u+MKtHs06qODB2zBnI/jBd4MPQm1VkY79Tb18gB+C62FdBFsZR6yeIo1YQiLJWMIiqVjQIu1YSCLNWFgijVjYIuhYYCKoWKAiiFgoopxYaKLUWOii2FgkophYp6F3r42W5A9s9OcgNvva8xQaysKXlFytoqdYmQH6tF3toSUo0INq9AAAAAElFTkSuQmCC'); */
+  background-image: url('../../images/chilli3.png');
+  background-repeat: no-repeat;
+  position: absolute;
+  height: 49px;
+  width: 38px;
+  background-size: 33px 32px;
+  transform: rotatey(180deg);
+  left: 165px;
+  top: 5px;
 }
