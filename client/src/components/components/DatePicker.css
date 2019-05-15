@@ -1,6 +1,11 @@
 /* react-day-picker\lib\style.css */
 /* https://github.com/gpbl/react-day-picker/blob/master/src/classNames.js */
 
+.Custom-DayPicker {
+  display: inline-block;
+  /* font-size: 1rem; */
+}
+
 .Custom-Wrapper {
   position: relative;
   flex-direction: row;
@@ -13,6 +18,7 @@
   background-image: linear-gradient(#ffa07a, #ffdab9 60%);
   /* background-color: burlywood; */
   outline: none;
+  padding-top: 24px;
 }
 
 .Custom-TodayButton {
@@ -86,6 +92,23 @@
   text-align: center;
 }
 
+.Custom-NavButton {
+  position: absolute;
+  top: 1em;
+  right: 1.5em;
+  left: auto;
+
+  display: inline-block;
+  margin-top: 2px;
+  width: 1.25em;
+  height: 1.25em;
+  background-position: center;
+  background-size: 50%;
+  background-repeat: no-repeat;
+  color: #8b9898;
+  cursor: pointer;
+}
+
 .Custom-NavButton:hover {
   opacity: 0.8;
 }
@@ -98,8 +121,10 @@
   height: 49px;
   width: 38px;
   background-size: 33px 32px;
-  left: 214px;
-  top: 5px;
+  /* left: 214px; */
+  /* left: calc(50% + 17px); */
+  left: calc(50% - (38px / 2) + 26px);
+  top: -8px;
   outline: none;
 }
 
@@ -113,8 +138,9 @@
   width: 38px;
   background-size: 33px 32px;
   transform: rotatey(180deg);
-  left: 165px;
-  top: 5px;
+  /* left: 165px; */
+  left: calc(50% - (38px / 2) - 22px);
+  top: -8px;
   outline: none;
 }
 
@@ -126,8 +152,8 @@
   height: 49px;
   width: 38px;
   background-size: 33px 32px;
-  left: calc(50% - (38px / 2) + 24px);
-  top: -24px;
+  left: calc(50% - (38px / 2) + 26px);
+  top: -33px;
   outline: none;
 }
 
@@ -141,7 +167,44 @@
   width: 38px;
   background-size: 33px 32px;
   transform: rotatey(180deg);
-  left: calc(50% - (38px / 2) - 24px);
+  left: calc(50% - (38px / 2) - 22px);
+  top: -33px;
+  outline: none;
+}
+
+.Custom-NavButton-ShowMoreMonths--prev {
+  /* margin-right: 1.5em; */
+  /* background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAwCAYAAAB5R9gVAAAABGdBTUEAALGPC/xhBQAAAVVJREFUWAnN2G0KgjAYwPHpGfRkaZeqvgQaK+hY3SUHrk1YzNLay/OiEFp92I+/Mp2F2Mh2lLISWnflFjzH263RQjzMZ19wgs73ez0o1WmtW+dgA01VxrE3p6l2GLsnBy1VYQOtVSEH/atCCgqpQgKKqYIOiq2CBkqtggLKqQIKgqgCBjpJ2Y5CdJ+zrT9A7HHSTA1dxUdHgzCqJIEwq0SDsKsEg6iqBIEoq/wEcVRZBXFV+QJxV5mBtlDFB5VjYTaGZ2sf4R9PM7U9ZU+lLuaetPP/5Die3ToO1+u+MKtHs06qODB2zBnI/jBd4MPQm1VkY79Tb18gB+C62FdBFsZR6yeIo1YQiLJWMIiqVjQIu1YSCLNWFgijVjYIuhYYCKoWKAiiFgoopxYaKLUWOii2FgkophYp6F3r42W5A9s9OcgNvva8xQaysKXlFytoqdYmQH6tF3toSUo0INq9AAAAAElFTkSuQmCC'); */
+  background-image: url('../../images/chilli4.png');
+  background-repeat: no-repeat;
+  position: absolute;
+  height: 49px;
+  width: 38px;
+  background-size: 33px 32px;
+  transform: rotatey(180deg);
+  left: 108px;
   top: -24px;
   outline: none;
+}
+
+.Custom-Month-ShowMoreMonths {
+  display: table;
+  margin: 0 1em;
+  margin-top: 1em;
+  border-spacing: 0;
+  border-collapse: collapse;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transform: scale(1, 0.7);
+  zoom: 0.4;
+  font-weight: 600;
+}
+
+.Custom-Caption-ShowMoreMonths {
+  display: table-caption;
+  margin-bottom: 0.5em;
+  padding: 0 0.5em;
+  text-align: center;
 }

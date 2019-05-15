@@ -117,7 +117,6 @@ class Header extends Component {
           elevation={0}
           style={{
             background: 'transparent',
-            paddingTop: '5px',
             //   this.props.auth !== null && location.pathname === '/pereritto'
             //     ? '#FF4136'
             //     : 'transparent',

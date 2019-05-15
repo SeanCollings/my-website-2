@@ -98,15 +98,9 @@ class ProjectsPage extends Component {
           </Tabs>
           <div className={classes.centered}>
             {value === 0 && <PererittoPlayers />}
-            {value === 1 && (
-              <TabContainer>
-                <div style={{ paddingTop: '24px' }}>
-                  <PererittoCalendar />
-                </div>
-              </TabContainer>
-            )}
+            {value === 1 && <TabContainer children={<PererittoCalendar />} />}
             {value === 2 && (
-              <TabContainer style={{}} children={<UpdatePererittoPlayer />} />
+              <TabContainer children={<UpdatePererittoPlayer />} />
             )}
           </div>
         </div>

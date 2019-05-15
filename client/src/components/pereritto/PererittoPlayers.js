@@ -140,7 +140,7 @@ class PererittoPlayers extends Component {
     const { resizeScreen } = this.props;
 
     return (
-      <div style={{ paddingTop: '24px', width: resizeScreen ? '' : '600px' }}>
+      <div style={{ paddingTop: '30px', width: resizeScreen ? '' : '600px' }}>
         {this.buildPlayerTally()}
       </div>
     );
