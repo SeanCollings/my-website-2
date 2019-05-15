@@ -55,6 +55,7 @@ class HomePage extends Component {
 
   render() {
     const { classes } = this.props;
+
     return (
       <div className={classes.pageFill}>
         {/* <Header /> */}
@@ -64,7 +65,8 @@ class HomePage extends Component {
           style={{
             alignItems: 'center',
             justifyContent: 'center',
-            display: 'flex'
+            display: 'flex',
+            paddingTop: '10px'
           }}
         >
           <Button

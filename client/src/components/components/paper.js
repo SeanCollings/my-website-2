@@ -8,7 +8,7 @@ const styles = theme => ({
   root: {
     ...theme.mixins.gutters(),
     paddingTop: '10px',
-    paddingBottom: '10px',
+    // paddingBottom: '10px',
     textAlign: 'center',
     backgroundColor: 'transparent'
   },

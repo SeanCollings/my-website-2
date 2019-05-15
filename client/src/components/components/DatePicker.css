@@ -9,6 +9,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
   background-image: linear-gradient(#ffa07a, #ffdab9 60%);
   /* background-color: burlywood; */
   outline: none;

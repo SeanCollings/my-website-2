@@ -26,8 +26,8 @@ class ProjectsPage extends Component {
           title="My Projects"
           content="Just some of the projects I have worked on"
         />
-        <Grid>
-          <Grid item >
+        <Grid style={{ paddingTop: '10px' }}>
+          <Grid item>
             <ComplexCard className={classes.card} />
           </Grid>
         </Grid>
