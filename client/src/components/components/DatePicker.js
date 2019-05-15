@@ -1,24 +1,31 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import ReactDayPicker from 'react-day-picker';
 
 import 'react-day-picker/lib/style.css';
 import classNames from 'react-day-picker/lib/src/classNames';
 
 import './DatePicker.css';
-const dayPickerClassNames = {
-  ...classNames,
-  weekday: 'Custom-Weekday',
-  weekdays: 'Custom-Weekdays',
-  todayButton: 'Custom-TodayButton',
-  day: 'Custom-Day',
-  wrapper: 'Custom-Wrapper',
-  footer: 'Custom-Footer',
-  navButtonNext: 'Custom-NavButton Custom-NavButton--next',
-  navButtonPrev: 'Custom-NavButton Custom-NavButton--prev'
-};
 
 class DatePicker extends Component {
   state = { selectedDay: null };
+  mobileScreen = this.props.resizeScreen || !this.props.preventSelection;
+
+  dayPickerClassNames = {
+    ...classNames,
+    weekday: 'Custom-Weekday',
+    weekdays: 'Custom-Weekdays',
+    todayButton: 'Custom-TodayButton',
+    day: 'Custom-Day',
+    wrapper: 'Custom-Wrapper',
+    footer: 'Custom-Footer',
+    navButtonNext: this.mobileScreen
+      ? 'Custom-NavButton Custom-NavButton--next'
+      : 'Custom-NavButton Custom-NavButton-Multiple--next',
+    navButtonPrev: this.mobileScreen
+      ? 'Custom-NavButton Custom-NavButton--prev'
+      : 'Custom-NavButton Custom-NavButton-Multiple--prev'
+  };
 
   componentDidMount() {
     // this.props.
@@ -54,7 +61,7 @@ class DatePicker extends Component {
   };
 
   render() {
-    const { data } = this.props;
+    const { data, resizeScreen, preventSelection } = this.props;
     let modifiers = {};
     let modifiersStyles = {};
 
@@ -68,20 +75,44 @@ class DatePicker extends Component {
       });
     }
 
+    const mobileScreen = resizeScreen || !preventSelection;
+    let monthsToDisplay = 6;
+
     return (
-      <div>
+      <div
+        style={{
+          paddingTop: mobileScreen ? '' : '24px',
+          backgroundColor: mobileScreen ? '' : '#ffa07a'
+        }}
+      >
         <ReactDayPicker
           todayButton="Today"
           selectedDays={this.state.selectedDay}
-          onDayClick={this.props.preventSelection ? null : this.handleDayClick}
+          onDayClick={preventSelection ? null : this.handleDayClick}
           modifiers={modifiers}
           modifiersStyles={modifiersStyles}
-          classNames={dayPickerClassNames}
+          classNames={this.dayPickerClassNames}
           renderDay={this.renderDay}
+          numberOfMonths={mobileScreen ? 1 : monthsToDisplay}
+          month={
+            mobileScreen
+              ? null
+              : new Date(
+                  new Date().getFullYear(),
+                  new Date().getMonth() - (monthsToDisplay - 1),
+                  new Date().getDate()
+                )
+          }
         />
       </div>
     );
   }
 }
 
-export default DatePicker;
+function mapStateToProps({ resizeScreen }) {
+  return {
+    resizeScreen
+  };
+}
+
+export default connect(mapStateToProps)(DatePicker);

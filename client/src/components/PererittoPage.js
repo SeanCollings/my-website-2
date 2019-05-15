@@ -57,7 +57,7 @@ class ProjectsPage extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, superUser } = this.props;
     const { value } = this.state;
 
     if (!this.props.pererittoUsers) {
@@ -90,7 +90,11 @@ class ProjectsPage extends Component {
           >
             <Tab label="Players" />
             <Tab label="Calendar" />
-            <Tab label="Update" disabled={!this.props.superUser} />
+            <Tab
+              label="Update"
+              style={{ display: superUser ? '' : 'none' }}
+              disabled={!superUser}
+            />
           </Tabs>
           <div className={classes.centered}>
             {value === 0 && <PererittoPlayers />}

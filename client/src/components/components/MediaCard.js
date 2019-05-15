@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -10,6 +12,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 // import Typography from '@material-ui/core/Typography';
 
 import Background from '../../images/keyboard.jpg';
+import BackgroundSmall from '../../images/keyboard_small.jpg';
 
 const styles = {
   card: {
@@ -31,11 +34,15 @@ const styles = {
 };
 
 function MediaCard(props) {
-  const { classes } = props;
+  const { classes, resizeScreen } = props;
+
   return (
     <Card className={classes.card}>
       <CardActionArea>
-        <CardMedia className={classes.media} image={Background} />
+        <CardMedia
+          className={classes.media}
+          image={resizeScreen ? BackgroundSmall : Background}
+        />
         {/* <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
             Lizard
@@ -54,4 +61,10 @@ MediaCard.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(MediaCard);
+function mapStateToProps({ resizeScreen }) {
+  return {
+    resizeScreen
+  };
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(MediaCard));

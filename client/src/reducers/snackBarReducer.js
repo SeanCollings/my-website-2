@@ -9,6 +9,9 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case SHOW_MESSAGE:
+      if (!action.payload.type && !action.payload.message) {
+        return initialState;
+      }
       return { ...action.payload, open: true };
     case REMOVE_MESSAGE:
       return { ...state, open: false };

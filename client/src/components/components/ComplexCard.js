@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
 import { withStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import Card from '@material-ui/core/Card';
@@ -18,6 +20,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 // import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import image from '../../images/project_page.png';
+import imageSmall from '../../images/project_page_small.png';
 
 const styles = theme => ({
   card: {
@@ -76,7 +79,7 @@ class RecipeReviewCard extends React.Component {
         />
         <CardMedia
           className={classes.media}
-          image={image}
+          image={this.props.resizeScreen ? imageSmall : image}
           title="Paella dish"
         />
         <CardContent style={{ paddingBottom: '10px' }}>
@@ -152,4 +155,8 @@ RecipeReviewCard.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(RecipeReviewCard);
+function mapStateToProps({ resizeScreen }) {
+  return { resizeScreen };
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(RecipeReviewCard));

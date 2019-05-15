@@ -1,0 +1,19 @@
+1 ### To login to Mongo db and work on a specific collection ###
+  (after installing mongo shell and adding to variable path)
+  - cmd
+  - mongo "mongodb+srv://<mongo-database>.mongodb.net/test" --username <username>
+  - type in password
+  - <collection> = db.<collection>
+  - <collection>.find() -> show all documents in collection
+
+2 ### To remove a particular field from all documents in a collection ###
+  - Do (1) above
+  - <collection>.updateMany({<condition if required>}, { $unset: { <field to remove>: "" } })
+
+3 ### To add a new field to all documents in a collection ###
+  - Do (1) above
+  - <collection>.updateMany({}, { $set: { <name of field>: <field value> } })
+  - <field value> :
+    - String: "<field value>"
+    - Boolean: true / false
+    - Number: NumberInt(0...)

@@ -68,4 +68,5 @@ export const getWinners = () => async dispatch => {
   const res = await axios.get(`/api/get_winners`);
 
   dispatch({ type: GET_WINNERS, payload: res.data });
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };

@@ -1,6 +1,6 @@
 import requireLogin from '../middlewares/requireLogin';
 // import requireSuperAccess from '../middlewares/requireSuperAccess';
-// import { MessageTypeEnum } from '../client/src/utils/constants';
+import { MessageTypeEnum } from '../client/src/utils/constants';
 
 const mongoose = require('mongoose');
 const WinnerDates = mongoose.model('winnerDates');
@@ -28,17 +28,25 @@ const getPlayers = async winner => {
 
 export default app => {
   app.get('/api/get_winners', requireLogin, async (req, res) => {
-    const winners = await WinnerDates.find();
+    try {
+      const winners = await WinnerDates.find();
 
-    if (winners.length > 0) {
-      const transformedWinners = [];
-      for (let i = 0; i < winners.length; i++) {
-        transformedWinners.push(await getPlayers(winners[i]));
+      if (winners.length > 0) {
+        const transformedWinners = [];
+        for (let i = 0; i < winners.length; i++) {
+          transformedWinners.push(await getPlayers(winners[i]));
+        }
+
+        res.send(transformedWinners);
+      } else {
+        console.log('No winners to display.');
       }
-
-      res.send(transformedWinners);
-    } else {
-      console.log('No winners to display.');
+    } catch (error) {
+      res.send({
+        type: MessageTypeEnum.error,
+        message: `An error occured in retrieving winners`
+      });
+      throw Error(error);
     }
   });
 };

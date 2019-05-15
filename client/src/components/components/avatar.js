@@ -7,8 +7,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import deepPurple from '@material-ui/core/colors/deepPurple';
 
-import profilePic from '../../images/fry.png';
-import habanero from '../../images/habanero.png';
+import profilePic from '../../images/fry_small.png';
+import habanero from '../../images/habanero_small.png';
 import { PERERITTO_PATH } from '../../utils/constants';
 
 const styles = {
