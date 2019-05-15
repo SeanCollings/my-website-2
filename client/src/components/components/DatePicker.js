@@ -31,12 +31,17 @@ class DatePicker extends Component {
   };
 
   shouldComponentUpdate(nextProps) {
+    if (
+      !this.props.preventSelection &&
+      nextProps.selectedDate !== this.state.selectedDay
+    )
+      return true;
+
     return nextProps.showMoreMonths !== this.state.showMoreMonths;
   }
 
   componentDidUpdate(props) {
     const { showMoreMonths } = this.props;
-
     this.dayPickerClassNames = {
       ...this.dayPickerClassNames,
       navButtonPrev: showMoreMonths
@@ -48,7 +53,8 @@ class DatePicker extends Component {
         : 'DayPicker-Caption'
     };
 
-    this.setState({ showMoreMonths: showMoreMonths });
+    if (this.props.preventSelection)
+      this.setState({ showMoreMonths: showMoreMonths });
   }
 
   handleDayClick = (day, { selected }) => {
