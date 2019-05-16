@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
+import Gravatar from 'react-gravatar';
 
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -11,6 +12,7 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from '@material-ui/core';
+// import Avatar from '@material-ui/core/Avatar';
 
 const styles = {
   list: {
@@ -36,19 +38,19 @@ class TemporaryDrawer extends React.Component {
         return;
       case false:
         return (
-          <ListItem button>
-            <NavLink to="/login" style={{ textDecoration: 'none' }}>
+          <NavLink to="/login" style={{ textDecoration: 'none' }}>
+            <ListItem button>
               <ListItemText primary="Login" />
-            </NavLink>
-          </ListItem>
+            </ListItem>
+          </NavLink>
         );
       default:
         return (
-          <ListItem button>
-            <Link href="/api/logout">
+          <Link href="/api/logout">
+            <ListItem button>
               <ListItemText primary="Log out" />
-            </Link>
-          </ListItem>
+            </ListItem>
+          </Link>
         );
     }
   }
@@ -79,11 +81,11 @@ class TemporaryDrawer extends React.Component {
     if (this.props.superUser) {
       return (
         <List>
-          <ListItem button>
-            <NavLink to="/maintenance" style={{ textDecoration: 'none' }}>
+          <NavLink to="/maintenance" style={{ textDecoration: 'none' }}>
+            <ListItem button>
               <ListItemText primary="Maintenance" />
-            </NavLink>
-          </ListItem>
+            </ListItem>
+          </NavLink>
         </List>
       );
     }
@@ -91,11 +93,49 @@ class TemporaryDrawer extends React.Component {
     return null;
   }
 
+  renderUserMenu() {
+    const { auth } = this.props;
+
+    // let initials = '';
+    // if (auth) {
+    //   initials =
+    //     auth.givenName.charAt(0).toUpperCase() +
+    //     auth.familyName.charAt(0).toUpperCase();
+    // }
+
+    return (
+      <div>
+        <List style={{ paddingTop: '6px', paddingBottom: '6px' }}>
+          <NavLink to="/profile" style={{ textDecoration: 'none' }}>
+            <ListItem
+              button
+              style={{ paddingTop: '1px', paddingBottom: '1px' }}
+            >
+              {/* <Avatar>{initials}</Avatar> */}
+              <Gravatar
+                email={auth ? auth.emailAddress : ''}
+                size={40}
+                style={{ borderRadius: '50%' }}
+                protocol="https://"
+                default="mp"
+              />
+              <ListItemText
+                primary={auth ? `${auth.givenName} ${auth.familyName}` : ''}
+              />
+            </ListItem>
+          </NavLink>
+        </List>
+        <Divider />
+      </div>
+    );
+  }
+
   render() {
     const { classes } = this.props;
 
     const sideList = (
       <div className={classes.list}>
+        {this.renderUserMenu()}
         <List>
           {this.props.menuList.map((text, index) => this.renderMenu(text))}
         </List>

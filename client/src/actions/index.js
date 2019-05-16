@@ -14,8 +14,10 @@ export const fetchUser = () => async dispatch => {
   dispatch({ type: FETCH_USER, payload: res.data });
 };
 
-export const fetchAllUsers = () => async dispatch => {
-  const res = await axios.get('/api/get_users');
+export const fetchAllUsers = parameter => async dispatch => {
+  if (parameter === undefined) parameter = '';
+
+  const res = await axios.get(`/api/get_users?parameter=${parameter}`);
 
   dispatch({ type: FETCH_All_USERS, payload: res.data });
 };

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../actions';
 import MaterialTable from 'material-table';
 
-import UpdateUser from './UpdateUser';
+import UpdatePereritto from './UpdatePereritto';
 
 import Grid from '@material-ui/core/Grid';
 // import Typography from '@material-ui/core/Typography';
@@ -19,50 +19,31 @@ const styles = theme => ({
   }
 });
 
-class UpdateUsers extends Component {
+class UpdatePererittos extends Component {
   state = { updateEnabled: false };
 
   componentDidMount() {
-    this.props.fetchAllUsers();
+    this.props.fetchAllUsers('pererittoUser');
   }
 
   renderAllUsers() {
     const { users, resizeScreen } = this.props;
 
-    const tableStyle = {
-      width: '1px',
-      whiteSpace: 'nowrap',
-      padding: '0px',
-      paddingRight: '10px'
-    };
-
     const columns = [
       {
         title: 'Name',
-        field: 'name',
-        headerStyle: tableStyle,
-        cellStyle: tableStyle
+        field: 'name'
       },
       {
         title: 'Surname',
-        field: 'surname',
-        headerStyle: tableStyle,
-        cellStyle: tableStyle
-      },
-      {
-        title: 'Email Address',
-        field: 'email',
-        headerStyle: tableStyle,
-        cellStyle: tableStyle
+        field: 'surname'
       }
     ];
 
     if (!resizeScreen) {
       columns.unshift({
         title: 'Row',
-        field: 'index',
-        headerStyle: tableStyle,
-        cellStyle: tableStyle
+        field: 'index'
       });
     }
 
@@ -71,12 +52,12 @@ class UpdateUsers extends Component {
         style={{
           paddingLeft: '10px',
           paddingRight: '10px',
-          maxWidth: '1200px',
+          maxWidth: '600px',
           margin: 'auto'
         }}
       >
         <MaterialTable
-          title="Users Table"
+          title="Pereritto Table"
           columns={columns}
           data={
             users !== null && users.length > 0
@@ -85,19 +66,14 @@ class UpdateUsers extends Component {
                   id: user._id,
                   name: user.givenName,
                   surname: user.familyName,
-                  email: user.emailAddress,
-                  superUser: user.superUser,
                   pererittoUser: user.pererittoUser
                 }))
               : []
           }
           detailPanel={[
             {
-              // icon: () => {
-              //   return null;
-              // },
               render: rowData => {
-                return <UpdateUser data={rowData} />;
+                return <UpdatePereritto data={rowData} />;
               }
             }
           ]}
@@ -107,7 +83,7 @@ class UpdateUsers extends Component {
               height: 'auto'
             },
             headerStyle: {
-              backgroundColor: '#2980B9',
+              backgroundColor: '#EF6161',
               color: '#DEDEDE'
             }
           }}
@@ -123,7 +99,7 @@ class UpdateUsers extends Component {
           item
           style={{
             textAlign: 'left',
-            maxWidth: '100%',
+            maxWidth: '1200px',
             width: '100%',
             margin: 'auto'
           }}
@@ -142,4 +118,4 @@ function mapStateToProps({ maintenance, resizeScreen }) {
 export default connect(
   mapStateToProps,
   actions
-)(withStyles(styles)(UpdateUsers));
+)(withStyles(styles)(UpdatePererittos));

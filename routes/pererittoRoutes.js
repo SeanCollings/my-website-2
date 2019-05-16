@@ -18,22 +18,32 @@ export default app => {
     async (req, res) => {
       const existingUser = await PererittoUser.find({ name: req.query.name });
 
+      const existingColour = await PererittoUser.find({
+        colour: new RegExp(req.query.colour, 'i')
+      });
+
       if (existingUser.length > 0) {
-        res.status(200).send({
+        return res.send({
           type: MessageTypeEnum.error,
           message: 'User already exists!'
         });
-      } else {
-        new PererittoUser({
-          name: req.query.name,
-          colour: `#${req.query.colour}`
-        }).save();
-
-        res.status(200).send({
-          type: MessageTypeEnum.success,
-          message: 'User successfully added!'
+      }
+      if (existingColour.length > 0) {
+        return res.send({
+          type: MessageTypeEnum.error,
+          message: 'Colour already used! Select another.'
         });
       }
+
+      new PererittoUser({
+        name: req.query.name,
+        colour: `#${req.query.colour}`
+      }).save();
+
+      res.status(200).send({
+        type: MessageTypeEnum.success,
+        message: 'User successfully added!'
+      });
     }
   );
 
@@ -85,21 +95,24 @@ export default app => {
     requireSuperAccess,
     async (req, res) => {
       const user = await PererittoUser.findOne({ name: req.query.name });
-      const userInWinner = await WinnerDates.findOne({ _winner: user._id });
 
       if (user === null) {
-        res.send({
+        return res.send({
           type: MessageTypeEnum.error,
           message: 'That user does not exist!'
         });
-      } else if (userInWinner) {
-        res.send({
+      }
+
+      const userInWinner = await WinnerDates.findOne({ _winner: user._id });
+
+      if (userInWinner) {
+        return res.send({
           type: MessageTypeEnum.error,
           message: 'User is already on the board!'
         });
       } else {
         await PererittoUser.deleteOne(user);
-        res.status(200).send({
+        return res.status(200).send({
           type: MessageTypeEnum.success,
           message: 'User successfully deleted!'
         });

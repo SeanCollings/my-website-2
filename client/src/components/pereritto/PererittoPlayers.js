@@ -10,12 +10,23 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Avatar from '@material-ui/core/Avatar';
 
+import trophy from '../../images/trophy.png';
+
 const styles = theme => ({
   root: {
     minWidth: '100%',
     maxWidth: '600px',
     backgroundImage: 'linear-gradient(#FFA07A, #FFDAB9 60%)',
     borderRadius: '35px'
+  },
+  trophy: {
+    height: 'auto',
+    width: '35px',
+    borderRadius: 0,
+    marginRight: '5px',
+    marginLeft: '-40px',
+    filter:
+      'brightness(42%) sepia(90%) hue-rotate(330deg) saturate(670%) contrast(0.8)'
   }
 });
 
@@ -26,6 +37,8 @@ class PererittoPlayers extends Component {
   }
 
   renderPlayers = (playerTally, lastWinDate) => {
+    const { classes } = this.props;
+
     return playerTally.map(player => {
       const firstLetter = player.name.charAt(0).toUpperCase();
 
@@ -54,6 +67,9 @@ class PererittoPlayers extends Component {
             primary={player.name}
             style={{ paddingRight: '120px' }}
           />
+          <ListItemAvatar style={{ display: player.winner ? '' : 'none' }}>
+            <Avatar className={classes.trophy} alt="winner" src={trophy} />
+          </ListItemAvatar>
           <ListItemSecondaryAction>
             <ListItemText primary={player.count} />
           </ListItemSecondaryAction>
@@ -68,6 +84,7 @@ class PererittoPlayers extends Component {
     playerTally.sort(function(a, b) {
       return b.count - a.count;
     });
+    playerTally[0].winner = true;
 
     return (
       <List className={classes.root}>
@@ -125,7 +142,7 @@ class PererittoPlayers extends Component {
     return (
       <div
         style={{
-          paddingTop: '30px',
+          paddingTop: '36px',
           width: resizeScreen ? '' : '600px',
           display: 'table'
         }}

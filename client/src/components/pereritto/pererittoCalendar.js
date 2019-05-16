@@ -18,12 +18,13 @@ class PererittoCalendar extends Component {
 
     return (
       <div>
-        <div style={{ paddingTop: resizeScreen ? '' : '24px' }} />
+        <div style={{ paddingTop: resizeScreen ? '5px' : '24px' }} />
         <Grid item style={{ textAlign: 'center' }}>
           <Button
             style={{
               display: resizeScreen ? '' : 'none',
-              color: '#FFC300'
+              color: '#FFC300',
+              paddingBottom: '5px'
             }}
             size="small"
             onClick={() => this.setState({ showMoreMonths: !showMoreMonths })}

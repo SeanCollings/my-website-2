@@ -58,7 +58,6 @@ class ProjectsPage extends Component {
   }
 
   handleChange = (event, value) => {
-    console.log('click', value);
     this.slider.slickGoTo(value);
     this.setState({ value });
   };

@@ -36,6 +36,7 @@ export default [
   'Object orientating this programming...',
   'Putting the fun in function...',
   'Calculating some calculations...',
+  'Doing some maths...',
   "Determining the meaning of 'this'...",
   "Where's the money, Lebowski?",
   'Hiding spoilers...',
@@ -103,5 +104,9 @@ export default [
   'Just breaking a few things...',
   'Whoops...',
   'Deploying to prod...',
-  'Searching for answers...'
+  'Searching for answers...',
+  'Getting pereryv...',
+  'Pereryv while you wait?',
+  'Cleaning up some memory...',
+  "Here's looking at you, kid."
 ];

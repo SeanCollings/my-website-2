@@ -4,7 +4,7 @@ import * as actions from '../actions';
 
 import Paper from './components/paper';
 import TabContainer from './components/tabContainer';
-import AddRemovePererittoPlayer from './maintenance/AddRemovePererittoPlayer';
+import UpdatePererittos from './maintenance/UpdatePererittos';
 import UpdateUsers from './maintenance/UpdateUsers';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -50,14 +50,14 @@ class ContactsPage extends Component {
         </Tabs>
         <div style={{ paddingTop: '24px' }}>
           {value === 0 && (
-            <TabContainer style={{ width: '100%' }}>
+            <TabContainer style={{ width: '100%', maxWidth: '900px' }}>
               <UpdateUsers />
             </TabContainer>
           )}
         </div>
         {value === 1 && (
-          <TabContainer padding={'24px'}>
-            <AddRemovePererittoPlayer />
+          <TabContainer style={{ width: '100%', maxWidth: '900px' }}>
+            <UpdatePererittos />
           </TabContainer>
         )}
       </div>

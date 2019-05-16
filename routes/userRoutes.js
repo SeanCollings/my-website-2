@@ -12,7 +12,19 @@ export default app => {
     requireLogin,
     requireSuperAccess,
     async (req, res) => {
-      const users = await Users.find().sort({ familyName: 1, givenName: 1 });
+      let users = [];
+
+      switch (req.query.parameter) {
+        case 'pererittoUser':
+          users = await Users.find({ pererittoUser: true }).sort({
+            familyName: 1,
+            givenName: 1
+          });
+          break;
+        default:
+          users = await Users.find().sort({ familyName: 1, givenName: 1 });
+          break;
+      }
 
       res.send(users);
     }
