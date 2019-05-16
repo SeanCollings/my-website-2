@@ -62,23 +62,6 @@ class PererittoPlayers extends Component {
     });
   };
 
-  dynamicSort = property => {
-    let sortOrder = 1;
-
-    if (property[0] === '-') {
-      sortOrder = -1;
-      property = property.substr(1);
-    }
-
-    return (a, b) => {
-      if (sortOrder === -1) {
-        return b[property].localeCompare(a[property]);
-      } else {
-        return a[property].localeCompare(b[property]);
-      }
-    };
-  };
-
   renderPlayerList = (playerTally, lastWinDate) => {
     const { classes } = this.props;
 
@@ -140,7 +123,13 @@ class PererittoPlayers extends Component {
     const { resizeScreen } = this.props;
 
     return (
-      <div style={{ paddingTop: '30px', width: resizeScreen ? '' : '600px' }}>
+      <div
+        style={{
+          paddingTop: '30px',
+          width: resizeScreen ? '' : '600px',
+          display: 'table'
+        }}
+      >
         {this.buildPlayerTally()}
       </div>
     );

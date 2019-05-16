@@ -8,7 +8,12 @@ import classNames from 'react-day-picker/lib/src/classNames';
 import './DatePicker.css';
 
 class DatePicker extends Component {
-  state = { selectedDay: null, showMoreMonths: false, monthsToDisplay: 6 };
+  state = {
+    selectedDay: null,
+    showMoreMonths: false,
+    monthsToDisplay: 6,
+    data: null
+  };
 
   mobileScreen = this.props.resizeScreen || !this.props.preventSelection;
   showMoreMonths = this.props.showMoreMonths;
@@ -34,8 +39,15 @@ class DatePicker extends Component {
     if (
       !this.props.preventSelection &&
       nextProps.selectedDate !== this.state.selectedDay
-    )
+    ) {
       return true;
+    }
+
+    if (nextProps.data) {
+      if (this.state.data !== nextProps.data) {
+        return true;
+      }
+    }
 
     return nextProps.showMoreMonths !== this.state.showMoreMonths;
   }
@@ -55,6 +67,10 @@ class DatePicker extends Component {
 
     if (this.props.preventSelection)
       this.setState({ showMoreMonths: showMoreMonths });
+
+    if (props.data && this.state.data !== props.data) {
+      this.setState({ data: props.data });
+    }
   }
 
   handleDayClick = (day, { selected }) => {

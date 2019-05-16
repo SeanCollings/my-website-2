@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
+import Slider from 'react-slick';
 
 // import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
@@ -14,6 +15,9 @@ import TabContainer from './components/tabContainer';
 import PererittoPlayers from './pereritto/PererittoPlayers';
 import UpdatePererittoPlayer from './pereritto/UpdatePererittoPlayer';
 import PererittoCalendar from './pereritto/pererittoCalendar';
+
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const styles = theme => ({
   pageFill: {
@@ -50,14 +54,16 @@ class ProjectsPage extends Component {
 
   componentDidMount() {
     this.props.getPererittoUsers();
+    // this.props.getWinners();
   }
 
   handleChange = (event, value) => {
+    this.slider.slickGoTo(value);
     this.setState({ value });
   };
 
   render() {
-    const { classes, superUser } = this.props;
+    const { classes, superUser, resizeScreen } = this.props;
     const { value } = this.state;
 
     if (!this.props.pererittoUsers) {
@@ -76,6 +82,14 @@ class ProjectsPage extends Component {
         </Typography>
       );
     }
+
+    const settings = {
+      dots: false,
+      arrows: false,
+      infinite: false,
+      centerPadding: '50px',
+      speed: 250
+    };
 
     return (
       <div className={classes.pageFill}>
@@ -96,12 +110,31 @@ class ProjectsPage extends Component {
               disabled={!superUser}
             />
           </Tabs>
-          <div className={classes.centered}>
+          <div
+            className={classes.centered}
+            style={{ display: resizeScreen ? 'none' : '' }}
+          >
             {value === 0 && <PererittoPlayers />}
             {value === 1 && <TabContainer children={<PererittoCalendar />} />}
             {value === 2 && (
               <TabContainer children={<UpdatePererittoPlayer />} />
             )}
+          </div>
+          <div
+            style={{
+              textAlign: '-webkit-center',
+              display: resizeScreen ? '' : 'none'
+            }}
+          >
+            <Slider
+              ref={c => (this.slider = c)}
+              {...settings}
+              afterChange={current => this.setState({ value: current })}
+            >
+              <PererittoPlayers />
+              <TabContainer children={<PererittoCalendar />} />
+              <TabContainer children={<UpdatePererittoPlayer />} />
+            </Slider>
           </div>
         </div>
       </div>
@@ -109,10 +142,11 @@ class ProjectsPage extends Component {
   }
 }
 
-function mapStateToProps({ auth, pererittoUsers }) {
+function mapStateToProps({ auth, pererittoUsers, resizeScreen }) {
   return {
     pererittoUsers,
-    superUser: auth.superUser
+    superUser: auth.superUser,
+    resizeScreen
   };
 }
 

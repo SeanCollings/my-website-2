@@ -1,15 +1,33 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Sean !Oh",
+  "name": "Pure Seanography",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "/icons/favicon-16x16.png",
+      "type": "image/png",
+      "sizes": "16x16"
+    },
+    {
+      "src": "/icons/favicon-32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "/icons/android-chrome-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/android-chrome-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/pereritto",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "color": "#FFC300",
+  "theme_color": "#581845",
+  "background_color": "#900C3F",
+  "background_image": "linear-gradient(155deg, #581845, #900C3F, #FF5733)",
+  "orientation": "portrait-primary"
 }
