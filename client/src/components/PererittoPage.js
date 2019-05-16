@@ -43,7 +43,7 @@ const styles = theme => ({
     justifyContent: 'center'
   },
   indicator: {
-    backgroundColor: '#C70039'
+    backgroundColor: '#ffa07a'
   }
 });
 
@@ -58,6 +58,7 @@ class ProjectsPage extends Component {
   }
 
   handleChange = (event, value) => {
+    console.log('click', value);
     this.slider.slickGoTo(value);
     this.setState({ value });
   };
@@ -87,7 +88,6 @@ class ProjectsPage extends Component {
       dots: false,
       arrows: false,
       infinite: false,
-      centerPadding: '50px',
       speed: 250
     };
 
@@ -129,7 +129,7 @@ class ProjectsPage extends Component {
             <Slider
               ref={c => (this.slider = c)}
               {...settings}
-              afterChange={current => this.setState({ value: current })}
+              beforeChange={(current, next) => this.setState({ value: next })}
             >
               <PererittoPlayers />
               <TabContainer children={<PererittoCalendar />} />
