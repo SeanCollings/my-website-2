@@ -50,6 +50,7 @@ const styles = theme => ({
 class ProjectsPage extends Component {
   state = {
     value: 0
+    // valueTab: 0
   };
 
   componentDidMount() {
@@ -87,7 +88,7 @@ class ProjectsPage extends Component {
       dots: false,
       arrows: false,
       infinite: false,
-      speed: 250
+      speed: 100
     };
 
     return (
@@ -128,11 +129,16 @@ class ProjectsPage extends Component {
             <Slider
               ref={c => (this.slider = c)}
               {...settings}
-              beforeChange={(current, next) => this.setState({ value: next })}
+              // beforeChange={(current, next) =>
+              //   this.setState({ value: next })
+              // }
+              afterChange={current => this.setState({ value: current })}
             >
               <PererittoPlayers />
               <TabContainer children={<PererittoCalendar />} />
-              <TabContainer children={<UpdatePererittoPlayer />} />
+              {superUser && (
+                <TabContainer children={<UpdatePererittoPlayer />} />
+              )}
             </Slider>
           </div>
         </div>
@@ -144,7 +150,7 @@ class ProjectsPage extends Component {
 function mapStateToProps({ auth, pererittoUsers, resizeScreen }) {
   return {
     pererittoUsers,
-    superUser: auth.superUser,
+    superUser: auth ? auth.superUser : false,
     resizeScreen
   };
 }
