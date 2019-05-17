@@ -43,7 +43,7 @@ class UpdatePererittoPlayer extends Component {
   state = { playerName: '', selectedDate: null, errorName: false };
 
   componentDidMount() {
-    this.props.getPererittoUsers();
+    // this.props.getPererittoUsers();
   }
 
   onFormSubmit = event => {
@@ -65,7 +65,9 @@ class UpdatePererittoPlayer extends Component {
     if (selectedDate === null || selectedDate === '')
       return this.props.showMessage(MessageTypeEnum.error, 'Select a date!');
 
-    return this.props.updatePererittoUser(playerName, selectedDate);
+    return this.props
+      .updatePererittoUser(playerName, selectedDate)
+      .then(() => this.props.getWinners());
   };
 
   renderPlayers = () => {

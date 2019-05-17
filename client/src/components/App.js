@@ -42,7 +42,13 @@ class App extends Component {
 
   renderPereritto() {
     if (this.props.pererittoUser) {
-      this.props.getWinners();
+      if (
+        !this.props.winners &&
+        this.props.location.pathname !== PERERITTO_PATH
+      ) {
+        this.props.getWinners();
+      }
+
       return (
         <Route
           path={PERERITTO_PATH}
@@ -181,11 +187,12 @@ class App extends Component {
   }
 }
 
-function mapStateToProps({ auth }) {
+function mapStateToProps({ auth, winners }) {
   return {
     auth,
     pererittoUser: auth ? auth.pererittoUser : null,
-    superUser: auth ? auth.superUser : null
+    superUser: auth ? auth.superUser : null,
+    winners
   };
 }
 

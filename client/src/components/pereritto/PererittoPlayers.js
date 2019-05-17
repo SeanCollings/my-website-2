@@ -84,7 +84,15 @@ class PererittoPlayers extends Component {
     playerTally.sort(function(a, b) {
       return b.count - a.count;
     });
-    playerTally[0].winner = true;
+
+    const maxCount = playerTally[0].count;
+
+    playerTally = playerTally.map(player => {
+      return {
+        ...player,
+        winner: player.count > 0 && player.count === maxCount
+      };
+    });
 
     return (
       <List className={classes.root}>

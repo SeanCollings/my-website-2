@@ -54,7 +54,7 @@ class ProjectsPage extends Component {
   };
 
   componentDidMount() {
-    this.props.getPererittoUsers();
+    if (!this.props.pererittoUsers) this.props.getPererittoUsers();
     // this.props.getWinners();
   }
 

@@ -9,7 +9,7 @@ class PererittoCalendar extends Component {
   state = { showMoreMonths: false };
 
   componentDidMount() {
-    this.props.getWinners();
+    // this.props.getWinners();
   }
 
   render() {
