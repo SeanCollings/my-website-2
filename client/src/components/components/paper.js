@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 const styles = theme => ({
   root: {
     ...theme.mixins.gutters(),
-    paddingTop: '10px',
+    // paddingTop: '10px',
     // paddingBottom: '10px',
     textAlign: 'center',
     backgroundColor: 'transparent'

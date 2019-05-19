@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../actions';
 import { showMessage } from '../../actions/snackBarActions';
 import { MessageTypeEnum } from '../../utils/constants';
+import { MAINTENANCE_MENU } from '../../utils/maintenance';
 
 import Grid from '@material-ui/core/Grid';
 // import Typography from '@material-ui/core/Typography';
@@ -71,7 +72,9 @@ const colours = [
 class UpdateUser extends Component {
   state = {
     playerColour: '',
-    errorColour: false
+    errorColour: false,
+    screenType: MAINTENANCE_MENU.PERERITTO_USERS.type,
+    options: MAINTENANCE_MENU.PERERITTO_USERS.options
   };
 
   handleColourPickerChange = colour => {
@@ -79,15 +82,33 @@ class UpdateUser extends Component {
   };
 
   addPlayerClick = () => {
-    if (this.state.playerColour === '') {
+    const { playerColour } = this.state;
+    const { _id, name, _pereritto } = this.props.data;
+
+    if (playerColour === '') {
       this.props.showMessage(MessageTypeEnum.error, 'Select a colour!');
       return this.setState({ errorColour: true });
     }
 
-    console.log(this.props.data.id, this.state.playerColour);
-    // this.props.addPererittoUser(this.state.playerName, this.state.playerColour);
+    this.props.addPererittoUser(_id, name, playerColour, _pereritto);
+
     // this.props.getPererittoUsers();
-    // this.props.getWinners();
+    // NEED TO ADD A SPINNER TO CHECK COMPLETION OF CALL
+    // if complete, rerender
+    // this.props.fetchAllUsers([screenType, options[1]]);
+  };
+
+  deletePlayerClick = () => {
+    const { playerName, screenType, options } = this.state;
+    if (playerName === '') {
+      this.props.showMessage(MessageTypeEnum.error, 'Select a name!');
+    } else {
+      this.props.deletePererittoUser(
+        this.props.data._id,
+        this.props.data._pereritto
+      );
+      this.props.fetchAllUsers([screenType, options[0]]);
+    }
   };
 
   renderMessage() {
@@ -104,7 +125,15 @@ class UpdateUser extends Component {
 
   renderContent = () => {
     return (
-      <Grid item style={{ textAlign: 'center', marginTop: '5px' }}>
+      <Grid
+        item
+        style={{
+          textAlign: 'center',
+          marginTop: '5px',
+          display:
+            this.props.selectedOption === this.state.options[0] ? 'none' : ''
+        }}
+      >
         {this.renderMessage()}
         <div
           style={{
@@ -146,11 +175,31 @@ class UpdateUser extends Component {
               color: 'white',
               backgroundColor: playerColour === '' ? '#001f3f' : playerColour,
               marginRight: '10px',
-              minWidth: '100px'
+              minWidth: '100px',
+              display:
+                this.props.selectedOption === this.state.options[0]
+                  ? 'none'
+                  : ''
             }}
             onClick={this.addPlayerClick}
           >
             {playerColour === '' ? 'Pick a colour' : 'Add to Board'}
+          </Button>
+          <Button
+            size="small"
+            style={{
+              marginLeft: '10px',
+              color: 'white',
+              backgroundColor: '#FF4136',
+              minWidth: '100px',
+              display:
+                this.props.selectedOption === this.state.options[1]
+                  ? 'none'
+                  : ''
+            }}
+            onClick={this.deletePlayerClick}
+          >
+            Remove Player
           </Button>
         </Grid>
       </Grid>

@@ -9,8 +9,9 @@ const PererittoUser = mongoose.model('pererittos');
 const findPererittoPlayerById = async playerId => {
   try {
     const player = await PererittoUser.findById(playerId);
+    const params = { colour: player.colour, name: player.name };
 
-    return { ...player._doc };
+    return params;
   } catch (error) {
     console.log('Unable to retrieve player by id:', playerId);
     throw error;

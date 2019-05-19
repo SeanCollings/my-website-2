@@ -14,10 +14,15 @@ export const fetchUser = () => async dispatch => {
   dispatch({ type: FETCH_USER, payload: res.data });
 };
 
-export const fetchAllUsers = parameter => async dispatch => {
-  if (parameter === undefined) parameter = '';
+export const fetchAllUsers = parameters => async dispatch => {
+  let params = '';
+  parameters.map((parameter, index) => {
+    if (index > 0) return (params += `&param${index + 1}=${parameter}`);
 
-  const res = await axios.get(`/api/get_users?parameter=${parameter}`);
+    return (params += `param${index + 1}=${parameter}`);
+  });
+
+  const res = await axios.get(`/api/get_users?${params}`);
 
   dispatch({ type: FETCH_All_USERS, payload: res.data });
 };
@@ -43,10 +48,20 @@ export const getPererittoUsers = () => async dispatch => {
   dispatch({ type: GET_PERERITTO_USERS, payload: res.data });
 };
 
-export const addPererittoUser = (name, colour) => async dispatch => {
-  const res = await axios.get(
-    `/api/add_pereritto?name=${name}&colour=${colour.substring(1)}`
-  );
+export const addPererittoUser = (
+  _id,
+  name,
+  colour,
+  _pereritto
+) => async dispatch => {
+  colour = colour.substring(1);
+
+  const res = await axios.post('/api/add_pereritto', {
+    _id,
+    name,
+    colour,
+    _pereritto
+  });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
@@ -60,8 +75,10 @@ export const updatePererittoUser = (name, date) => async dispatch => {
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
-export const deletePererittoUser = name => async dispatch => {
-  const res = await axios.get(`/api/delete_pereritto?name=${name}`);
+export const deletePererittoUser = (_id, _pereritto) => async dispatch => {
+  const res = await axios.delete('/api/delete_pereritto', {
+    data: { _id, _pereritto }
+  });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };

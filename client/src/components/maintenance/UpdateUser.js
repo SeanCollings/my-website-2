@@ -97,7 +97,8 @@ class UpdateUser extends Component {
 
     if (!this.state.preventSave) {
       this.props.updateUser(attributes);
-      this.props.fetchAllUsers();
+      // this.props.fetchAllUsers([this.state.screen, this.state.options[0]]);
+      this.props.updateList();
     }
   };
 

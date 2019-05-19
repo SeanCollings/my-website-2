@@ -6,7 +6,8 @@ const userSchema = new Schema({
   familyName: String,
   emailAddress: String,
   superUser: { type: Boolean, default: false },
-  pererittoUser: { type: Boolean, default: false }
+  pererittoUser: { type: Boolean, default: false },
+  _pereritto: { type: Schema.Types.ObjectId, ref: 'pererittos' }
 });
 
 mongoose.model('users', userSchema);

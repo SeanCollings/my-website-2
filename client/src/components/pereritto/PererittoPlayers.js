@@ -15,7 +15,7 @@ import trophy from '../../images/trophy.png';
 const styles = theme => ({
   root: {
     minWidth: '100%',
-    maxWidth: '600px',
+
     backgroundImage: 'linear-gradient(#FFA07A, #FFDAB9 60%)',
     borderRadius: '35px'
   },
@@ -95,7 +95,10 @@ class PererittoPlayers extends Component {
     });
 
     return (
-      <List className={classes.root}>
+      <List
+        className={classes.root}
+        style={{ maxWidth: this.props.resizeScreen ? '280px' : '600px' }}
+      >
         {this.renderPlayers(playerTally, lastWinDate)}
       </List>
     );
