@@ -32,8 +32,8 @@ const styles = theme => ({
 
 class PererittoPlayers extends Component {
   componentDidMount() {
-    this.props.getPererittoUsers();
-    this.props.getWinners();
+    // this.props.getPererittoUsers();
+    // if (!this.props.winners) this.props.getWinners();
   }
 
   renderPlayers = (playerTally, lastWinDate) => {
@@ -44,7 +44,7 @@ class PererittoPlayers extends Component {
 
       return (
         <ListItem
-          key={player.name}
+          key={player._id}
           style={{
             backgroundColor:
               player.lastWinDate === lastWinDate &&
@@ -114,7 +114,8 @@ class PererittoPlayers extends Component {
     }
 
     pererittoUsers.map(user => {
-      return (playerTally[user.name] = {
+      return (playerTally[user._id] = {
+        _id: user._id,
         name: user.name,
         count: 0,
         colour: user.colour,
@@ -127,12 +128,12 @@ class PererittoPlayers extends Component {
         let playerWinDate = new Date(winner.date);
         if (playerWinDate > OverallWinDate) OverallWinDate = playerWinDate;
 
-        if (playerTally[winner._winner.name]) {
-          if (playerTally[winner._winner.name].lastWinDate < playerWinDate) {
-            playerTally[winner._winner.name].lastWinDate = playerWinDate;
+        if (playerTally[winner._winner._id]) {
+          if (playerTally[winner._winner._id].lastWinDate < playerWinDate) {
+            playerTally[winner._winner._id].lastWinDate = playerWinDate;
           }
 
-          playerTally[winner._winner.name].count += 1;
+          playerTally[winner._winner._id].count += 1;
         }
 
         return null;

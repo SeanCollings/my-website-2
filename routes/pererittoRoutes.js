@@ -134,6 +134,11 @@ export default app => {
             } else {
               await PererittoUser.deleteOne(pererittoPlayer);
 
+              await Users.updateOne(
+                { _pereritto },
+                { $unset: { _pereritto: '' } }
+              );
+
               return res.status(200).send({
                 type: MessageTypeEnum.success,
                 message: 'User successfully deleted!'

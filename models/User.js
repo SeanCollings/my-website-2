@@ -5,6 +5,7 @@ const userSchema = new Schema({
   givenName: String,
   familyName: String,
   emailAddress: String,
+  googlePhoto: String,
   superUser: { type: Boolean, default: false },
   pererittoUser: { type: Boolean, default: false },
   _pereritto: { type: Schema.Types.ObjectId, ref: 'pererittos' }

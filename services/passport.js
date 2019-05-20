@@ -32,10 +32,16 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const { id, name, emails } = profile;
+        const { id, name, emails, photos } = profile;
         const existingUser = await User.findOne({ googleId: id });
 
         if (existingUser) {
+          if (photos && existingUser.googlePhoto !== photos[0].value)
+            await User.updateOne(
+              { googleId: id },
+              { $set: { googlePhoto: photos[0].value } }
+            );
+
           return done(null, existingUser);
         }
 
