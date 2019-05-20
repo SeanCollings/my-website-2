@@ -10,12 +10,14 @@ import './models/User';
 import './services/passport';
 import './models/PererittoUser';
 import './models/WinnerDates';
+import './models/Settings';
 
 import keys from './config/keys';
 import authRoutes from './routes/authRoutes';
 import pereRoutes from './routes/pererittoRoutes';
 import userRoutes from './routes/userRoutes';
 import winnerRoutes from './routes/winnerRoutes';
+import settingsRoutes from './routes/settingsRoutes';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
@@ -40,6 +42,7 @@ authRoutes(app);
 pereRoutes(app);
 userRoutes(app);
 winnerRoutes(app);
+settingsRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));

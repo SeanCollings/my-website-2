@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
-// import Gravatar from 'react-gravatar';
+import Gravatar from 'react-gravatar';
 
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -33,13 +33,6 @@ class TemporaryDrawer extends React.Component {
   // static getDerivedStateFromProps(props, state) {
   //   return { ...state, openDrawer: props.openDrawer };
   // }
-
-  componentDidMount() {
-    if (this.props.auth && this.props.auth.googlePhoto) {
-      googlePic = this.auth.googlePhoto;
-      console.log(googlePic);
-    }
-  }
 
   renderLoginLogout() {
     switch (this.props.auth) {
@@ -105,41 +98,28 @@ class TemporaryDrawer extends React.Component {
   renderUserMenu() {
     const { auth } = this.props;
 
-    // let initials = '';
-    // if (auth) {
-    //   initials =
-    //     auth.givenName.charAt(0).toUpperCase() +
-    //     auth.familyName.charAt(0).toUpperCase();
-    // }
-
     if (!auth) {
       return null;
     }
 
     if (auth.googlePhoto && googlePic === '') {
       googlePic = auth.googlePhoto;
-      console.log(googlePic);
     }
 
-    console.log('test');
+    const profileName = `${auth.givenName.toLowerCase()}${auth.familyName.toLowerCase()}`;
 
     return (
       <div>
         <List style={{ paddingTop: '6px', paddingBottom: '6px' }}>
-          <NavLink to="/profile" style={{ textDecoration: 'none' }}>
+          <NavLink
+            to={`/profile/${profileName}`}
+            style={{ textDecoration: 'none' }}
+          >
             <ListItem
               button
               style={{ paddingTop: '1px', paddingBottom: '1px' }}
             >
-              {/* <Avatar>{initials}</Avatar> */}
-              <Avatar src={auth.googlePhoto ? googlePic : ''} />
-              {/* <Gravatar
-                email={auth ? auth.emailAddress : ''}
-                size={40}
-                style={{ borderRadius: '50%' }}
-                protocol="https://"
-                default={auth.googlePhoto ? auth.googlePhoto : 'mp'}
-              /> */}
+              {this.renderAvatar()}
               <ListItemText
                 primary={auth ? `${auth.givenName} ${auth.familyName}` : ''}
               />
@@ -149,6 +129,37 @@ class TemporaryDrawer extends React.Component {
         <Divider />
       </div>
     );
+  }
+
+  renderAvatar() {
+    const { settings, auth } = this.props;
+
+    let initials = '';
+    if (auth) {
+      initials =
+        auth.givenName.charAt(0).toUpperCase() +
+        auth.familyName.charAt(0).toUpperCase();
+    }
+
+    if (!settings) {
+      return <Avatar>{initials}</Avatar>;
+    }
+
+    if (settings.profilePic === 'google') {
+      return <Avatar src={auth.googlePhoto ? googlePic : ''} />;
+    } else if (settings.profilePic === 'gravatar') {
+      return (
+        <Gravatar
+          email={auth ? auth.emailAddress : ''}
+          size={40}
+          style={{ borderRadius: '50%' }}
+          protocol="https://"
+          default={'mp'}
+        />
+      );
+    } else {
+      return <Avatar>{initials}</Avatar>;
+    }
   }
 
   render() {
@@ -194,8 +205,8 @@ TemporaryDrawer.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-function mapStateToProps({ auth }) {
-  return { auth, superUser: auth !== null ? auth.superUser : null };
+function mapStateToProps({ auth, settings }) {
+  return { auth, superUser: auth !== null ? auth.superUser : null, settings };
 }
 
 export default connect(mapStateToProps)(

@@ -36,10 +36,7 @@ export default app => {
       if (winners.length > 0 && players.length > 0) {
         const playerMap = {};
         const transformedWinners = [];
-        // const transformedWinners1 = [];
-        // for (let i = 0; i < winners.length; i++) {
-        //   transformedWinners1.push(await getPlayers(winners[i]));
-        // }
+
         for (let i = 0; i < players.length; i++) {
           playerMap[players[i]._id] = { ...players[i]._doc };
         }

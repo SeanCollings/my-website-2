@@ -3,6 +3,7 @@ export const VERIFY_USER = 'verify_user';
 export const FETCH_All_USERS = 'fetch_all_users';
 export const GET_PERERITTO_USERS = 'get_pereritto_users';
 export const GET_WINNERS = 'get_winners';
+export const GET_USER_SETTINGS = 'get_user_settings';
 
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';

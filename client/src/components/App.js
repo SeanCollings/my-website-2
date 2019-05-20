@@ -12,6 +12,7 @@ import ProjectsPage from './ProjectsPage';
 import CredentialPage from './CredentialPage';
 import PererittoPage from './PererittoPage';
 import MaintenancePage from './MaintenancePage';
+import UserProfilePage from './UserProfilePage';
 
 import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import Header from './components/Header';
@@ -64,6 +65,29 @@ class App extends Component {
     }
 
     return;
+  }
+
+  renderUserProfile() {
+    const { auth } = this.props;
+
+    if (!auth) {
+      return (
+        <Route
+          path="/profile"
+          exact
+          render={props => <ProfilePage {...props} />}
+        />
+      );
+    }
+
+    const username = `${auth.givenName.toLowerCase()}${auth.familyName.toLowerCase()}`;
+
+    return (
+      <Route
+        path={`/profile/${username}`}
+        render={props => <UserProfilePage {...props} />}
+      />
+    );
   }
 
   renderMaintance() {
@@ -162,7 +186,11 @@ class App extends Component {
           superUser={this.props.superUser}
         />
         <Switch>
-          <Route path="/profile" render={props => <ProfilePage {...props} />} />
+          <Route
+            path="/profile"
+            exact
+            render={props => <ProfilePage {...props} />}
+          />
           <Route path="/contact" render={props => <ContactPage {...props} />} />
           <Route
             path="/projects"
@@ -176,6 +204,8 @@ class App extends Component {
               render={props => <CredentialPage {...props} />}
             />
           )}
+          {this.renderUserProfile()}
+
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}
         </Switch>

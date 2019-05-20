@@ -5,7 +5,8 @@ import {
   GET_PERERITTO_USERS,
   FETCH_All_USERS,
   SHOW_MESSAGE,
-  GET_WINNERS
+  GET_WINNERS,
+  GET_USER_SETTINGS
 } from './types';
 
 export const fetchUser = () => async dispatch => {
@@ -90,4 +91,18 @@ export const getWinners = () => async dispatch => {
 
   // May Potentially break everything?
   // dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const getUserSettings = () => async dispatch => {
+  const res = await axios.get(`/api/get_usersettings`);
+
+  dispatch({ type: GET_USER_SETTINGS, payload: res.data });
+};
+
+export const updateProfilePic = option => async dispatch => {
+  const res = await axios.post('/api/update_profilepic', {
+    option
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
