@@ -14,6 +14,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import LogoutIcon from '@material-ui/icons/ExitToApp';
+import ContactIcon from '@material-ui/icons/MailOutline';
+import MaintenanceIcon from '@material-ui/icons/BuildOutlined';
+import ProjectsIcon from '@material-ui/icons/DescriptionOutlined';
+import PererittoIcon from '@material-ui/icons/HotTubRounded';
+import ProfileIcon from '@material-ui/icons/PersonOutline';
+
 let googlePic = '';
 
 const styles = {
@@ -42,6 +50,7 @@ class TemporaryDrawer extends React.Component {
         return (
           <NavLink to="/login" style={{ textDecoration: 'none' }}>
             <ListItem button>
+              <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
               <ListItemText primary="Login" />
             </ListItem>
           </NavLink>
@@ -50,6 +59,7 @@ class TemporaryDrawer extends React.Component {
         return (
           <Link href="/api/logout">
             <ListItem button>
+              <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
               <ListItemText primary="Log out" />
             </ListItem>
           </Link>
@@ -73,6 +83,26 @@ class TemporaryDrawer extends React.Component {
         style={{ textDecoration: 'none' }}
       >
         <ListItem button>
+          {item === 'Profile' && (
+            <ListItemIcon>
+              <ProfileIcon />
+            </ListItemIcon>
+          )}
+          {item === 'Projects' && (
+            <ListItemIcon>
+              <ProjectsIcon />
+            </ListItemIcon>
+          )}
+          {item === 'Contact' && (
+            <ListItemIcon>
+              <ContactIcon />
+            </ListItemIcon>
+          )}
+          {item === 'Pereritto' && (
+            <ListItemIcon>
+              <PererittoIcon />
+            </ListItemIcon>
+          )}
           <ListItemText primary={item} />
         </ListItem>
       </NavLink>
@@ -85,6 +115,9 @@ class TemporaryDrawer extends React.Component {
         <List>
           <NavLink to="/maintenance" style={{ textDecoration: 'none' }}>
             <ListItem button>
+              <ListItemIcon>
+                <MaintenanceIcon />
+              </ListItemIcon>
               <ListItemText primary="Maintenance" />
             </ListItem>
           </NavLink>
@@ -110,7 +143,7 @@ class TemporaryDrawer extends React.Component {
 
     return (
       <div>
-        <List style={{ paddingTop: '6px', paddingBottom: '6px' }}>
+        <List>
           <NavLink
             to={`/profile/${profileName}`}
             style={{ textDecoration: 'none' }}

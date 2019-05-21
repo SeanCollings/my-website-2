@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Loader from 'react-loader-advanced';
-import { ClipLoader } from 'halogenium';
+import MiniLoader from 'react-loader-spinner';
+// import { ClipLoader } from 'halogenium';
 import * as actions from '../actions';
 import { showMessage } from '../actions/snackBarActions';
 
@@ -23,7 +24,7 @@ const styles = theme => ({
     // paddingBottom: '2.5rem'
   },
   root: {
-    display: 'flex',
+    // display: 'flex',
     backgroundColor: 'white',
     marginLeft: '24px',
     marginRight: '24px',
@@ -60,12 +61,11 @@ class UserProfilePage extends Component {
 
   componentWillUpdate(props) {
     if (props.settings) {
-      if (
-        props.settings.profilePic !== this.state.value &&
-        this.state.firstMount
-      ) {
-        this.setState({ value: props.settings.profilePic });
+      if (this.state.firstMount) {
         this.setState({ firstMount: false });
+        if (props.settings.profilePic !== this.state.value) {
+          this.setState({ value: props.settings.profilePic });
+        }
       }
     }
   }
@@ -76,13 +76,13 @@ class UserProfilePage extends Component {
 
   spinner = (
     <span>
-      <ClipLoader color="#FFC300" size="33px" />
+      <MiniLoader type="TailSpin" color="#FFC300" height={45} width={45} />
     </span>
   );
 
   spinnerSmall = (
     <span>
-      <ClipLoader color="#FFC300" size="27px" />
+      <MiniLoader type="TailSpin" color="#FFC300" height={30} width={30} />
     </span>
   );
 
@@ -181,6 +181,7 @@ class UserProfilePage extends Component {
             </Loader>
           </div>
         </Grid>
+        <div style={{ height: '40px' }} />
       </div>
     );
   }

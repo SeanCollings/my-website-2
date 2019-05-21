@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Loader from 'react-loader-advanced';
-import { ScaleLoader } from 'halogenium';
+import MiniLoader from 'react-loader-spinner';
+// import { ScaleLoader } from 'halogenium';
 import * as actions from '../actions';
 
 import HomePage from './HomePage';
@@ -32,6 +33,7 @@ class App extends Component {
         loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
     });
     this.props.fetchUser();
+    this.props.getUserSettings();
 
     setTimeout(
       function() {
@@ -158,7 +160,28 @@ class App extends Component {
     const colour = '#FFC300'; //'#424242'
     const spinner = (
       <span>
-        <ScaleLoader color={colour} size="33px" margin="2px" />
+        {/* <ScaleLoader color={colour} size="33px" margin="2px" /> */}
+        <div
+          style={{
+            // marginTop: '7px',
+            position: 'absolute',
+            right: 'calc(50% - 15px)',
+            transform: 'rotate(180deg)'
+          }}
+        >
+          <div
+            style={{
+              marginTop: '7px',
+              position: 'absolute',
+              right: 'calc(50% - 3px)'
+              // transform: 'rotate(180deg)'
+            }}
+          >
+            <MiniLoader type="Oval" color={colour} height={20} width={20} />
+          </div>
+          <MiniLoader type="Oval" color={colour} height={43} width={43} />
+        </div>
+        <MiniLoader type="Oval" color={colour} height={60} width={60} />
         <Typography style={{ color: colour }}>
           {this.state.welcomeMessage}
         </Typography>
@@ -205,7 +228,6 @@ class App extends Component {
             />
           )}
           {this.renderUserProfile()}
-
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}
         </Switch>
