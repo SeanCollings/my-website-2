@@ -29,15 +29,13 @@ class App extends Component {
   state = { pereritto: false, render: false, welcomeMessage: '' };
 
   componentDidMount() {
-    console.log('Start Loader');
     const welcomeMessage =
       loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-    this.props.showLoader(welcomeMessage);
 
+    this.props.showLoader(welcomeMessage);
     this.setState({ welcomeMessage });
 
     this.props.fetchUser();
-    this.props.getUserSettings();
 
     setTimeout(
       function() {
@@ -48,9 +46,12 @@ class App extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.auth && this.props.app.open) {
-      console.log('STOP Loader! !');
+    if (this.props.auth !== null && this.props.app.open && this.state.render) {
       this.props.hideLoader();
+    }
+
+    if (this.props.auth && this.props.settings === null) {
+      this.props.getUserSettings();
     }
   }
 
@@ -60,7 +61,8 @@ class App extends Component {
         !this.props.winners &&
         this.props.location.pathname !== PERERITTO_PATH
       ) {
-        this.props.getWinners();
+        //console.log('getting winners');
+        //this.props.getWinners();
       }
 
       return (
@@ -86,7 +88,7 @@ class App extends Component {
     if (!auth) {
       return (
         <Route
-          path="/profile"
+          path="/aboutme"
           exact
           render={props => <ProfilePage {...props} />}
         />
@@ -188,7 +190,12 @@ class App extends Component {
               // transform: 'rotate(180deg)'
             }}
           >
-            <MiniLoader type="Oval" color={colour} height={20} width={20} />
+            <MiniLoader
+              type="Ball-Triangle"
+              color={colour}
+              height={20}
+              width={20}
+            />
           </div>
           <MiniLoader type="Oval" color={colour} height={43} width={43} />
         </div>
@@ -199,7 +206,7 @@ class App extends Component {
       </span>
     );
 
-    if (!this.state.render) {
+    if (this.props.app.open) {
       return (
         <Loader
           show
@@ -213,15 +220,31 @@ class App extends Component {
       );
     }
 
+    //if (this.props.auth) {
+    //this.props.getUserSettings();
+    //console.log('loggedin ');
+    //}
+    //console.log('render?');
+    /*console.log(this.props.winners);
+    if (
+      this.props.auth &&
+      this.props.auth.pererittoUser &&
+      this.props.winners === null
+    ) {
+      this.props.getWinners();
+      console.log('getting winners ');
+    }
+*/
     return (
       <Loader contentStyle={this.checkRoute()} show={false}>
         <Header
           pererittoUser={this.props.pererittoUser}
           superUser={this.props.superUser}
         />
+        {/* <Toolbar /> */}
         <Switch>
           <Route
-            path="/profile"
+            path="/aboutme"
             exact
             render={props => <ProfilePage {...props} />}
           />
@@ -250,13 +273,14 @@ class App extends Component {
   }
 }
 
-function mapStateToProps({ auth, winners, app }) {
+function mapStateToProps({ auth, winners, app, settings }) {
   return {
     auth,
     pererittoUser: auth ? auth.pererittoUser : null,
     superUser: auth ? auth.superUser : null,
     winners,
-    app
+    app,
+    settings
   };
 }
 

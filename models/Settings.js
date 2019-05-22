@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 const settingsSchema = new Schema({
-  profilePic: { type: String, default: 'google' },
+  profilePic: { type: String, default: 'none' },
   _user: { type: Schema.Types.ObjectId, ref: 'users' }
 });
 

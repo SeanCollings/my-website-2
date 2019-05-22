@@ -47,8 +47,11 @@ class UserProfilePage extends Component {
   };
 
   componentDidMount() {
-    // this.setState({ getUserSettings: true });
-    this.props.getUserSettings();
+    if (!this.props.settings) {
+      this.props.getUserSettings();
+    } else {
+      this.setState({ getUserSettings: false });
+    }
   }
 
   shouldComponentUpdate(nextProps) {

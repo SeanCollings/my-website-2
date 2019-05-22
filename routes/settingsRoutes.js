@@ -7,7 +7,14 @@ const Settings = mongoose.model('settings');
 export default app => {
   app.get('/api/get_usersettings', requireLogin, async (req, res) => {
     const settings = await Settings.findOne({ _user: req.user._id });
-    res.send(settings);
+
+    if (settings === null) {
+      const newSettings = await new Settings({
+        _user: req.user._id
+      }).save();
+      return res.send(newSettings);
+    }
+    return res.send(settings);
   });
 
   app.post('/api/update_profilepic', requireLogin, async (req, res) => {

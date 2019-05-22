@@ -20,7 +20,10 @@ class ProfilePage extends Component {
           {' '}
           Home
         </Button> */}
-        <Paper title="My Profile" content="Probably some important stuff" />
+        <Paper
+          title="About Me"
+          content="'Who are you?' you may ask. Good question..."
+        />
       </div>
     );
   }

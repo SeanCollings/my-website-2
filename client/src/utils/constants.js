@@ -1,5 +1,6 @@
 export const MENU_LIST = [
-  'Profile',
+  'Home',
+  'About Me',
   'Projects',
   'Contact',
   'Pereritto',

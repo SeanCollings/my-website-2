@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import Slider from 'react-slick';
+import MiniLoader from 'react-loader-spinner';
 
 // import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
@@ -69,18 +70,29 @@ class ProjectsPage extends Component {
 
     if (!this.props.pererittoUsers) {
       return (
-        <Typography
+        <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             textAlign: 'center',
-            minHeight: '80vh',
-            color: '#FFC300'
+            minHeight: '80vh'
           }}
         >
-          Loading players...
-        </Typography>
+          <MiniLoader
+            type="Ball-Triangle"
+            color="#FFC300"
+            height={30}
+            width={30}
+          />
+          <Typography
+            style={{
+              color: '#FFC300'
+            }}
+          >
+            Loading players...
+          </Typography>
+        </div>
       );
     }
 
@@ -129,10 +141,8 @@ class ProjectsPage extends Component {
             <Slider
               ref={c => (this.slider = c)}
               {...settings}
-              // beforeChange={(current, next) =>
-              //   this.setState({ value: next })
-              // }
-              afterChange={current => this.setState({ value: current })}
+              beforeChange={(current, next) => this.setState({ value: next })}
+              // afterChange={current => this.setState({ value: current })}
             >
               <PererittoPlayers />
               <TabContainer children={<PererittoCalendar />} />

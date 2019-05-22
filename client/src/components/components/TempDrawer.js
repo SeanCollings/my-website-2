@@ -4,6 +4,8 @@ import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Gravatar from 'react-gravatar';
 
+import keys from '../../config/keys';
+
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 // import Button from '@material-ui/core/Button';
@@ -11,7 +13,7 @@ import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Link } from '@material-ui/core';
+import { Link, Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -21,6 +23,8 @@ import MaintenanceIcon from '@material-ui/icons/BuildOutlined';
 import ProjectsIcon from '@material-ui/icons/DescriptionOutlined';
 import PererittoIcon from '@material-ui/icons/HotTubRounded';
 import ProfileIcon from '@material-ui/icons/PersonOutline';
+import HomeIcon from '@material-ui/icons/HomeOutlined';
+import ClearIcon from '@material-ui/icons/Clear';
 
 let googlePic = '';
 
@@ -79,11 +83,16 @@ class TemporaryDrawer extends React.Component {
     return (
       <NavLink
         key={item}
-        to={`/${item.toLowerCase()}`}
+        to={`/${item.toLowerCase().replace(/\s/g, '')}`}
         style={{ textDecoration: 'none' }}
       >
         <ListItem button>
-          {item === 'Profile' && (
+          {item === 'Home' && (
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+          )}
+          {item === 'About Me' && (
             <ListItemIcon>
               <ProfileIcon />
             </ListItemIcon>
@@ -129,35 +138,38 @@ class TemporaryDrawer extends React.Component {
   }
 
   renderUserMenu() {
-    const { auth } = this.props;
+    // const { auth } = this.props;
 
-    if (!auth) {
-      return null;
-    }
+    // if (!auth) {
+    //   return null;
+    // }
 
-    if (auth.googlePhoto && googlePic === '') {
-      googlePic = auth.googlePhoto;
-    }
+    // if (auth.googlePhoto && googlePic === '') {
+    //   googlePic = auth.googlePhoto;
+    // }
 
-    const profileName = `${auth.givenName.toLowerCase()}${auth.familyName.toLowerCase()}`;
+    // const profileName = `${auth.givenName.toLowerCase()}${auth.familyName.toLowerCase()}`;
 
     return (
       <div>
         <List>
-          <NavLink
+          {/* <NavLink
             to={`/profile/${profileName}`}
             style={{ textDecoration: 'none' }}
+          > */}
+          <ListItem
+            button
+            // style={{ paddingTop: '1px', paddingBottom: '1px' }}
           >
-            <ListItem
-              button
-              style={{ paddingTop: '1px', paddingBottom: '1px' }}
-            >
-              {this.renderAvatar()}
-              <ListItemText
+            <ListItemIcon>
+              <ClearIcon />
+            </ListItemIcon>
+            {/* <ListItemText
                 primary={auth ? `${auth.givenName} ${auth.familyName}` : ''}
               />
-            </ListItem>
-          </NavLink>
+              {this.renderAvatar()} */}
+          </ListItem>
+          {/* </NavLink> */}
         </List>
         <Divider />
       </div>
@@ -228,6 +240,16 @@ class TemporaryDrawer extends React.Component {
           >
             {sideList}
           </div>
+          <Typography
+            style={{
+              position: 'absolute',
+              bottom: '10px',
+              right: '15px',
+              color: '#C7C7C7'
+            }}
+          >
+            {`release version: ${keys.releaseVersion}`}
+          </Typography>
         </Drawer>
       </div>
     );
