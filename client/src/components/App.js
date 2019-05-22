@@ -5,6 +5,7 @@ import Loader from 'react-loader-advanced';
 import MiniLoader from 'react-loader-spinner';
 // import { ScaleLoader } from 'halogenium';
 import * as actions from '../actions';
+import { showLoader, hideLoader } from '../actions/appActions';
 
 import HomePage from './HomePage';
 import ContactPage from './ContactPage';
@@ -28,10 +29,13 @@ class App extends Component {
   state = { pereritto: false, render: false, welcomeMessage: '' };
 
   componentDidMount() {
-    this.setState({
-      welcomeMessage:
-        loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
-    });
+    console.log('Start Loader');
+    const welcomeMessage =
+      loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+    this.props.showLoader(welcomeMessage);
+
+    this.setState({ welcomeMessage });
+
     this.props.fetchUser();
     this.props.getUserSettings();
 
@@ -41,6 +45,13 @@ class App extends Component {
       }.bind(this),
       2000
     );
+  }
+
+  componentDidUpdate() {
+    if (this.props.auth && this.props.app.open) {
+      console.log('STOP Loader! !');
+      this.props.hideLoader();
+    }
   }
 
   renderPereritto() {
@@ -239,18 +250,19 @@ class App extends Component {
   }
 }
 
-function mapStateToProps({ auth, winners }) {
+function mapStateToProps({ auth, winners, app }) {
   return {
     auth,
     pererittoUser: auth ? auth.pererittoUser : null,
     superUser: auth ? auth.superUser : null,
-    winners
+    winners,
+    app
   };
 }
 
 export default withRouter(
   connect(
     mapStateToProps,
-    actions
+    { ...actions, showLoader, hideLoader }
   )(App)
 );

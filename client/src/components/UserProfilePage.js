@@ -42,7 +42,8 @@ class UserProfilePage extends Component {
   state = {
     value: '',
     getUserSettings: false,
-    firstMount: true
+    firstMount: true,
+    showLoader: true
   };
 
   componentDidMount() {
@@ -65,6 +66,7 @@ class UserProfilePage extends Component {
         this.setState({ firstMount: false });
         if (props.settings.profilePic !== this.state.value) {
           this.setState({ value: props.settings.profilePic });
+          this.setState({ showLoader: false });
         }
       }
     }
@@ -92,7 +94,7 @@ class UserProfilePage extends Component {
     return (
       <div className={classes.root}>
         <Loader
-          show={this.props.settings === null ? true : false}
+          show={this.state.showLoader ? true : false}
           message={this.spinner}
           style={{ width: '100%' }}
         >

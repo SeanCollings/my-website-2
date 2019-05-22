@@ -6,6 +6,7 @@ import snackBarReducer from './snackBarReducer';
 import resizeScreenReducer from './resizeScreenReducer';
 import winnersReducer from './winnerReducer';
 import settingsReducer from './settingsReducer';
+import appReducer from './appReducer';
 
 export default combineReducers({
   auth: authreducer,
@@ -14,5 +15,6 @@ export default combineReducers({
   snackBar: snackBarReducer,
   resizeScreen: resizeScreenReducer,
   winners: winnersReducer,
-  settings: settingsReducer
+  settings: settingsReducer,
+  app: appReducer
 });
