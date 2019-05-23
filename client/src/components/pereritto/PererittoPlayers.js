@@ -9,6 +9,10 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Avatar from '@material-ui/core/Avatar';
+import { Grid } from '@material-ui/core';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+// import RefreshIcon from '@material-ui/icons/RefreshRounded';
 
 import trophy from '../../images/trophy.png';
 
@@ -31,9 +35,31 @@ const styles = theme => ({
 });
 
 class PererittoPlayers extends Component {
+  state = { playedYears: null, selectedYear: null, loadedYears: [] };
+
   componentDidMount() {
     // this.props.getPererittoUsers();
     // if (!this.props.winners) this.props.getWinners();
+  }
+
+  componentDidUpdate() {
+    const { winners } = this.props;
+    const { playedYears } = this.state;
+
+    if (winners && winners.winnerYears && playedYears === null) {
+      const arr = [];
+      Object.keys(winners.winnerYears).map(key => {
+        return arr.push(winners.winnerYears[key]);
+      });
+
+      const sortedYears = arr.sort((a, b) => {
+        return b - a;
+      });
+
+      this.setState({ playedYears: sortedYears });
+      this.setState({ selectedYear: sortedYears[0] });
+      this.setState({ loadedYears: [sortedYears[0]] });
+    }
   }
 
   renderPlayers = (playerTally, lastWinDate) => {
@@ -106,6 +132,7 @@ class PererittoPlayers extends Component {
 
   buildPlayerTally = () => {
     const { pererittoUsers, winners } = this.props;
+    const { selectedYear } = this.state;
     const playerTally = {};
     let OverallWinDate = new Date(0);
 
@@ -123,17 +150,19 @@ class PererittoPlayers extends Component {
       });
     });
 
-    if (winners !== null) {
-      winners.map(winner => {
-        let playerWinDate = new Date(winner.date);
-        if (playerWinDate > OverallWinDate) OverallWinDate = playerWinDate;
+    if (winners.winners !== null && selectedYear) {
+      winners.winners.map(winner => {
+        if (winner.year === selectedYear) {
+          let playerWinDate = new Date(winner.date);
+          if (playerWinDate > OverallWinDate) OverallWinDate = playerWinDate;
 
-        if (playerTally[winner._winner._id]) {
-          if (playerTally[winner._winner._id].lastWinDate < playerWinDate) {
-            playerTally[winner._winner._id].lastWinDate = playerWinDate;
+          if (playerTally[winner._winner._id]) {
+            if (playerTally[winner._winner._id].lastWinDate < playerWinDate) {
+              playerTally[winner._winner._id].lastWinDate = playerWinDate;
+            }
+
+            playerTally[winner._winner._id].count += 1;
           }
-
-          playerTally[winner._winner._id].count += 1;
         }
 
         return null;
@@ -148,17 +177,71 @@ class PererittoPlayers extends Component {
     return this.renderPlayerList(concatPlayerList, OverallWinDate);
   };
 
+  handleChange = event => {
+    const year = event.target.value;
+
+    if (!this.state.loadedYears.includes(year)) {
+      this.props.getWinners(year);
+      this.setState({ loadedYears: [...this.state.loadedYears, year] });
+    }
+
+    this.setState({ selectedYear: year });
+  };
+
+  renderDates() {
+    const { playedYears } = this.state;
+
+    if (playedYears !== null) {
+      return playedYears.map(year => {
+        return (
+          <MenuItem key={year} value={year}>
+            {year}
+          </MenuItem>
+        );
+      });
+    }
+
+    return null;
+  }
+
   render() {
     const { resizeScreen } = this.props;
+    const { selectedYear } = this.state;
 
     return (
       <div
         style={{
-          paddingTop: '36px',
           width: resizeScreen ? '' : '600px',
           display: 'table'
         }}
       >
+        <Grid item style={{ textAlign: 'center', paddingBottom: '10px' }}>
+          <Select
+            value={selectedYear ? this.state.selectedYear : ''}
+            onChange={this.handleChange}
+            MenuProps={{
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left'
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'left'
+              },
+              getContentAnchorEl: null,
+              PaperProps: {
+                style: {
+                  backgroundColor: '#DEDEDE',
+                  maxHeight: 300
+                }
+              }
+            }}
+            SelectDisplayProps={{ style: { borderBottom: 'red' } }}
+          >
+            {this.renderDates()}
+          </Select>
+          {/* <RefreshIcon /> */}
+        </Grid>
         {this.buildPlayerTally()}
       </div>
     );

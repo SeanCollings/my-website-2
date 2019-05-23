@@ -137,8 +137,19 @@ class TemporaryDrawer extends React.Component {
     return null;
   }
 
-  renderUserMenu() {
-    // const { auth } = this.props;
+  renderTopColor(currentRoute) {
+    switch (currentRoute) {
+      case '/pereritto':
+        return '#C70039';
+      case '/maintenance':
+        return '#154360';
+      default:
+        return '#581845';
+    }
+  }
+
+  renderTopMenu() {
+    const { currentRoute } = this.props;
 
     // if (!auth) {
     //   return null;
@@ -151,26 +162,34 @@ class TemporaryDrawer extends React.Component {
     // const profileName = `${auth.givenName.toLowerCase()}${auth.familyName.toLowerCase()}`;
 
     return (
-      <div>
-        <List>
-          {/* <NavLink
+      <div
+        style={{
+          paddingTop: '5px',
+          color: '#DEDEDE',
+          backgroundColor: this.renderTopColor(currentRoute)
+        }}
+      >
+        <div style={{ paddingBottom: '5px' }}>
+          <List disablePadding={true}>
+            {/* <NavLink
             to={`/profile/${profileName}`}
             style={{ textDecoration: 'none' }}
           > */}
-          <ListItem
-            button
-            // style={{ paddingTop: '1px', paddingBottom: '1px' }}
-          >
-            <ListItemIcon>
-              <ClearIcon />
-            </ListItemIcon>
-            {/* <ListItemText
+            <ListItem
+              button
+              // style={{ paddingTop: '1px', paddingBottom: '1px' }}
+            >
+              <ListItemIcon>
+                <ClearIcon style={{ color: '#DEDEDE' }} />
+              </ListItemIcon>
+              {/* <ListItemText
                 primary={auth ? `${auth.givenName} ${auth.familyName}` : ''}
-              />
+                />
               {this.renderAvatar()} */}
-          </ListItem>
-          {/* </NavLink> */}
-        </List>
+            </ListItem>
+            {/* </NavLink> */}
+          </List>
+        </div>
         <Divider />
       </div>
     );
@@ -212,7 +231,7 @@ class TemporaryDrawer extends React.Component {
 
     const sideList = (
       <div className={classes.list}>
-        {this.renderUserMenu()}
+        {this.renderTopMenu()}
         <List>
           {this.props.menuList.map((text, index) => this.renderMenu(text))}
         </List>
@@ -229,7 +248,9 @@ class TemporaryDrawer extends React.Component {
           open={this.props.openDrawer}
           onClose={() => this.props.onClick(false)}
           PaperProps={{
-            style: { backgroundColor: '#DEDEDE' }
+            style: {
+              backgroundColor: '#DEDEDE'
+            }
           }}
         >
           <div

@@ -6,11 +6,11 @@
   - <collection> = db.<collection>
   - <collection>.find() -> show all documents in collection
 
-2 ### To remove a particular field from all documents in a collection ###
+2 ### Remove a particular field from all documents in a collection ###
   - Do (1) above
   - <collection>.updateMany({<condition if required>}, { $unset: { <field to remove>: "" } })
 
-3 ### To add a new field to all documents in a collection ###
+3 ### Add a new field to all documents in a collection ###
   - Do (1) above
   - <collection>.updateMany({}, { $set: { <name of field>: <field value> } })
   - <field value> :
@@ -18,3 +18,19 @@
     - Boolean: true / false
     - Number: NumberInt(0...)
     - ObjectId()
+
+4 ### Insert many new documents into a collection ###
+    - Do (1) above
+    - <collection>.insertMany([
+        {date: "", year: 2018, _winner: ObjectId("5cd1eba2af63510ef4c088e3")},
+        {date: "", year: 2018, _winner: ObjectId("5cd1eba2af63510ef4c088e3")},
+        {date: "", year: 2018, _winner: ObjectId("5cd1eba2af63510ef4c088e3")},
+    ])
+
+win.insertMany([{date: "", year: 2018, _winner: ObjectId("5cd1eba2af63510ef4c088e3")}, {date: "", year: 2018, _winner: ObjectId("5cd1eba2af63510ef4c088e3")}, {date: "", year: 2018, _winner: ObjectId("5cd1eba2af63510ef4c088e3")}])
+
+5 ### Insert one new document into a collection ###
+    - Do (1) above
+    - <collection>.insertOne([
+        {date: "", year: 2018, _winner: ObjectId("5cd1eba2af63510ef4c088e3")}
+    ])

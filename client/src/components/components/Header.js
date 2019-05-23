@@ -109,10 +109,7 @@ class Header extends Component {
             </Typography>
           </MenuItem>
         </NavLink>
-        <NavLink
-          to={`/profile/${profileName}`}
-          style={{ textDecoration: 'none' }}
-        >
+        <NavLink to="/settings" style={{ textDecoration: 'none' }}>
           <MenuItem onClick={this.handleClose}>
             <Typography noWrap>Settings</Typography>
           </MenuItem>
@@ -193,8 +190,45 @@ class Header extends Component {
     }
   }
 
+  renderHeading(currentRoute) {
+    const { auth } = this.props;
+
+    switch (currentRoute) {
+      case '/home':
+        return 'Home';
+      case '/aboutme':
+        return 'About Me';
+      case '/projects':
+        return 'Projects';
+      case '/contact':
+        return 'Contact Me';
+      case '/pereritto':
+        return 'Pereritto Winners';
+      case '/maintenance':
+        return 'Maintenance';
+      case '/settings':
+        return 'Settings';
+      default:
+        if (currentRoute.includes('profile') && auth)
+          return `${auth.givenName} ${auth.familyName}`;
+
+        return '';
+    }
+  }
+
+  renderColor(currentRoute) {
+    switch (currentRoute) {
+      case '/pereritto':
+        return '#C70039';
+      case '/maintenance':
+        return '#154360';
+      default:
+        return '#581845';
+    }
+  }
+
   render() {
-    const { classes } = this.props;
+    const { classes, currentRoute } = this.props;
     // const pointer = { cursor: 'pointer' };
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
@@ -202,10 +236,10 @@ class Header extends Component {
     return (
       <div className={classes.root} ref={this.myDiv}>
         <AppBar
-          position="sticky"
-          elevation={0}
+          position="fixed"
+          elevation={1}
           style={{
-            background: 'transparent',
+            background: this.renderColor(currentRoute),
             // background: '#581845',
             //   this.props.auth !== null && location.pathname === '/pereritto'
             //     ? '#FF4136'
@@ -226,10 +260,16 @@ class Header extends Component {
               <MenuIcon />
             </IconButton>
             <Typography
-              variant="h6"
+              variant="h5"
               color="inherit"
               className={classes.grow}
-              style={{ display: 'inline-block', color: '#DEDEDE' }}
+              // align="center"
+              noWrap={true}
+              style={{
+                display: 'inline-block',
+                color: '#DEDEDE',
+                paddingLeft: '16px'
+              }}
             >
               {/* <Link
                 color="inherit"
@@ -241,7 +281,9 @@ class Header extends Component {
               >
                 Home
               </Link> */}
+              {this.renderHeading(currentRoute)}
             </Typography>
+
             {/* <Typography style={{ display: 'inline-block' }} component={'span'}>
               <Link
                 style={pointer}
@@ -271,13 +313,14 @@ class Header extends Component {
               onClose={this.handleClose}
               disableAutoFocusItem
               elevation={1}
-              classes={{ root: { color: 'red' } }}
-              square={true}
               PaperProps={{
                 style: {
-                  backgroundColor: '#DEDEDE'
+                  backgroundColor: '#DEDEDE',
+                  width: 220,
+                  square: true
                 }
               }}
+              style={{ paddingTop: '20px' }}
             >
               {this.renderDropDownMenu()}
             </Menu>
@@ -291,6 +334,7 @@ class Header extends Component {
           onClick={this.toggleDrawer}
           menuList={MENU_LIST}
           pererittoUser={this.props.pererittoUser}
+          currentRoute={currentRoute}
         />
       </div>
     );

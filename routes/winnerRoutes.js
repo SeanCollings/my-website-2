@@ -30,7 +30,9 @@ const getPlayers = async winner => {
 export default app => {
   app.get('/api/get_winners', requireLogin, async (req, res) => {
     try {
-      const winners = await WinnerDates.find();
+      const winners = await WinnerDates.find({
+        year: parseInt(req.query.year)
+      });
       const players = await PererittoUsers.find();
 
       if (winners.length > 0 && players.length > 0) {
@@ -58,6 +60,30 @@ export default app => {
         message: `An error occured in retrieving winners`
       });
       throw Error(error);
+    }
+  });
+
+  app.get('/api/get_winneryears', requireLogin, async (req, res) => {
+    try {
+      const winnerDates = await WinnerDates.find();
+
+      if (winnerDates.length > 0) {
+        const yearsMap = {};
+
+        winnerDates.map(winner => {
+          yearsMap[winner.year] = winner.year;
+        });
+
+        return res.send(yearsMap);
+      } else {
+        console.log('No winners to display.');
+      }
+    } catch (err) {
+      res.send({
+        type: MessageTypeEnum.error,
+        message: `An error occured in retrieving winner years`
+      });
+      throw Error(err);
     }
   });
 };

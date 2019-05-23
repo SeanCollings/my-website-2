@@ -53,7 +53,7 @@ class DatePicker extends Component {
   }
 
   componentDidUpdate(props) {
-    const { showMoreMonths } = this.props;
+    const { showMoreMonths, preventSelection } = this.props;
     this.dayPickerClassNames = {
       ...this.dayPickerClassNames,
       navButtonPrev: showMoreMonths
@@ -65,8 +65,7 @@ class DatePicker extends Component {
         : 'DayPicker-Caption'
     };
 
-    if (this.props.preventSelection)
-      this.setState({ showMoreMonths: showMoreMonths });
+    if (preventSelection) this.setState({ showMoreMonths: showMoreMonths });
 
     if (props.data && this.state.data !== props.data) {
       this.setState({ data: props.data });
@@ -118,11 +117,13 @@ class DatePicker extends Component {
 
     if (data) {
       data.forEach(d => {
-        modifiers[d._id] = new Date(d.date);
-        modifiersStyles[d._id] = {
-          color: 'white',
-          backgroundColor: d._winner.colour
-        };
+        if (d.date) {
+          modifiers[d._id] = new Date(d.date);
+          modifiersStyles[d._id] = {
+            color: 'white',
+            backgroundColor: d._winner.colour
+          };
+        }
       });
     }
 

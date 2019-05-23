@@ -6,7 +6,9 @@ import {
   FETCH_All_USERS,
   SHOW_MESSAGE,
   GET_WINNERS,
-  GET_USER_SETTINGS
+  GET_USER_SETTINGS,
+  GET_WINNER_YEARS,
+  CLEAR_WINNERS
 } from './types';
 
 export const fetchUser = () => async dispatch => {
@@ -84,13 +86,23 @@ export const deletePererittoUser = (_id, _pereritto) => async dispatch => {
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
-export const getWinners = () => async dispatch => {
-  const res = await axios.get(`/api/get_winners`);
+export const getWinners = year => async dispatch => {
+  const res = await axios.get(`/api/get_winners?year=${year}`);
 
   dispatch({ type: GET_WINNERS, payload: res.data });
 
   // May Potentially break everything?
   // dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const getWinnerYears = () => async dispatch => {
+  const res = await axios.get(`/api/get_winneryears`);
+
+  dispatch({ type: GET_WINNER_YEARS, payload: res.data });
+};
+
+export const clearWinners = () => {
+  return { type: CLEAR_WINNERS };
 };
 
 export const getUserSettings = () => async dispatch => {

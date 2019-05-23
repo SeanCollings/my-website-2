@@ -17,7 +17,10 @@ class ContactsPage extends Component {
     const { classes } = this.props;
     return (
       <div className={classes.pageFill}>
-        <Paper title="Contact Me" content="Feel free to send me a message" />
+        <Paper
+          title="Contact Me"
+          content="Feel free to send me a message, somehow"
+        />
       </div>
     );
   }

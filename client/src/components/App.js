@@ -15,6 +15,7 @@ import CredentialPage from './CredentialPage';
 import PererittoPage from './PererittoPage';
 import MaintenancePage from './MaintenancePage';
 import UserProfilePage from './UserProfilePage';
+import SettingsPage from './SettingsPage';
 
 import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import Header from './components/Header';
@@ -23,7 +24,7 @@ import SnackBar from './components/SnackBar';
 import loadingMessages from '../utils/loadingMessages';
 // import MobileView from './components/MobileView.1';
 
-import { Typography } from '@material-ui/core';
+import { Typography, Toolbar } from '@material-ui/core';
 
 class App extends Component {
   state = { pereritto: false, render: false, welcomeMessage: '' };
@@ -112,6 +113,16 @@ class App extends Component {
           path={MAINTENANCE_PATH}
           render={props => <MaintenancePage {...props} />}
         />
+      );
+    }
+
+    return;
+  }
+
+  renderSettings() {
+    if (this.props.auth) {
+      return (
+        <Route path="/settings" render={props => <SettingsPage {...props} />} />
       );
     }
 
@@ -240,8 +251,9 @@ class App extends Component {
         <Header
           pererittoUser={this.props.pererittoUser}
           superUser={this.props.superUser}
+          currentRoute={this.props.location.pathname}
         />
-        {/* <Toolbar /> */}
+        <Toolbar />
         <Switch>
           <Route
             path="/aboutme"
@@ -261,6 +273,7 @@ class App extends Component {
               render={props => <CredentialPage {...props} />}
             />
           )}
+          {this.renderSettings()}
           {this.renderUserProfile()}
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}

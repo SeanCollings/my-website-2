@@ -56,7 +56,12 @@ class ProjectsPage extends Component {
 
   componentDidMount() {
     this.props.getPererittoUsers();
-    this.props.getWinners();
+    this.props.getWinners(new Date().getFullYear());
+    this.props.getWinnerYears();
+  }
+
+  componentWillUnmount() {
+    this.props.clearWinners();
   }
 
   handleChange = (event, value) => {

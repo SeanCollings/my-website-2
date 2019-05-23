@@ -65,9 +65,8 @@ class UpdatePererittoPlayer extends Component {
     if (selectedDate === null || selectedDate === '')
       return this.props.showMessage(MessageTypeEnum.error, 'Select a date!');
 
-    return this.props
-      .updatePererittoUser(playerName, selectedDate)
-      .then(() => this.props.getWinners());
+    return this.props.updatePererittoUser(playerName, selectedDate);
+    // .then(() => this.props.getWinners());
   };
 
   renderPlayers = () => {

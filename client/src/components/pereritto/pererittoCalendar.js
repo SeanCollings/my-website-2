@@ -14,7 +14,7 @@ class PererittoCalendar extends Component {
 
   render() {
     const { showMoreMonths } = this.state;
-    const { resizeScreen, winners } = this.props;
+    const { resizeScreen, winners, renderPage } = this.props;
 
     return (
       <div>
@@ -33,9 +33,10 @@ class PererittoCalendar extends Component {
           </Button>
         </Grid>
         <DatePicker
-          data={winners}
+          data={winners.winners}
           preventSelection={true}
           showMoreMonths={showMoreMonths}
+          renderPage={renderPage}
         />
       </div>
     );
