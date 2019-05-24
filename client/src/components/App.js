@@ -58,13 +58,13 @@ class App extends Component {
 
   renderPereritto() {
     if (this.props.pererittoUser) {
-      if (
-        !this.props.winners &&
-        this.props.location.pathname !== PERERITTO_PATH
-      ) {
-        //console.log('getting winners');
-        //this.props.getWinners();
-      }
+      // if (
+      // !this.props.winners &&
+      // this.props.location.pathname !== PERERITTO_PATH
+      // ) {
+      //console.log('getting winners');
+      //this.props.getWinners();
+      // }
 
       return (
         <Route

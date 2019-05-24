@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Gravatar from 'react-gravatar';
-
-import keys from '../../config/keys';
+import { getVersion } from '../../actions/appActions';
 
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -45,6 +44,9 @@ class TemporaryDrawer extends React.Component {
   // static getDerivedStateFromProps(props, state) {
   //   return { ...state, openDrawer: props.openDrawer };
   // }
+  componentDidMount() {
+    if (!this.props.version) this.props.getVersion();
+  }
 
   renderLoginLogout() {
     switch (this.props.auth) {
@@ -63,7 +65,9 @@ class TemporaryDrawer extends React.Component {
         return (
           <Link href="/api/logout">
             <ListItem button>
-              <ListItemIcon>{<LogoutIcon />}</ListItemIcon>
+              <ListItemIcon>
+                {<LogoutIcon style={{ transform: 'rotate(180deg)' }} />}
+              </ListItemIcon>
               <ListItemText primary="Log out" />
             </ListItem>
           </Link>
@@ -269,7 +273,7 @@ class TemporaryDrawer extends React.Component {
               color: '#C7C7C7'
             }}
           >
-            {`release version: ${keys.releaseVersion}`}
+            {`release version: ${this.props.version}`}
           </Typography>
         </Drawer>
       </div>
@@ -281,10 +285,16 @@ TemporaryDrawer.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-function mapStateToProps({ auth, settings }) {
-  return { auth, superUser: auth !== null ? auth.superUser : null, settings };
+function mapStateToProps({ auth, settings, app }) {
+  return {
+    auth,
+    superUser: auth !== null ? auth.superUser : null,
+    settings,
+    version: app.version
+  };
 }
 
-export default connect(mapStateToProps)(
-  withRouter(withStyles(styles)(TemporaryDrawer))
-);
+export default connect(
+  mapStateToProps,
+  { getVersion }
+)(withRouter(withStyles(styles)(TemporaryDrawer)));

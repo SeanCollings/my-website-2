@@ -13,3 +13,5 @@ export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';
 
 export const RESIZE_SCREEN = 'resize_screen';
+
+export const GET_VERSION = 'get_Version';

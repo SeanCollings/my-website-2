@@ -29,7 +29,7 @@ export default [
   'Calculating the meaning of life...',
   'Just doing this one thing real quick...',
   'Normal programming will commence shortly...',
-  'Putting pixel (182, 45) back in place...',
+  'Putting pixel [182, 45] back in place...',
   'Evaluating if this is real code or not...',
   'Putting one variable next to the other...',
   "Assigning '4' to the variable 'a'...",

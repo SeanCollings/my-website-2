@@ -18,6 +18,7 @@ import pereRoutes from './routes/pererittoRoutes';
 import userRoutes from './routes/userRoutes';
 import winnerRoutes from './routes/winnerRoutes';
 import settingsRoutes from './routes/settingsRoutes';
+import versionRoutes from './routes/versionRoute';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
@@ -43,6 +44,7 @@ pereRoutes(app);
 userRoutes(app);
 winnerRoutes(app);
 settingsRoutes(app);
+versionRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));

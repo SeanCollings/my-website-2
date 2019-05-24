@@ -146,8 +146,8 @@ class ProjectsPage extends Component {
             <Slider
               ref={c => (this.slider = c)}
               {...settings}
-              beforeChange={(current, next) => this.setState({ value: next })}
-              // afterChange={current => this.setState({ value: current })}
+              // beforeChange={(current, next) => this.setState({ value: next })}
+              afterChange={current => this.setState({ value: current })}
             >
               <PererittoPlayers />
               <TabContainer children={<PererittoCalendar />} />

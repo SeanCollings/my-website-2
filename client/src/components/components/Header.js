@@ -122,7 +122,7 @@ class Header extends Component {
     const { settings, auth } = this.props;
     let initials = '';
 
-    if (auth === null) return null;
+    if (auth === null || auth === false) return null;
 
     if (auth) {
       initials =
