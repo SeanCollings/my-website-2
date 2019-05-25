@@ -8,13 +8,18 @@ import { Button, Grid } from '@material-ui/core';
 class PererittoCalendar extends Component {
   state = { showMoreMonths: false };
 
-  componentDidMount() {
-    // this.props.getWinners();
-  }
-
   render() {
     const { showMoreMonths } = this.state;
     const { resizeScreen, winners, renderPage } = this.props;
+    const selectedYearsArray = [];
+
+    if (winners && winners.winnerYears && winners.winners) {
+      Object.keys(winners.winners).forEach(key => {
+        Object.keys(winners.winners[key]).forEach(date => {
+          selectedYearsArray.push(winners.winners[key][date]);
+        });
+      });
+    }
 
     return (
       <div>
@@ -33,7 +38,7 @@ class PererittoCalendar extends Component {
           </Button>
         </Grid>
         <DatePicker
-          data={winners.winners}
+          data={selectedYearsArray}
           preventSelection={true}
           showMoreMonths={showMoreMonths}
           renderPage={renderPage}

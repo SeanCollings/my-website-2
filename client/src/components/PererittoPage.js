@@ -55,13 +55,15 @@ class ProjectsPage extends Component {
   };
 
   componentDidMount() {
-    this.props.getPererittoUsers();
-    this.props.getWinners(new Date().getFullYear());
-    this.props.getWinnerYears();
+    const { pererittoUsers, winners } = this.props;
+
+    if (!pererittoUsers) this.props.getPererittoUsers();
+    if (!winners.winners) this.props.getWinners(new Date().getFullYear());
+    if (!winners.winnerYears) this.props.getWinnerYears();
   }
 
   componentWillUnmount() {
-    this.props.clearWinners();
+    // this.props.clearWinners();
   }
 
   handleChange = (event, value) => {
@@ -162,11 +164,12 @@ class ProjectsPage extends Component {
   }
 }
 
-function mapStateToProps({ auth, pererittoUsers, resizeScreen }) {
+function mapStateToProps({ auth, pererittoUsers, resizeScreen, winners }) {
   return {
     pererittoUsers,
     superUser: auth ? auth.superUser : false,
-    resizeScreen
+    resizeScreen,
+    winners
   };
 }
 

@@ -202,15 +202,24 @@ class App extends Component {
             }}
           >
             <MiniLoader
-              type="Ball-Triangle"
+              type="RevolvingDot"
               color={colour}
               height={20}
               width={20}
             />
           </div>
-          <MiniLoader type="Oval" color={colour} height={43} width={43} />
+          {/* <div style={{ transform: 'rotateY(180deg)' }}> */}
+          <div style={{ transform: 'rotate(280deg)' }}>
+            <MiniLoader
+              type="RevolvingDot"
+              color={colour}
+              height={43}
+              width={43}
+            />
+          </div>
+          {/* </div> */}
         </div>
-        <MiniLoader type="Oval" color={colour} height={60} width={60} />
+        <MiniLoader type="RevolvingDot" color={colour} height={60} width={60} />
         <Typography style={{ color: colour }}>
           {this.state.welcomeMessage}
         </Typography>

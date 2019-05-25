@@ -31,6 +31,15 @@ const styles = theme => ({
     marginLeft: '-40px',
     filter:
       'brightness(42%) sepia(90%) hue-rotate(330deg) saturate(670%) contrast(0.8)'
+  },
+  cssUnderline: {
+    borderBottomColor: '#DEDEDE',
+    '&:before': {
+      borderColor: ''
+    },
+    '&:after': {
+      borderBottomColor: '#ffa07a'
+    }
   }
 });
 
@@ -38,8 +47,10 @@ class PererittoPlayers extends Component {
   state = { playedYears: null, selectedYear: null, loadedYears: [] };
 
   componentDidMount() {
-    // this.props.getPererittoUsers();
-    // if (!this.props.winners) this.props.getWinners();
+    const { winners } = this.props;
+    if (winners.winnerYears) {
+      this.setupWinnerYears(winners.winnerYears, true);
+    }
   }
 
   componentDidUpdate() {
@@ -47,20 +58,27 @@ class PererittoPlayers extends Component {
     const { playedYears } = this.state;
 
     if (winners && winners.winnerYears && playedYears === null) {
-      const arr = [];
-      Object.keys(winners.winnerYears).map(key => {
-        return arr.push(winners.winnerYears[key]);
-      });
-
-      const sortedYears = arr.sort((a, b) => {
-        return b - a;
-      });
-
-      this.setState({ playedYears: sortedYears });
-      this.setState({ selectedYear: sortedYears[0] });
-      this.setState({ loadedYears: [sortedYears[0]] });
+      this.setupWinnerYears(winners.winnerYears, false);
     }
   }
+
+  setupWinnerYears = (winnerYears, multipleYears) => {
+    const arr = [];
+    Object.keys(winnerYears).map(key => {
+      return arr.push(winnerYears[key]);
+    });
+
+    const sortedYears = arr.sort((a, b) => {
+      return b - a;
+    });
+
+    this.setState({ playedYears: sortedYears });
+    this.setState({ selectedYear: sortedYears[0] });
+
+    if (multipleYears)
+      this.setState({ loadedYears: this.props.winners.selectedYears });
+    else this.setState({ loadedYears: [sortedYears[0]] });
+  };
 
   renderPlayers = (playerTally, lastWinDate) => {
     const { classes } = this.props;
@@ -150,8 +168,13 @@ class PererittoPlayers extends Component {
       });
     });
 
-    if (winners.winners !== null && selectedYear) {
-      winners.winners.map(winner => {
+    if (
+      winners.winners &&
+      winners.winners[selectedYear] &&
+      winners.winners[selectedYear].length > 0 &&
+      selectedYear
+    ) {
+      winners.winners[selectedYear].map(winner => {
         if (winner.year === selectedYear) {
           let playerWinDate = new Date(winner.date);
           if (playerWinDate > OverallWinDate) OverallWinDate = playerWinDate;
@@ -205,7 +228,7 @@ class PererittoPlayers extends Component {
   }
 
   render() {
-    const { resizeScreen } = this.props;
+    const { resizeScreen, classes } = this.props;
     const { selectedYear } = this.state;
 
     return (
@@ -217,6 +240,7 @@ class PererittoPlayers extends Component {
       >
         <Grid item style={{ textAlign: 'center', paddingBottom: '10px' }}>
           <Select
+            className={classes.cssUnderline}
             value={selectedYear ? this.state.selectedYear : ''}
             onChange={this.handleChange}
             MenuProps={{

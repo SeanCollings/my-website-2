@@ -89,7 +89,12 @@ export const deletePererittoUser = (_id, _pereritto) => async dispatch => {
 export const getWinners = year => async dispatch => {
   const res = await axios.get(`/api/get_winners?year=${year}`);
 
-  dispatch({ type: GET_WINNERS, payload: res.data });
+  let payload = { data: res.data, year: null };
+
+  if (payload.data && payload.data.length > 0 && payload.data[0].year)
+    payload = { ...payload, year: payload.data[0].year };
+
+  dispatch({ type: GET_WINNERS, payload });
 
   // May Potentially break everything?
   // dispatch({ type: SHOW_MESSAGE, payload: res.data });

@@ -228,7 +228,7 @@ class Header extends Component {
   }
 
   render() {
-    const { classes, currentRoute } = this.props;
+    const { classes, currentRoute, auth } = this.props;
     // const pointer = { cursor: 'pointer' };
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
@@ -297,11 +297,23 @@ class Header extends Component {
             {/* {this.props.resizeScreen ? ( */}
             {this.props.resizeScreen ? '' : this.renderMenuItems()}
             {this.props.resizeScreen ? '' : this.renderLoginLogout()}
+            <Button
+              style={{
+                color: '#DEDEDE',
+                backgroundColor: '#FF4136',
+                display: auth || currentRoute.includes('login') ? 'none' : ''
+              }}
+              onClick={e => {
+                this.handleClick('login', e);
+              }}
+            >
+              Login
+            </Button>
             <IconButton
               aria-label="More"
               aria-haspopup="true"
               onClick={this.toggleMenu}
-              style={{ color: '#DEDEDE' }}
+              style={{ color: '#DEDEDE', display: auth ? '' : 'none' }}
             >
               {/* <VertIcon /> */}
               {this.renderAvatar()}

@@ -86,9 +86,8 @@ class DatePicker extends Component {
     let dateToRender = day.toString().substring(0, 15);
 
     const date = day.getDate();
-
     const renderDates = () => {
-      if (data) {
+      if (data && data.length > 0) {
         for (let i = 0; i < data.length; i++) {
           if (data[i].date === dateToRender)
             return <div>{data[i]._winner.name.charAt(0).toUpperCase()}</div>;
@@ -111,17 +110,17 @@ class DatePicker extends Component {
   };
 
   render() {
-    const { data, resizeScreen, preventSelection, showMoreMonths } = this.props;
+    const { resizeScreen, preventSelection, showMoreMonths, data } = this.props;
     let modifiers = {};
     let modifiersStyles = {};
 
-    if (data) {
-      data.forEach(d => {
-        if (d.date) {
-          modifiers[d._id] = new Date(d.date);
-          modifiersStyles[d._id] = {
+    if (data && data.length) {
+      data.forEach(date => {
+        if (date.date) {
+          modifiers[date._id] = new Date(date.date);
+          modifiersStyles[date._id] = {
             color: 'white',
-            backgroundColor: d._winner.colour
+            backgroundColor: date._winner.colour
           };
         }
       });
@@ -165,9 +164,10 @@ class DatePicker extends Component {
   }
 }
 
-function mapStateToProps({ resizeScreen }) {
+function mapStateToProps({ resizeScreen, winners }) {
   return {
-    resizeScreen
+    resizeScreen,
+    winners
   };
 }
 
