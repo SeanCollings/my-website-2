@@ -123,3 +123,11 @@ export const updateProfilePic = option => async dispatch => {
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
+
+export const uploadUserPhoto = dataUri => async dispatch => {
+  const res = await axios.post('/api/upload_userphoto', {
+    dataUri
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};

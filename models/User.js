@@ -6,6 +6,7 @@ const userSchema = new Schema({
   familyName: String,
   emailAddress: String,
   googlePhoto: String,
+  uploadedPhoto: String,
   superUser: { type: Boolean, default: false },
   pererittoUser: { type: Boolean, default: false },
   lastLogin: { type: Date, default: new Date(0) },

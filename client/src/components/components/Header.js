@@ -130,9 +130,7 @@ class Header extends Component {
         auth.familyName.charAt(0).toUpperCase();
     }
 
-    // console.log(auth.googlePhoto, 'inbetween', googlePic);
     if (settings === null) {
-      // console.log('test');
       return <Avatar>{initials}</Avatar>;
     }
 
@@ -148,6 +146,8 @@ class Header extends Component {
           default={'mp'}
         />
       );
+    } else if (settings.profilePic === 'uploadedPhoto' && auth.uploadedPhoto) {
+      return <Avatar src={auth.uploadedPhoto} />;
     } else {
       return <Avatar>{initials}</Avatar>;
     }
