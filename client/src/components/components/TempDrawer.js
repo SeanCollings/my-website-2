@@ -6,7 +6,8 @@ import Gravatar from 'react-gravatar';
 import { getVersion } from '../../actions/appActions';
 
 import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
+// import Drawer from '@material-ui/core/Drawer';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 // import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
@@ -231,15 +232,13 @@ class TemporaryDrawer extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, version, menuList, superUser, openDrawer } = this.props;
 
     const sideList = (
       <div className={classes.list}>
         {this.renderTopMenu()}
-        <List>
-          {this.props.menuList.map((text, index) => this.renderMenu(text))}
-        </List>
-        {this.props.superUser && <Divider />}
+        <List>{menuList.map((text, index) => this.renderMenu(text))}</List>
+        {superUser && <Divider />}
         {this.renderMaintenance()}
         <Divider />
         <List>{this.renderLoginLogout()}</List>
@@ -248,7 +247,7 @@ class TemporaryDrawer extends React.Component {
 
     return (
       <div>
-        <Drawer
+        {/* <Drawer
           open={this.props.openDrawer}
           onClose={() => this.props.onClick(false)}
           PaperProps={{
@@ -273,9 +272,42 @@ class TemporaryDrawer extends React.Component {
               color: '#C7C7C7'
             }}
           >
-            {`release version: ${this.props.version}`}
+            {`release version: ${version}`}
           </Typography>
-        </Drawer>
+        </Drawer> */}
+        <SwipeableDrawer
+          open={openDrawer}
+          onClose={() => this.props.onClick(false)}
+          onOpen={() => this.props.onClick(true)}
+          disableBackdropTransition={true}
+          disableDiscovery={false}
+          minFlingVelocity={500}
+          // transitionDuration={300}
+          PaperProps={{
+            style: {
+              backgroundColor: '#DEDEDE'
+            }
+          }}
+        >
+          <div
+            tabIndex={0}
+            role="button"
+            onClick={() => this.props.onClick(false)}
+            onKeyDown={() => this.props.onClick(false)}
+          >
+            {sideList}
+          </div>
+          <Typography
+            style={{
+              position: 'absolute',
+              bottom: '10px',
+              right: '15px',
+              color: '#C7C7C7'
+            }}
+          >
+            {`release version: ${version}`}
+          </Typography>
+        </SwipeableDrawer>
       </div>
     );
   }

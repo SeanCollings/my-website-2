@@ -35,7 +35,6 @@ class App extends Component {
 
     this.props.showLoader(welcomeMessage);
     this.setState({ welcomeMessage });
-
     this.props.fetchUser();
 
     setTimeout(

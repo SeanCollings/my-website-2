@@ -141,9 +141,29 @@ class UpdateUser extends Component {
     );
   };
 
-  renderContent(data) {
+  renderContent(data, lastLoginSelected) {
     const { classes } = this.props;
 
+    if (lastLoginSelected) {
+      const loginDate = new Date(data.lastLogin).toLocaleString('en-GB');
+      return (
+        <Table className={classes.table}>
+          <TableBody>
+            <TableRow className={classes.tableRow}>
+              <TableCell
+                component="th"
+                scope="row"
+                align="left"
+                className={classes.tableCellLeft}
+                classes={{ root: classes.table }}
+              >
+                {`[Last Login] ${loginDate}`}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      );
+    }
     return (
       <Table className={classes.table}>
         <TableBody>
@@ -240,17 +260,18 @@ class UpdateUser extends Component {
   }
 
   render() {
-    const { classes, data } = this.props;
+    const { classes, data, lastLoginSelected } = this.props;
 
     return (
       <Grid style={{ paddingRight: '10px' }}>
-        {this.renderContent(data)}
+        {this.renderContent(data, lastLoginSelected)}
         <Grid
           item
           style={{
             paddingBottom: '5px',
             paddingTop: '5px',
-            textAlign: 'center'
+            textAlign: 'center',
+            display: lastLoginSelected ? 'none' : ''
           }}
         >
           <Button

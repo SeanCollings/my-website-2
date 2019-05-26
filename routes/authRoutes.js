@@ -1,5 +1,8 @@
 import passport from 'passport';
 
+const mongoose = require('mongoose');
+const Users = mongoose.model('users');
+
 export default app => {
   app.get(
     '/auth/google',
@@ -22,7 +25,13 @@ export default app => {
     res.redirect('/home');
   });
 
-  app.get('/api/current_user', (req, res) => {
+  app.get('/api/current_user', async (req, res) => {
+    if (req.user) {
+      await Users.updateOne(
+        { _id: req.user._id },
+        { $set: { lastLogin: Date.now() } }
+      );
+    }
     res.send(req.user);
   });
 };

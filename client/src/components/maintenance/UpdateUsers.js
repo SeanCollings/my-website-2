@@ -36,7 +36,8 @@ class UpdateUsers extends Component {
     options: MAINTENANCE_MENU.ALL_USERS.options,
     selectedOption: MAINTENANCE_MENU.ALL_USERS.options[0],
     selectedUsers: null,
-    showSpinner: true
+    showSpinner: true,
+    lastLoginSelected: false
   };
 
   componentDidMount() {
@@ -67,22 +68,53 @@ class UpdateUsers extends Component {
       let selectedUsers = [];
       switch (clickedOption) {
         case MAINTENANCE_MENU.ALL_USERS.options[0]:
-          this.setState({ selectedUsers: users });
+          this.setState({
+            ...this.state,
+            selectedUsers: users,
+            lastLoginSelected: false
+          });
           break;
         case MAINTENANCE_MENU.ALL_USERS.options[1]:
           for (let i = 0; i < users.length; i++) {
             if (users[i].superUser) selectedUsers.push(users[i]);
           }
-          this.setState({ selectedUsers });
+          this.setState({
+            ...this.state,
+            selectedUsers,
+            lastLoginSelected: false
+          });
           break;
         case MAINTENANCE_MENU.ALL_USERS.options[2]:
           for (let i = 0; i < users.length; i++) {
             if (users[i].pererittoUser) selectedUsers.push(users[i]);
           }
-          this.setState({ selectedUsers });
+          this.setState({
+            ...this.state,
+            selectedUsers,
+            lastLoginSelected: false
+          });
+          break;
+        case MAINTENANCE_MENU.ALL_USERS.options[3]:
+          for (let i = 0; i < users.length; i++) {
+            if (users[i].lastLogin) selectedUsers.push(users[i]);
+          }
+          selectedUsers.sort(function(a, b) {
+            a = new Date(a.lastLogin);
+            b = new Date(b.lastLogin);
+            return b - a;
+          });
+          this.setState({
+            ...this.state,
+            selectedUsers,
+            lastLoginSelected: true
+          });
           break;
         default:
-          this.setState({ selectedUsers: users });
+          this.setState({
+            ...this.state,
+            selectedUsers,
+            lastLoginSelected: false
+          });
           break;
       }
 
@@ -93,7 +125,12 @@ class UpdateUsers extends Component {
 
   renderAllUsers() {
     const { resizeScreen } = this.props;
-    const { selectedUsers, screenType, selectedOption } = this.state;
+    const {
+      selectedUsers,
+      screenType,
+      selectedOption,
+      lastLoginSelected
+    } = this.state;
 
     const tableStyle = {
       width: '1px',
@@ -154,7 +191,8 @@ class UpdateUsers extends Component {
                     surname: user.familyName,
                     email: user.emailAddress,
                     superUser: user.superUser,
-                    pererittoUser: user.pererittoUser
+                    pererittoUser: user.pererittoUser,
+                    lastLogin: user.lastLogin
                   }))
                 : []
             }
@@ -167,6 +205,7 @@ class UpdateUsers extends Component {
                   return (
                     <UpdateUser
                       data={rowData}
+                      lastLoginSelected={lastLoginSelected}
                       updateList={() => {
                         // this.setState({ showSpinner: true });
                         this.props.fetchAllUsers([screenType, selectedOption]);
