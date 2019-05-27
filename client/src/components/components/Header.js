@@ -146,7 +146,7 @@ class Header extends Component {
           default={'mp'}
         />
       );
-    } else if (settings.profilePic === 'uploadedPhoto' && auth.uploadedPhoto) {
+    } else if (settings.profilePic === 'profilePhoto' && auth.uploadedPhoto) {
       return <Avatar src={auth.uploadedPhoto} />;
     } else {
       return <Avatar>{initials}</Avatar>;

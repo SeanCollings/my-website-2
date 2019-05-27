@@ -6,9 +6,6 @@ import MiniLoader from 'react-loader-spinner';
 import * as actions from '../actions';
 import { showMessage } from '../actions/snackBarActions';
 
-import Camera from 'react-html5-camera-photo';
-import 'react-html5-camera-photo/build/css/index.css';
-
 import Button from '@material-ui/core/Button';
 // import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -47,10 +44,7 @@ class UserProfilePage extends Component {
     value: '',
     getUserSettings: false,
     firstMount: true,
-    showLoader: true,
-    uploadPhoto: false,
-    capturedPhotoBase65: null,
-    photoTaken: null
+    showLoader: true
   };
 
   componentDidMount() {
@@ -64,7 +58,6 @@ class UserProfilePage extends Component {
   shouldComponentUpdate(nextProps) {
     if (nextProps.snackBar.open && this.state.getUserSettings) {
       this.setState({ getUserSettings: false });
-      console.log('get settungs');
       this.props.getUserSettings();
     }
 
@@ -103,91 +96,6 @@ class UserProfilePage extends Component {
     this.setState({ value: event.target.value });
   };
 
-  onTakePhoto = dataUri => {
-    // let base64str = dataUri.substr(22);
-    // let decoded = atob(base64str);
-    // console.log('FileSize: ' + decoded.length);
-    // console.log('takePhoto', dataUri);
-    this.setState({
-      ...this.state,
-      capturedPhotoBase65: dataUri,
-      photoTaken: true
-    });
-  };
-
-  onCameraStart(stream) {
-    // console.log('onCameraStart');
-  }
-
-  onCameraStop() {
-    console.log('onCameraStop');
-  }
-
-  renderCamera = () => {
-    const { classes } = this.props;
-    const { photoTaken, capturedPhotoBase65 } = this.state;
-
-    if (photoTaken) {
-      return (
-        <div className={classes.root}>
-          <Grid
-            item
-            style={{
-              textAlign: 'center',
-              display: capturedPhotoBase65 ? '' : 'none'
-            }}
-          >
-            <div
-              style={{
-                width: '200px',
-                height: '200px',
-                // position: 'relative',
-                overflow: 'hidden',
-                borderRadius: '50%',
-                margin: 'auto'
-              }}
-            >
-              <img
-                style={{
-                  display: 'inline',
-                  margin: '0 auto',
-                  // marginLeft: '-25%',
-                  marginLeft: '-25px',
-                  height: '100%'
-                  // width: 'auto'
-                }}
-                src={capturedPhotoBase65 ? capturedPhotoBase65 : ''}
-                alt="captured"
-              />
-            </div>
-          </Grid>
-        </div>
-      );
-    }
-
-    return (
-      <div className={classes.root}>
-        <Grid item style={{ textAlign: '' }}>
-          <Camera
-            onTakePhoto={dataUri => {
-              this.onTakePhoto(dataUri);
-            }}
-            onCameraStart={stream => {
-              this.onCameraStart(stream);
-            }}
-            onCameraStop={() => {
-              this.onCameraStop();
-            }}
-            isSilentMode={true}
-            sizeFactor={0.5}
-            idealResolution={{ width: 214, height: 160 }}
-            isMaxResolution={false}
-          />
-        </Grid>
-      </div>
-    );
-  };
-
   avatarSelection() {
     const { classes } = this.props;
 
@@ -199,7 +107,7 @@ class UserProfilePage extends Component {
           style={{ width: '100%' }}
         >
           <FormControl component="fieldset" className={classes.formControl}>
-            <FormLabel component="legend">Preferred Profile Picture:</FormLabel>
+            <FormLabel component="legend">Select an avatar:</FormLabel>
             <RadioGroup
               aria-label="PreferredProfile"
               name="PreferredProfile"
@@ -208,9 +116,9 @@ class UserProfilePage extends Component {
               onChange={this.handleChange}
             >
               <FormControlLabel
-                value="none"
+                value="profilePhoto"
                 control={<Radio style={{ padding: '5px' }} />}
-                label="None"
+                label="Profile Photo"
               />
               <FormControlLabel
                 value="google"
@@ -221,11 +129,6 @@ class UserProfilePage extends Component {
                 value="gravatar"
                 control={<Radio style={{ padding: '5px' }} />}
                 label="Gravatar"
-              />
-              <FormControlLabel
-                value="uploadedPhoto"
-                control={<Radio style={{ padding: '5px' }} />}
-                label="Uploaded Photo"
               />
             </RadioGroup>
             {this.renderSubmitButton()}
@@ -261,81 +164,15 @@ class UserProfilePage extends Component {
     );
   };
 
-  renderUploadCancelButton = () => {
-    const { resizeScreen } = this.props;
-    const { uploadPhoto, photoTaken } = this.state;
-
-    return (
-      <div>
-        <Button
-          size={resizeScreen ? 'small' : 'medium'}
-          style={{
-            color: 'white',
-            marginTop: '24px',
-            minWidth: '100px',
-            backgroundColor: uploadPhoto ? '#FF4136' : '#001f3f'
-          }}
-          onClick={() =>
-            this.setState({
-              ...this.state,
-              uploadPhoto: !uploadPhoto,
-              photoTaken: null
-            })
-          }
-        >
-          {uploadPhoto ? 'Cancel' : 'Upload a Photo'}
-        </Button>
-        <Button
-          size={resizeScreen ? 'small' : 'medium'}
-          style={{
-            color: 'white',
-            marginTop: '24px',
-            marginLeft: '10px',
-            minWidth: '100px',
-            display: photoTaken ? '' : 'none',
-            backgroundColor: '#FF4136'
-          }}
-          onClick={() =>
-            this.setState({
-              ...this.state,
-              capturedPhotoBase65: null,
-              photoTaken: false
-            })
-          }
-        >
-          Back
-        </Button>
-      </div>
-    );
-  };
-
   submitClick = event => {
     event.preventDefault();
-    this.setState({ shouldCall: true });
     this.setState({ getUserSettings: true });
     this.props.updateProfilePic(this.state.value);
   };
 
-  uploadUserPhoto = () => {
-    if (this.state.capturedPhotoBase65)
-      this.props.uploadUserPhoto(this.state.capturedPhotoBase65);
-
-    this.setState({
-      ...this.state,
-      // uploadPhoto: false,
-      value: 'uploadedPhoto',
-      // capturedPhotoBase65: null,
-      // photoTaken: null,
-      getUserSettings: true
-    });
-
-    // this.props.updateProfilePic('uploadedPhoto');
-    // this.props.getUserSettings();
-  };
-
   render() {
-    const { classes, auth, resizeScreen } = this.props;
-    const { uploadPhoto, photoTaken, getUserSettings } = this.state;
+    const { classes, auth } = this.props;
+    const { uploadPhoto, getUserSettings } = this.state;
 
     if (!auth) return null;
 
@@ -343,8 +180,7 @@ class UserProfilePage extends Component {
       <div className={classes.pageFill}>
         <Grid>
           <Grid item style={{ textAlign: 'center' }}>
-            {!uploadPhoto ? this.avatarSelection() : this.renderCamera()}
-            {this.renderUploadCancelButton()}
+            {this.avatarSelection()}
           </Grid>
           <Grid item style={{ textAlign: 'center', marginTop: '24px' }}>
             <Loader
@@ -353,21 +189,7 @@ class UserProfilePage extends Component {
                 this.props.resizeScreen ? this.spinnerSmall : this.spinner
               }
               backgroundStyle={{ backgroundColor: '' }}
-            >
-              <Button
-                size={resizeScreen ? 'small' : 'medium'}
-                style={{
-                  color: 'white',
-                  minWidth: '100px',
-                  display: photoTaken ? '' : 'none',
-                  backgroundColor: '#2ECC40',
-                  opacity: getUserSettings ? '0.4' : '1'
-                }}
-                onClick={() => this.uploadUserPhoto()}
-              >
-                Upload
-              </Button>
-            </Loader>
+            />
           </Grid>
         </Grid>
         <div style={{ height: '40px' }} />
