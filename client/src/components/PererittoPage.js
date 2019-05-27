@@ -11,7 +11,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { Typography } from '@material-ui/core';
 
-import Paper from './components/paper';
+// import Paper from './components/paper';
 import TabContainer from './components/tabContainer';
 import PererittoPlayers from './pereritto/PererittoPlayers';
 import UpdatePererittoPlayer from './pereritto/UpdatePererittoPlayer';
@@ -112,7 +112,7 @@ class ProjectsPage extends Component {
 
     return (
       <div className={classes.pageFill}>
-        <Paper title="Pereritto Winners" content="Habanero Roulette" />
+        {/* <Paper title="Pereritto Winners" content="Habanero Roulette" /> */}
         <div className={classes.tabBar}>
           <Tabs
             value={value}
@@ -123,13 +123,14 @@ class ProjectsPage extends Component {
           >
             <Tab label="Players" />
             <Tab label="Calendar" />
+            <Tab label="Awards" />
             <Tab
               label="Update"
               style={{ display: superUser ? '' : 'none' }}
               disabled={!superUser}
             />
           </Tabs>
-          <div
+          {/* <div
             className={classes.centered}
             style={{ display: resizeScreen ? 'none' : '' }}
           >
@@ -138,7 +139,7 @@ class ProjectsPage extends Component {
             {value === 2 && (
               <TabContainer children={<UpdatePererittoPlayer />} />
             )}
-          </div>
+          </div> */}
           <div
             style={{
               textAlign: '-webkit-center',
@@ -153,6 +154,7 @@ class ProjectsPage extends Component {
             >
               <PererittoPlayers />
               <TabContainer children={<PererittoCalendar />} />
+              <Typography>Awards Coming Soon...</Typography>
               {superUser && (
                 <TabContainer children={<UpdatePererittoPlayer />} />
               )}

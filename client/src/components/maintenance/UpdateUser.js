@@ -157,7 +157,7 @@ class UpdateUser extends Component {
                 className={classes.tableCellLeft}
                 classes={{ root: classes.table }}
               >
-                {`[Last Login] ${loginDate}`}
+                {`${loginDate}`}
               </TableCell>
             </TableRow>
           </TableBody>

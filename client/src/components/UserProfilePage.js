@@ -52,7 +52,19 @@ const styles = theme => ({
 });
 
 class UserProfilePage extends Component {
-  state = { showModal: false, showWarning: false, showCamera: false };
+  state = {
+    showModal: false,
+    showWarning: false,
+    showCamera: false,
+    updateUser: false
+  };
+
+  componentDidUpdate() {
+    if (this.props.snackBar.open && this.state.updateUser) {
+      this.setState({ updateUser: false });
+      this.props.fetchUser();
+    }
+  }
 
   cameraMoreClick = () => {
     this.setState({ showModal: true });
@@ -72,41 +84,36 @@ class UserProfilePage extends Component {
             // display: capturedPhotoBase65 ? '' : 'none'
           }}
         >
-          <div
-            style={{
-              width: '200px',
-              height: '200px',
-              // position: 'relative',
-              overflow: 'hidden',
-              borderRadius: '50%',
-              margin: 'auto'
-            }}
-          >
-            {auth.uploadedPhoto ? (
-              <img
-                style={{
-                  display: 'inline',
-                  margin: '0 auto',
-                  // marginLeft: '-25%',
-                  marginLeft: '-25px',
-                  height: '100%'
-                  // width: 'auto'
-                }}
-                src={auth.uploadedPhoto}
-                alt="profile"
-              />
-            ) : (
+          {!auth.uploadedPhoto ? (
+            <div
+              style={{
+                width: '200px',
+                height: '200px',
+                // position: 'relative',
+                overflow: 'hidden',
+                borderRadius: '50%',
+                margin: 'auto'
+              }}
+            >
               <Avatar
                 style={{
                   height: '200px',
                   width: '200px'
-                  // backgroundColor: '#DEDEDE'
                 }}
               >
                 No Photo
               </Avatar>
-            )}
-          </div>
+            </div>
+          ) : (
+            <Avatar
+              style={{
+                height: '200px',
+                width: '200px',
+                margin: 'auto'
+              }}
+              src={auth.uploadedPhoto}
+            />
+          )}
           <Avatar
             style={{
               width: '50px',
@@ -149,7 +156,7 @@ class UserProfilePage extends Component {
               }}
             >
               <Avatar
-                style={{ marginRight: '80px', backgroundColor: '#FF4136' }}
+                style={{ marginRight: '80px', backgroundColor: '#900C3F' }}
                 onClick={() => this.initiateCamera()}
               >
                 <CameraIcon />
@@ -266,7 +273,14 @@ class UserProfilePage extends Component {
             {this.renderSelectionModal()}
           </div>
         ) : (
-          <WebCam hideCamera={() => this.setState({ showCamera: false })} />
+          <WebCam
+            hideCamera={() =>
+              this.setState({
+                showCamera: false
+              })
+            }
+            newPhotoUpload={() => this.setState({ updateUser: true })}
+          />
         )}
       </div>
     );

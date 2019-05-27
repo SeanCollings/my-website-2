@@ -3,12 +3,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 import { showMessage } from '../../actions/snackBarActions';
+import Loader from 'react-loader-advanced';
+import MiniLoader from 'react-loader-spinner';
 
 import Camera from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
 
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import Avatar from '@material-ui/core/Avatar';
 // import Paper from '@material-ui/core/Paper';
 // import Typography from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
@@ -25,7 +28,7 @@ const styles = theme => ({
 });
 
 class WebCam extends Component {
-  state = { photoTaken: false, capturedPhotoBase65: null };
+  state = { photoTaken: false, capturedPhotoBase65: null, showLoader: true };
 
   onTakePhoto = dataUri => {
     // let base64str = dataUri.substr(22);
@@ -35,13 +38,20 @@ class WebCam extends Component {
     this.setState({
       ...this.state,
       photoTaken: true,
-      capturedPhotoBase65: dataUri
+      capturedPhotoBase65: dataUri,
+      showLoader: false
     });
   };
 
-  onCameraStart(stream) {}
+  onCameraStart(stream) {
+    this.setState({ showLoader: false });
+  }
 
   onCameraStop() {}
+
+  onCameraError(error) {
+    // console.error('onCameraError', error);
+  }
 
   cancelCamera = () => {
     this.setState({
@@ -57,7 +67,8 @@ class WebCam extends Component {
 
   uploadPhoto = () => {
     // console.log(this.state.capturedPhotoBase65);
-    // this.props.uploadUserPhoto(this.state.capturedPhotoBase65);
+    this.props.uploadUserPhoto(this.state.capturedPhotoBase65);
+
     this.setState({
       ...this.state,
       photoTaken: false,
@@ -65,9 +76,16 @@ class WebCam extends Component {
     });
 
     this.props.hideCamera();
+    this.props.newPhotoUpload();
 
     return null;
   };
+
+  spinner = (
+    <span>
+      <MiniLoader type="TailSpin" color="#FFC300" height={45} width={45} />
+    </span>
+  );
 
   renderCameraDisplay = () => {
     const { classes } = this.props;
@@ -83,29 +101,14 @@ class WebCam extends Component {
               display: capturedPhotoBase65 ? '' : 'none'
             }}
           >
-            <div
+            <Avatar
               style={{
-                width: '200px',
                 height: '200px',
-                // position: 'relative',
-                overflow: 'hidden',
-                borderRadius: '50%',
+                width: '200px',
                 margin: 'auto'
               }}
-            >
-              <img
-                style={{
-                  display: 'inline',
-                  margin: '0 auto',
-                  // marginLeft: '-25%',
-                  marginLeft: '-25px',
-                  height: '100%'
-                  // width: 'auto'
-                }}
-                src={capturedPhotoBase65 ? capturedPhotoBase65 : ''}
-                alt="captured"
-              />
-            </div>
+              src={this.state.capturedPhotoBase65}
+            />
           </Grid>
           <Grid item style={{ textAlign: 'center', paddingTop: '24px' }}>
             <Button
@@ -129,7 +132,8 @@ class WebCam extends Component {
                 this.setState({
                   ...this.state,
                   photoTaken: false,
-                  capturedPhotoBase65: null
+                  capturedPhotoBase65: null,
+                  showLoader: true
                 })
               }
             >
@@ -154,20 +158,49 @@ class WebCam extends Component {
     }
 
     return (
-      <Camera
-        onTakePhoto={dataUri => {
-          this.onTakePhoto(dataUri);
+      <div
+        style={{
+          position: 'relative'
         }}
-        onCameraStart={stream => {
-          this.onCameraStart(stream);
-        }}
-        onCameraStop={() => {
-          this.onCameraStop();
-        }}
-        isSilentMode={true}
-        sizeFactor={0.4}
-        isMaxResolution={false}
-      />
+      >
+        <div>
+          <Loader
+            show={this.state.showLoader ? true : false}
+            message={this.spinner}
+            style={{ width: '100%' }}
+          >
+            <Camera
+              onTakePhoto={dataUri => {
+                this.onTakePhoto(dataUri);
+              }}
+              onCameraStart={stream => {
+                this.onCameraStart(stream);
+              }}
+              onCameraStop={() => {
+                this.onCameraStop();
+              }}
+              onCameraError={error => {
+                this.onCameraError(error);
+              }}
+              isSilentMode={true}
+              sizeFactor={0.3}
+              isMaxResolution={false}
+            />
+          </Loader>
+        </div>
+        <Button
+          style={{
+            width: '50px',
+            color: 'white',
+            backgroundColor: '#FF4136',
+            position: 'absolute',
+            top: '0'
+          }}
+          onClick={this.cancelCamera}
+        >
+          <ClearIcon />
+        </Button>
+      </div>
     );
   };
 

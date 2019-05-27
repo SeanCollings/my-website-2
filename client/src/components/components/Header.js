@@ -203,7 +203,7 @@ class Header extends Component {
       case '/contact':
         return 'Contact Me';
       case '/pereritto':
-        return 'Pereritto Winners';
+        return 'Habanero Roulette';
       case '/maintenance':
         return 'Maintenance';
       case '/settings':

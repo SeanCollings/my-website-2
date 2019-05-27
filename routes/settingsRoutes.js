@@ -70,7 +70,7 @@ export default app => {
       if (existingSettings) {
         await Settings.updateOne(
           { _id: existingSettings },
-          { $set: { profilePic: 'uploadedPhoto' } }
+          { $set: { profilePic: 'profilePhoto' } }
         );
       }
 

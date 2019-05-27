@@ -151,19 +151,26 @@ class UpdateUsers extends Component {
         field: 'surname',
         headerStyle: tableStyle,
         cellStyle: tableStyle
-      },
-      {
-        title: 'Email Address',
-        field: 'email',
-        headerStyle: tableStyle,
-        cellStyle: tableStyle
       }
+      // {
+      //   title: 'Email Address',
+      //   field: 'email',
+      //   headerStyle: tableStyle,
+      //   cellStyle: tableStyle
+      // }
     ];
 
     if (!resizeScreen) {
       columns.unshift({
         title: 'Row',
         field: 'index',
+        headerStyle: tableStyle,
+        cellStyle: tableStyle
+      });
+
+      columns.push({
+        title: 'Email Address',
+        field: 'email',
         headerStyle: tableStyle,
         cellStyle: tableStyle
       });
@@ -253,7 +260,11 @@ class UpdateUsers extends Component {
                             Surname
                           </TableCell>
                           <TableCell
-                            style={{ whiteSpace: 'nowrap', color: '#DEDEDE' }}
+                            style={{
+                              whiteSpace: 'nowrap',
+                              color: '#DEDEDE',
+                              display: resizeScreen ? 'none' : ''
+                            }}
                           >
                             Email Address
                           </TableCell>
