@@ -122,4 +122,57 @@ export default app => {
       }
     }
   );
+
+  app.post('/api/upload_userphoto', requireLogin, async (req, res) => {
+    try {
+      const { dataUri } = req.body;
+      const { _id } = req.user;
+
+      await Users.updateOne({ _id }, { $set: { uploadedPhoto: dataUri } });
+
+      /*const existingSettings = await Settings.findOne(
+        {
+          _user: req.user._id
+        },
+        { _id: 1 }
+      ).limit(1);
+
+      if (existingSettings) {
+        await Settings.updateOne(
+          { _id: existingSettings },
+          { $set: { profilePic: 'uploadedPhoto' } }
+        );
+      }*/
+
+      res.send({
+        type: MessageTypeEnum.success,
+        message: `Profile photo uploaded!`
+      });
+    } catch (err) {
+      console.log(err);
+      res.send({
+        type: MessageTypeEnum.success,
+        message: 'An error occured!'
+      });
+    }
+  });
+
+  app.delete('/api/delete_userphoto', requireLogin, async (req, res) => {
+    try {
+      const { _id } = req.user;
+
+      await Users.updateOne({ _id }, { $unset: { uploadedPhoto: '' } });
+
+      res.send({
+        type: MessageTypeEnum.success,
+        message: `Profile photo removed!`
+      });
+    } catch (err) {
+      console.log(err);
+      res.send({
+        type: MessageTypeEnum.error,
+        message: 'An error occured!'
+      });
+    }
+  });
 };

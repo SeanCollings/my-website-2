@@ -209,8 +209,7 @@ class Header extends Component {
       case '/settings':
         return 'Settings';
       default:
-        if (currentRoute.includes('profile') && auth)
-          return `${auth.givenName} ${auth.familyName}`;
+        if (currentRoute.includes('profile') && auth) return `Profile`;
 
         return '';
     }

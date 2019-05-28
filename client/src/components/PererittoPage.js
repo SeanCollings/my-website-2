@@ -16,6 +16,7 @@ import TabContainer from './components/tabContainer';
 import PererittoPlayers from './pereritto/PererittoPlayers';
 import UpdatePererittoPlayer from './pereritto/UpdatePererittoPlayer';
 import PererittoCalendar from './pereritto/pererittoCalendar';
+import PererittoAwards from './pereritto/PererittoAwards';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -130,16 +131,17 @@ class ProjectsPage extends Component {
               disabled={!superUser}
             />
           </Tabs>
-          {/* <div
+          <div
             className={classes.centered}
             style={{ display: resizeScreen ? 'none' : '' }}
           >
             {value === 0 && <PererittoPlayers />}
             {value === 1 && <TabContainer children={<PererittoCalendar />} />}
-            {value === 2 && (
+            {value === 2 && <PererittoAwards />}
+            {value === 3 && (
               <TabContainer children={<UpdatePererittoPlayer />} />
             )}
-          </div> */}
+          </div>
           <div
             style={{
               textAlign: '-webkit-center',
@@ -154,7 +156,7 @@ class ProjectsPage extends Component {
             >
               <PererittoPlayers />
               <TabContainer children={<PererittoCalendar />} />
-              <Typography>Awards Coming Soon...</Typography>
+              <PererittoAwards />
               {superUser && (
                 <TabContainer children={<UpdatePererittoPlayer />} />
               )}

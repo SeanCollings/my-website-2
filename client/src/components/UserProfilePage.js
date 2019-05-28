@@ -135,6 +135,7 @@ class UserProfilePage extends Component {
 
   renderSelectionModal = () => {
     const { classes, auth } = this.props;
+
     return (
       <Modal
         aria-labelledby="profile-picture-select"
@@ -164,7 +165,7 @@ class UserProfilePage extends Component {
               <Avatar
                 style={{
                   backgroundColor: '#FF4136',
-                  opactity: auth.uploadedPhoto ? '1' : '0.4'
+                  opacity: auth.uploadedPhoto ? '1' : '0.4'
                 }}
                 onClick={() =>
                   auth.uploadedPhoto ? this.removePhotoPrompt() : null
@@ -239,8 +240,10 @@ class UserProfilePage extends Component {
     this.setState({
       ...this.state,
       showWarning: false,
-      showModal: false
+      showModal: false,
+      updateUser: true
     });
+    this.props.removeUserPhoto();
   };
 
   removePhotoPrompt = () => {

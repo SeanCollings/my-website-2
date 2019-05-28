@@ -131,3 +131,11 @@ export const uploadUserPhoto = dataUri => async dispatch => {
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
+
+export const removeUserPhoto = () => async dispatch => {
+  const res = await axios.delete('/api/delete_userphoto', {
+    data: {}
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
