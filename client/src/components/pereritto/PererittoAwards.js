@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import './PererittoAwards.css';
 
-// import { Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -29,24 +29,29 @@ const styles = theme => ({
 
 class PererittoAwards extends Component {
   state = {
+    awardMessage: '. Wall of Flame .',
+    shelvesRendered: false,
     awards: [
-      { image: trophy, title: '1', canFall: true },
-      { image: coffeeSmall, title: '2', canFall: true },
-      { image: diceSmall, title: '3', canFall: false },
-      { image: habaneroSmall, title: '4', canFall: false },
-      { image: medalmall, title: '5', canFall: false },
-      { image: silverSmall, title: '6', canFall: true },
-      { image: starSmall, title: '7', canFall: false }
+      { image: trophy, title: 'Current Winner', canFall: true },
+      { image: coffeeSmall, title: 'Current 2nd Place', canFall: true },
+      { image: diceSmall, title: 'Current 3nd Place', canFall: false },
+      { image: habaneroSmall, title: 'Current Last Winner', canFall: false },
+      { image: medalmall, title: '3 in a row!', canFall: false },
+      { image: silverSmall, title: 'Winner 2018!', canFall: true },
+      { image: starSmall, title: 'Player 2019', canFall: false }
     ]
   };
 
   renderShelves = () => {
     const { classes } = this.props;
     const { awards } = this.state;
+
     const awardsPerShelf = 3;
+    const shelfArray = [];
+    const originalMessage = '. Wall of Flame .';
+
     let numberOfShelves = Math.ceil(awards.length / awardsPerShelf);
     numberOfShelves = numberOfShelves < 2 ? 2 : numberOfShelves;
-    const shelfArray = [];
 
     for (let i = 0; i < numberOfShelves; i++) {
       const awardArray = [];
@@ -68,7 +73,7 @@ class PererittoAwards extends Component {
               className={classes.award}
               alt={awards[j].title}
               src={awards[j].image}
-              onClick={() => console.log(awards[j].title)}
+              onClick={() => this.setState({ awardMessage: awards[j].title })}
             />
           );
         } else {
@@ -78,8 +83,14 @@ class PererittoAwards extends Component {
 
       shelfArray.push(
         <div className="shelf" key={i}>
-          <div className="back" />
-          <div className="base" />
+          <div
+            className="back"
+            onClick={() => this.setState({ awardMessage: originalMessage })}
+          />
+          <div
+            className="base"
+            onClick={() => this.setState({ awardMessage: originalMessage })}
+          />
           <div className="front" />
           <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
             {awardArray.map(award => award)}
@@ -92,26 +103,46 @@ class PererittoAwards extends Component {
   };
 
   render() {
-    return (
+    const { auth } = this.props;
+    const { awardMessage } = this.state;
+    return auth && auth.superUser ? (
       <div
         style={{
           width: '300px',
-          paddingTop: '20%',
-          maxWidth: '90%'
+          maxWidth: '90%',
+          marginTop: '-34px'
         }}
       >
+        <div className="plaque-border">
+          <div className="plaque-interior">
+            <Typography
+              style={{
+                top: '25px',
+                position: 'relative',
+                transform: 'rotateX(20deg)',
+                color: '#3e0c00'
+              }}
+              className="plaque-text"
+            >
+              {awardMessage}
+            </Typography>
+          </div>
+        </div>
         <div className="cabinet">
           <div className="cabinet-top" />
           {this.renderShelves()}
         </div>
       </div>
+    ) : (
+      <Typography>Awards Coming Soon...</Typography>
     );
   }
 }
 
-function mapStateToProps({ resizeScreen }) {
+function mapStateToProps({ resizeScreen, auth }) {
   return {
-    resizeScreen
+    resizeScreen,
+    auth
   };
 }
 

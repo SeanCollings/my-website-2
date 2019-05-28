@@ -11,6 +11,9 @@ import './services/passport';
 import './models/PererittoUser';
 import './models/WinnerDates';
 import './models/Settings';
+import './models/Award';
+import './models/CurrentAward';
+import './models/PastAward';
 
 import keys from './config/keys';
 import authRoutes from './routes/authRoutes';
