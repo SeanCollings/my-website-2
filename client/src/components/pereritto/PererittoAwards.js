@@ -135,9 +135,8 @@ class PererittoAwards extends Component {
   };
 
   render() {
-    const { auth } = this.props;
     const { awardMessage } = this.state;
-    return auth && auth.superUser ? (
+    return (
       <div
         style={{
           width: '300px',
@@ -165,8 +164,6 @@ class PererittoAwards extends Component {
           {this.renderShelves()}
         </div>
       </div>
-    ) : (
-      <Typography>Awards Coming Soon...</Typography>
     );
   }
 }
