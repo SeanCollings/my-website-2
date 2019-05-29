@@ -94,7 +94,6 @@ class UpdatePererittoPlayer extends Component {
             <Button
               size={resizeScreen ? 'small' : 'medium'}
               style={{
-                marginRight: '10px',
                 color: 'white',
                 backgroundColor: '#001f3f'
               }}

@@ -4,17 +4,20 @@ const mongoose = require('mongoose');
 const Awards = mongoose.model('awards');
 const CurrentAwards = mongoose.model('currentawards');
 const PastAwards = mongoose.model('pastawards');
+const PererittoUser = mongoose.model('pererittos');
 
 export default app => {
   app.get('/api/get_userawards', requireLogin, async (req, res) => {
-    const { _id } = req.user;
+    const { _id } = await PererittoUser.findOne({
+      _id: req.user._pereritto
+    });
 
     const allAwards = [];
     const currentAwards = await CurrentAwards.find({
-      _user: _id
+      _pereritto: _id
     });
     const pastAwards = await PastAwards.find({
-      _user: _id
+      _pereritto: _id
     });
     const awards = await Awards.find();
 
@@ -24,7 +27,7 @@ export default app => {
     }
 
     if (currentAwards.length > 0) {
-      console.log('Found currentawards');
+      // console.log('Found currentawards');
       let transformedCurrentAwards = [];
       for (let i = 0; i < currentAwards.length; i++) {
         transformedCurrentAwards.push({
@@ -37,10 +40,10 @@ export default app => {
       });
 
       allAwards.push(...transformedCurrentAwards);
-    } else console.log('No currentawards');
+    }
 
     if (pastAwards.length > 0) {
-      console.log('Found pastawards');
+      // console.log('Found pastawards');
       let transformedPastAwards = [];
       for (let i = 0; i < pastAwards.length; i++) {
         transformedPastAwards.push({
@@ -53,7 +56,7 @@ export default app => {
       });
 
       allAwards.push(...transformedPastAwards);
-    } else console.log('No pastawards');
+    }
 
     res.send({ allAwards });
   });

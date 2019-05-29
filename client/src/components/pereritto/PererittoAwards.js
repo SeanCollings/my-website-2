@@ -8,13 +8,13 @@ import { Typography } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import { withStyles } from '@material-ui/core/styles';
 
-import trophy from '../../images/trophy.png';
-import coffeeSmall from '../../images/coffee_small.png';
-import diceSmall from '../../images/dice_small.png';
-import habaneroSmall from '../../images/habanero_small.png';
-import medalmall from '../../images/medal_small.png';
-import silverSmall from '../../images/silver_small.png';
-import starSmall from '../../images/star_small.png';
+// import trophy from '../../images/trophy.png';
+// import coffeeSmall from '../../images/coffee_small.png';
+// import diceSmall from '../../images/dice_small.png';
+// import habaneroSmall from '../../images/habanero_small.png';
+// import medalmall from '../../images/medal_small.png';
+// import silverSmall from '../../images/silver_small.png';
+// import starSmall from '../../images/star_small.png';
 
 const styles = theme => ({
   root: {},
@@ -31,31 +31,7 @@ const styles = theme => ({
 class PererittoAwards extends Component {
   state = {
     awardMessage: '. Wall of Flame .',
-    shelvesRendered: false,
-    awards: [
-      {
-        image: trophy,
-        title: 'Current Winner',
-        canFall: true,
-        fallAngle: '75'
-      },
-      {
-        image: coffeeSmall,
-        title: 'Current 2nd Place',
-        canFall: true,
-        fallAngle: '75'
-      },
-      { image: diceSmall, title: 'Current 3nd Place', canFall: false },
-      { image: habaneroSmall, title: 'Current Last Winner', canFall: false },
-      { image: medalmall, title: '3 in a row!', canFall: false },
-      {
-        image: silverSmall,
-        title: 'Winner 2018!',
-        canFall: true,
-        fallAngle: '120'
-      },
-      { image: starSmall, title: 'Player 2019', canFall: false }
-    ]
+    shelvesRendered: false
   };
 
   componentDidMount() {
@@ -97,12 +73,13 @@ class PererittoAwards extends Component {
           if (allAwards[j]) {
             const topple = Math.random() < 0.01;
             const fallFloor = Math.random() < 0.005;
+            const direction = Math.random() < 0.7 ? '' : '-';
             const pixelsTofall = 50 + 102 * (numberOfShelves - i - 1);
             let distance = null;
 
             if (allAwards[j]._award.canFall) {
               if (fallFloor) distance = `${pixelsTofall}px`;
-              else if (fallFloor) distance = '4px';
+              else if (topple) distance = '4px';
             }
             awardArray.push(
               <Avatar
@@ -110,16 +87,22 @@ class PererittoAwards extends Component {
                 style={{
                   transform:
                     allAwards[j]._award.canFall && (fallFloor || topple)
-                      ? `rotate(${allAwards[j]._award.fallAngle}deg)`
+                      ? `rotate(${direction}${
+                          allAwards[j]._award.fallAngle
+                        }deg)`
                       : '',
-                  marginTop: distance ? distance : ''
+                  marginTop: distance ? distance : '',
+                  filter:
+                    allAwards[j].year !== new Date().getFullYear()
+                      ? 'sepia(60%)'
+                      : ''
                 }}
                 className={classes.award}
                 alt={allAwards[j].title}
                 src={allAwards[j]._award.image}
                 onClick={() =>
                   this.setState({
-                    awardMessage: `${allAwards[j].title} ${allAwards[j].year}!`
+                    awardMessage: `${allAwards[j].title} ${allAwards[j].year}`
                   })
                 }
               />

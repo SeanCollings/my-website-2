@@ -13,11 +13,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 // import Paper from '@material-ui/core/Paper';
-// import Typography from '@material-ui/core/Typography';
+import Typography from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import UndoIcon from '@material-ui/icons/Undo';
 import DoneIcon from '@material-ui/icons/Done';
+import ErrorIcon from '@material-ui/icons/ErrorOutline';
 
 const styles = theme => ({
   root: {
@@ -28,7 +29,25 @@ const styles = theme => ({
 });
 
 class WebCam extends Component {
-  state = { photoTaken: false, capturedPhotoBase65: null, showLoader: true };
+  state = {
+    photoTaken: false,
+    capturedPhotoBase65: null,
+    showLoader: true,
+    truecameraDeniedAccess: false
+  };
+
+  componentDidMount() {
+    navigator.permissions
+      .query({ name: 'camera' })
+      .then(permissionObj => {
+        if (permissionObj.state === 'denied') {
+          this.setState({ cameraDeniedAccess: true });
+        }
+      })
+      .catch(error => {
+        console.log('Got error :', error);
+      });
+  }
 
   onTakePhoto = dataUri => {
     // let base64str = dataUri.substr(22);
@@ -49,9 +68,7 @@ class WebCam extends Component {
 
   onCameraStop() {}
 
-  onCameraError(error) {
-    // console.error('onCameraError', error);
-  }
+  onCameraError(error) {}
 
   cancelCamera = () => {
     this.setState({
@@ -81,6 +98,61 @@ class WebCam extends Component {
     return null;
   };
 
+  renderCameraWorkAround = () => {
+    if (!this.state.cameraDeniedAccess) return null;
+
+    return (
+      <Grid
+        item
+        style={{
+          maxWidth: '600px',
+          padding: '24px',
+          marginLeft: '10px',
+          marginRight: '10px',
+          borderRadius: '5px',
+          backgroundColor: 'white'
+        }}
+      >
+        <Typography paragraph>Well this is awkward.</Typography>
+        <Typography paragraph>
+          It seems you have denied permission for your browser to access the
+          this devices camera.
+        </Typography>
+        <Typography paragraph>
+          In order for you to take and upload a new profile picture you will
+          need to enable the camera. You can always disable it afterwards if you
+          feel you need to.
+        </Typography>
+        <Typography paragraph>
+          To enable the camera on Chrome follow these simple steps:
+        </Typography>
+        <Typography paragraph>
+          Click the 3 dots in the top right hand side of the browser. Click{' '}
+          <ErrorIcon style={{ transform: 'rotate(180deg)' }} /> followed by{' '}
+          <span style={{ color: '#0074D9' }}>Site Settings</span>. Under{' '}
+          <span style={{ color: '#0074D9' }}>Permissions</span>, click on <b>Access
+          your camera</b> and select <b>Allow</b>. Navigate back to your profile page and
+          select the camera icon to take that perfect profile picture.
+        </Typography>
+        <Typography paragraph>
+          To disable the camera, follow the above steps and select <b>Block</b>. The
+          app will now be denied access to this devices camera.
+        </Typography>
+        <Button
+          style={{
+            width: '100px',
+            color: 'white',
+            backgroundColor: '#FF4136',
+            marginBottom: '24px'
+          }}
+          onClick={this.cancelCamera}
+        >
+          Cancel
+        </Button>
+      </Grid>
+    );
+  };
+
   spinner = (
     <span>
       <MiniLoader type="TailSpin" color="#FFC300" height={45} width={45} />
@@ -89,7 +161,7 @@ class WebCam extends Component {
 
   renderCameraDisplay = () => {
     const { classes } = this.props;
-    const { photoTaken, capturedPhotoBase65 } = this.state;
+    const { photoTaken, capturedPhotoBase65,cameraDeniedAccess } = this.state;
 
     if (photoTaken) {
       return (
@@ -163,7 +235,7 @@ class WebCam extends Component {
           position: 'relative'
         }}
       >
-        <div>
+        <div style={{ display: cameraDeniedAccess ? 'none' : '' }}>
           <Loader
             show={this.state.showLoader ? true : false}
             message={this.spinner}
@@ -194,12 +266,15 @@ class WebCam extends Component {
             color: 'white',
             backgroundColor: '#FF4136',
             position: 'absolute',
-            top: '0'
+            top: '0',
+            zIndex: 10,
+            display: cameraDeniedAccess ? 'none' : ''
           }}
           onClick={this.cancelCamera}
         >
           <ClearIcon />
         </Button>
+        {this.renderCameraWorkAround()}
       </div>
     );
   };

@@ -3,7 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 const currentAwardSchema = new Schema({
   title: String,
   year: Number,
-  _user: { type: Schema.Types.ObjectId, ref: 'users' },
+  _pereritto: { type: Schema.Types.ObjectId, ref: 'pererittos' },
   _award: { type: Schema.Types.ObjectId, ref: 'awards' }
 });
 

@@ -74,6 +74,9 @@ export default app => {
           yearsMap[winner.year] = winner.year;
         });
 
+        const currentYear = new Date().getFullYear();
+        if (!yearsMap[currentYear]) yearsMap[currentYear] = currentYear;
+
         return res.send(yearsMap);
       } else {
         console.log('No winners to display.');
