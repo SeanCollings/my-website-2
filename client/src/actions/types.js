@@ -8,6 +8,7 @@ export const CLEAR_WINNERS = 'clear_winners';
 export const GET_USER_SETTINGS = 'get_user_settings';
 export const SHOW_LOADER = 'show_loader';
 export const HIDE_LOADER = 'hide_loader';
+export const GET_USER_AWARDS = 'get_user_awards';
 
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';
@@ -15,3 +16,4 @@ export const REMOVE_MESSAGE = 'remove_message';
 export const RESIZE_SCREEN = 'resize_screen';
 
 export const GET_VERSION = 'get_Version';
+export const GET_RELEASE_CREATED = 'get_release_created';

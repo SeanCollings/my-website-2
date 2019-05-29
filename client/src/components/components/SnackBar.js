@@ -32,7 +32,8 @@ const styles1 = theme => ({
     backgroundColor: theme.palette.error.dark
   },
   [MessageTypeEnum.info]: {
-    backgroundColor: theme.palette.primary.dark
+    // backgroundColor: theme.palette.primary.dark
+    backgroundColor: '#581845'
   },
   [MessageTypeEnum.warning]: {
     backgroundColor: amber[700]

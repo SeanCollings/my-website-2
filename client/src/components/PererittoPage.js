@@ -131,17 +131,19 @@ class ProjectsPage extends Component {
               disabled={!superUser}
             />
           </Tabs>
-          <div
-            className={classes.centered}
-            style={{ display: resizeScreen ? 'none' : '' }}
-          >
-            {value === 0 && <PererittoPlayers />}
-            {value === 1 && <TabContainer children={<PererittoCalendar />} />}
-            {value === 2 && <PererittoAwards />}
-            {value === 3 && (
-              <TabContainer children={<UpdatePererittoPlayer />} />
-            )}
-          </div>
+          {!resizeScreen ? (
+            <div
+              className={classes.centered}
+              style={{ display: resizeScreen ? 'none' : '' }}
+            >
+              {value === 0 && <PererittoPlayers />}
+              {value === 1 && <TabContainer children={<PererittoCalendar />} />}
+              {value === 2 && <PererittoAwards />}
+              {value === 3 && (
+                <TabContainer children={<UpdatePererittoPlayer />} />
+              )}
+            </div>
+          ) : null}
           <div
             style={{
               textAlign: '-webkit-center',

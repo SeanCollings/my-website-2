@@ -15,5 +15,6 @@ export const MessageTypeEnum = {
   success: 'success',
   error: 'error',
   warning: 'warning',
-  info: 'info'
+  info: 'info',
+  none: 'none'
 };

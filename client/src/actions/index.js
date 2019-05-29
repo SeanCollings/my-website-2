@@ -8,7 +8,8 @@ import {
   GET_WINNERS,
   GET_USER_SETTINGS,
   GET_WINNER_YEARS,
-  CLEAR_WINNERS
+  CLEAR_WINNERS,
+  GET_USER_AWARDS
 } from './types';
 
 export const fetchUser = () => async dispatch => {
@@ -138,4 +139,10 @@ export const removeUserPhoto = () => async dispatch => {
   });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const getUserAwards = () => async dispatch => {
+  const res = await axios.get(`/api/get_userawards`);
+
+  dispatch({ type: GET_USER_AWARDS, payload: res.data });
 };

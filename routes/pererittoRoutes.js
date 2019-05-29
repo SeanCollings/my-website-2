@@ -6,6 +6,60 @@ const mongoose = require('mongoose');
 const Users = mongoose.model('users');
 const PererittoUser = mongoose.model('pererittos');
 const WinnerDates = mongoose.model('winnerDates');
+const CurrentAwards = mongoose.model('currentawards');
+const PastAwards = mongoose.model('pastawards');
+const Awards = mongoose.model('awards');
+
+//#region Update Awards
+const updateAwards = async () => {
+  const currentYear = new Date().getFullYear();
+  const previousYear = new Date().getFullYear() - 1;
+  const currentAwardsPreviousYear = await CurrentAwards.find({
+    year: previousYear
+  });
+
+  if (currentAwardsPreviousYear.length > 0) {
+    console.log(
+      'Found currentAwards in previous year. Bulk remove and add to pastAwards'
+    );
+    // Do bulk remove operation
+    let bulkRemove = CurrentAwards.collection.initializeUnorderedBulkOp();
+    bulkRemove.find({}).remove();
+    const result = await bulkRemove.execute();
+
+    if (result) createAwards(false);
+  } else {
+    console.log('Nothing in currentawards for last year');
+    createAwards(true);
+  }
+};
+
+const createAwards = async updateCurrentYear => {
+  const award = await Awards.findOne({ type: 'first' }, { _id: 1 }).limit(1);
+
+  if (award) {
+    if (updateCurrentYear) {
+      console.log('Creating currentAward');
+
+      await new CurrentAwards({
+        title: 'Winner',
+        year: new Date().getFullYear(),
+        _user: '5cce28ef8f0e6c0b48bda9b3',
+        _award: award
+      }).save();
+    } else {
+      console.log('Creating pastReward');
+
+      await new PastAwards({
+        title: 'Winner',
+        year: new Date().getFullYear() - 1,
+        _user: '5cce28ef8f0e6c0b48bda9b3',
+        _award: award
+      }).save();
+    }
+  }
+};
+//#endregion Update Awards
 
 export default app => {
   app.get('/api/pereritto', requireLogin, (req, res) => {
@@ -97,6 +151,8 @@ export default app => {
             year,
             _winner: user
           }).save();
+
+          updateAwards();
 
           res.status(200).send({
             type: MessageTypeEnum.success,

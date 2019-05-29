@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import * as actions from '../../actions';
 
 import './PererittoAwards.css';
 
@@ -32,52 +33,100 @@ class PererittoAwards extends Component {
     awardMessage: '. Wall of Flame .',
     shelvesRendered: false,
     awards: [
-      { image: trophy, title: 'Current Winner', canFall: true },
-      { image: coffeeSmall, title: 'Current 2nd Place', canFall: true },
+      {
+        image: trophy,
+        title: 'Current Winner',
+        canFall: true,
+        fallAngle: '75'
+      },
+      {
+        image: coffeeSmall,
+        title: 'Current 2nd Place',
+        canFall: true,
+        fallAngle: '75'
+      },
       { image: diceSmall, title: 'Current 3nd Place', canFall: false },
       { image: habaneroSmall, title: 'Current Last Winner', canFall: false },
       { image: medalmall, title: '3 in a row!', canFall: false },
-      { image: silverSmall, title: 'Winner 2018!', canFall: true },
+      {
+        image: silverSmall,
+        title: 'Winner 2018!',
+        canFall: true,
+        fallAngle: '120'
+      },
       { image: starSmall, title: 'Player 2019', canFall: false }
     ]
   };
 
+  componentDidMount() {
+    if (!this.props.awards.allAwards) {
+      // console.log('GET called');
+      this.props.getUserAwards();
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.awards !== this.props.awards) return true;
+    if (this.state.awardMessage !== nextState.awardMessage) return true;
+
+    return false;
+  }
+
   renderShelves = () => {
-    const { classes } = this.props;
-    const { awards } = this.state;
+    const { classes, awards } = this.props;
+    const { allAwards } = awards;
+    console.log('AWARDS:', allAwards);
 
     const awardsPerShelf = 3;
     const shelfArray = [];
     const originalMessage = '. Wall of Flame .';
-
-    let numberOfShelves = Math.ceil(awards.length / awardsPerShelf);
-    numberOfShelves = numberOfShelves < 2 ? 2 : numberOfShelves;
+    let numberOfShelves = 2;
 
     for (let i = 0; i < numberOfShelves; i++) {
       const awardArray = [];
 
-      for (
-        let j = i * awardsPerShelf;
-        j < i * awardsPerShelf + awardsPerShelf;
-        j++
-      ) {
-        if (awards[j]) {
-          const fall = Math.random() < 0.01;
-          awardArray.push(
-            <Avatar
-              key={`${i}${j}`}
-              style={{
-                transform: fall && awards[j].canFall ? 'rotate(75deg)' : '',
-                marginTop: fall && awards[j].canFall ? '4px' : ''
-              }}
-              className={classes.award}
-              alt={awards[j].title}
-              src={awards[j].image}
-              onClick={() => this.setState({ awardMessage: awards[j].title })}
-            />
-          );
-        } else {
-          break;
+      if (allAwards) {
+        numberOfShelves = Math.ceil(allAwards.length / awardsPerShelf);
+        numberOfShelves = numberOfShelves < 2 ? 2 : numberOfShelves;
+
+        for (
+          let j = i * awardsPerShelf;
+          j < i * awardsPerShelf + awardsPerShelf;
+          j++
+        ) {
+          if (allAwards[j]) {
+            const topple = Math.random() < 0.01;
+            const fallFloor = Math.random() < 0.005;
+            const pixelsTofall = 50 + 102 * (numberOfShelves - i - 1);
+            let distance = null;
+
+            if (allAwards[j]._award.canFall) {
+              if (fallFloor) distance = `${pixelsTofall}px`;
+              else if (fallFloor) distance = '4px';
+            }
+            awardArray.push(
+              <Avatar
+                key={`${i}${j}`}
+                style={{
+                  transform:
+                    allAwards[j]._award.canFall && (fallFloor || topple)
+                      ? `rotate(${allAwards[j]._award.fallAngle}deg)`
+                      : '',
+                  marginTop: distance ? distance : ''
+                }}
+                className={classes.award}
+                alt={allAwards[j].title}
+                src={allAwards[j]._award.image}
+                onClick={() =>
+                  this.setState({
+                    awardMessage: `${allAwards[j].title} ${allAwards[j].year}!`
+                  })
+                }
+              />
+            );
+          } else {
+            break;
+          }
         }
       }
 
@@ -139,11 +188,15 @@ class PererittoAwards extends Component {
   }
 }
 
-function mapStateToProps({ resizeScreen, auth }) {
+function mapStateToProps({ resizeScreen, auth, awards }) {
   return {
     resizeScreen,
-    auth
+    auth,
+    awards
   };
 }
 
-export default connect(mapStateToProps)(withStyles(styles)(PererittoAwards));
+export default connect(
+  mapStateToProps,
+  actions
+)(withStyles(styles)(PererittoAwards));

@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const AwardSchema = new Schema({
   image: String,
-  type: Number,
+  type: String,
   canFall: Boolean,
   fallAngle: String,
   position: Number

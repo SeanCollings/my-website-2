@@ -5,7 +5,11 @@ import Loader from 'react-loader-advanced';
 import MiniLoader from 'react-loader-spinner';
 // import { ScaleLoader } from 'halogenium';
 import * as actions from '../actions';
-import { showLoader, hideLoader } from '../actions/appActions';
+import {
+  showLoader,
+  hideLoader,
+  getReleaseCreation
+} from '../actions/appActions';
 
 import HomePage from './HomePage';
 import ContactPage from './ContactPage';
@@ -48,6 +52,7 @@ class App extends Component {
   componentDidUpdate() {
     if (this.props.auth !== null && this.props.app.open && this.state.render) {
       this.props.hideLoader();
+      if (this.props.auth) this.props.getReleaseCreation();
     }
 
     if (this.props.auth && this.props.settings === null) {
@@ -308,6 +313,6 @@ function mapStateToProps({ auth, winners, app, settings }) {
 export default withRouter(
   connect(
     mapStateToProps,
-    { ...actions, showLoader, hideLoader }
+    { ...actions, showLoader, hideLoader, getReleaseCreation }
   )(App)
 );
