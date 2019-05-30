@@ -94,7 +94,7 @@ class PererittoAwards extends Component {
                   marginTop: distance ? distance : '',
                   filter:
                     allAwards[j].year !== new Date().getFullYear()
-                      ? 'sepia(60%)'
+                      ? 'sepia(60%) grayscale(30%)'
                       : ''
                 }}
                 className={classes.award}
