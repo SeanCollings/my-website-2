@@ -26,15 +26,19 @@ const updateAwards = async () => {
     await bulkRemove.execute();
 
     if (previousYearInCurrentAwards.length > 0) {
-      createAwards(false, currentYear, previousYear);
+      determineWinners(false, currentYear, previousYear);
     }
-    createAwards(true, currentYear, previousYear);
+    determineWinners(true, currentYear, previousYear);
   } catch (error) {
     throw error;
   }
 };
 
-const createAwards = async (updateCurrentAwards, currentYear, previousYear) => {
+const determineWinners = async (
+  updateCurrentAwards,
+  currentYear,
+  previousYear
+) => {
   const pererittoPlayers = await PererittoUser.find();
 
   const players = {};
@@ -65,12 +69,12 @@ const determineAwardTotals = (winnerDates, players, year) => {
   const participated = new Set();
   const playersDateCounts = [];
 
-  const winnersMap = winnerDates.map(winner => {
-    return {
-      date: new Date(winner.date),
-      _winner: winner._winner
-    };
-  });
+  const winnersMap = winnerDates.reduce((result, winner) => {
+    if (winner.date) {
+      result.push({ date: new Date(winner.date), _winner: winner._winner });
+    }
+    return result;
+  }, []);
 
   let winnerDatesSorted = [];
   winnerDatesSorted.push(...winnersMap);
@@ -177,8 +181,8 @@ const determineDateCounts = async (
     }
   }
 
-  award3InARow(players3InARow, year);
-  awardGodlike(playersGodlike, year);
+  if (players3InARow.length > 0) award3InARow(players3InARow, year);
+  if (playersGodlike.length > 0) awardGodlike(playersGodlike, year);
 };
 
 // ^^ ### Logic Gathering above ### ^^
@@ -200,7 +204,7 @@ const awardFirstPlace = async (firstArr, year) => {
       if (year !== currentYear) {
         await new PastAwards({
           ...awardParams,
-          title: 'Winner',
+          title: 'Winner!',
           _pereritto: first
         }).save();
       } else {
@@ -229,7 +233,7 @@ const awardSecondPlace = async (secondArr, year) => {
       if (year !== currentYear) {
         await new PastAwards({
           ...awardParams,
-          title: 'Second Place',
+          title: 'Second Place!',
           _pereritto: second
         }).save();
       } else {
@@ -258,7 +262,7 @@ const awardThirdPlace = async (thirdArr, year) => {
       if (year !== currentYear) {
         await new PastAwards({
           ...awardParams,
-          title: 'Third Place',
+          title: 'Third Place!',
           _pereritto: third
         }).save();
       } else {
@@ -281,7 +285,7 @@ const awardParticipated = async (participated, year) => {
     { _id: 1 }
   ).limit(1);
 
-  const awardParams = { title: 'Participated', year, _award: award };
+  const awardParams = { title: 'Felt the burn', year, _award: award };
   for (let part of participated) {
     if (year !== currentYear) {
       await new PastAwards({ ...awardParams, _pereritto: part }).save();
@@ -302,7 +306,7 @@ const awardGotItLast = async (lastWinner, year) => {
 
   if (award) {
     const awardParams = {
-      title: 'Got it last',
+      title: 'Afterburner',
       year,
       _award: award,
       _pereritto: lastWinner
@@ -345,7 +349,7 @@ const awardGodlike = async (playersGodlike, year) => {
 
   const award = await Awards.findOne(
     {
-      type: 'Godlike'
+      type: 'godlike'
     },
     { _id: 1 }
   ).limit(1);

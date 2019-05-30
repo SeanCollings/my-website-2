@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import Loader from 'react-loader-advanced';
+import MiniLoader from 'react-loader-spinner';
 import * as actions from '../../actions';
 import { showMessage } from '../../actions/snackBarActions';
 
@@ -40,10 +42,23 @@ const styles = theme => ({
 });
 
 class UpdatePererittoPlayer extends Component {
-  state = { playerName: '', selectedDate: null, errorName: false };
+  state = {
+    playerName: '',
+    selectedDate: null,
+    errorName: false,
+    updatingPlayer: false
+  };
 
   componentDidMount() {
     // this.props.getPererittoUsers();
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.snackBar.open && this.state.updatingPlayer) {
+      this.setState({ updatingPlayer: false });
+    }
+
+    return true;
   }
 
   onFormSubmit = event => {
@@ -65,6 +80,7 @@ class UpdatePererittoPlayer extends Component {
     if (selectedDate === null || selectedDate === '')
       return this.props.showMessage(MessageTypeEnum.error, 'Select a date!');
 
+    this.setState({ updatingPlayer: true });
     return this.props.updatePererittoUser(playerName, selectedDate);
     // .then(() => this.props.getWinners());
   };
@@ -84,23 +100,43 @@ class UpdatePererittoPlayer extends Component {
     return null;
   };
 
+  spinner = (
+    <span>
+      <MiniLoader type="TailSpin" color="#FFC300" height={45} width={45} />
+    </span>
+  );
+
+  spinnerSmall = (
+    <span>
+      <MiniLoader type="TailSpin" color="#FFC300" height={30} width={30} />
+    </span>
+  );
+
   render() {
     const { classes, resizeScreen } = this.props;
+    const { updatingPlayer } = this.state;
 
     return (
       <div style={{ paddingTop: '12px' }}>
         <Grid className={classes.root}>
           <Grid item style={{ textAlign: 'center' }}>
-            <Button
-              size={resizeScreen ? 'small' : 'medium'}
-              style={{
-                color: 'white',
-                backgroundColor: '#001f3f'
-              }}
-              onClick={this.updatePlayerClick}
+            <Loader
+              show={updatingPlayer ? true : false}
+              message={resizeScreen ? this.spinnerSmall : this.spinner}
+              backgroundStyle={{ backgroundColor: '' }}
             >
-              Update Player
-            </Button>
+              <Button
+                size={resizeScreen ? 'small' : 'medium'}
+                style={{
+                  color: 'white',
+                  backgroundColor: '#001f3f',
+                  opacity: updatingPlayer ? '0.4' : '1'
+                }}
+                onClick={this.updatePlayerClick}
+              >
+                Update Player
+              </Button>
+            </Loader>
           </Grid>
           <Grid item style={{ textAlign: 'center' }}>
             <form onSubmit={this.onFormSubmit}>
@@ -133,11 +169,12 @@ class UpdatePererittoPlayer extends Component {
   }
 }
 
-function mapStateToProps({ auth, pererittoUsers, resizeScreen }) {
+function mapStateToProps({ auth, pererittoUsers, resizeScreen, snackBar }) {
   return {
     pererittoUsers,
     superUser: auth.superUser,
-    resizeScreen
+    resizeScreen,
+    snackBar
   };
 }
 

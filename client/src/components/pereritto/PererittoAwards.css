@@ -55,28 +55,6 @@
   z-index: 1;
 }
 
-/* .plaque-border {
-  width: 200px;
-  height: 35px;
-  position: relative;
-  z-index: 1;
-  background-color: #944c10;
-  margin-bottom: 3px;
-  margin-top: 10px;
-}
-
-.plaque-interior {
-  height: 28px;
-  width: 192px;
-  top: 3px;
-  background-color: goldenrod;
-  position: relative;
-}
-
-.plaque-text {
-  line-height: 28px;
-} */
-
 .plaque-border {
   width: 200px;
   border-bottom: 35px solid #944c10;
@@ -85,6 +63,7 @@
   box-sizing: border-box;
   position: relative;
   z-index: 1;
+  margin: auto;
   margin-bottom: 4px;
 }
 
@@ -95,6 +74,7 @@
   border-left: 2px solid transparent;
   border-right: 2px solid transparent;
   position: relative;
+  text-align: center;
 }
 
 .plaque-text {

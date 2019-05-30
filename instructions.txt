@@ -34,3 +34,7 @@ win.insertMany([{date: "", year: 2018, _winner: ObjectId("5cd1eba2af63510ef4c088
     - <collection>.insertOne([
         {date: "", year: 2018, _winner: ObjectId("5cd1eba2af63510ef4c088e3")}
     ])
+
+6 ## Create a new CurrentAward set to last years date ###
+    - Do (1) above
+    - - <collection>.insertOne({year: 2018})

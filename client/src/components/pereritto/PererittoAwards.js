@@ -51,7 +51,7 @@ class PererittoAwards extends Component {
   renderShelves = () => {
     const { classes, awards } = this.props;
     const { allAwards } = awards;
-    console.log('AWARDS:', allAwards);
+    // console.log('AWARDS:', allAwards);
 
     const awardsPerShelf = 3;
     const shelfArray = [];
@@ -94,7 +94,7 @@ class PererittoAwards extends Component {
                   marginTop: distance ? distance : '',
                   filter:
                     allAwards[j].year !== new Date().getFullYear()
-                      ? 'sepia(60%) grayscale(30%)'
+                      ? 'sepia(5%) grayscale(50%)'
                       : ''
                 }}
                 className={classes.award}
@@ -102,7 +102,7 @@ class PererittoAwards extends Component {
                 src={allAwards[j]._award.image}
                 onClick={() =>
                   this.setState({
-                    awardMessage: `${allAwards[j].title} ${allAwards[j].year}`
+                    awardMessage: `${allAwards[j].title} - ${allAwards[j].year}`
                   })
                 }
               />
