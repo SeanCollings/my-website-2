@@ -19,6 +19,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import UndoIcon from '@material-ui/icons/Undo';
 import DoneIcon from '@material-ui/icons/Done';
 import ErrorIcon from '@material-ui/icons/ErrorOutline';
+import MoreIcon from '@material-ui/icons/MoreVert';
 
 const styles = theme => ({
   root: {
@@ -127,16 +128,21 @@ class WebCam extends Component {
           To enable the camera on Chrome follow these simple steps:
         </Typography>
         <Typography paragraph>
-          Click the 3 dots in the top right hand side of the browser. Click{' '}
-          <ErrorIcon style={{ transform: 'rotate(180deg)' }} /> followed by{' '}
-          <span style={{ color: '#0074D9' }}>Site Settings</span>. Under{' '}
-          <span style={{ color: '#0074D9' }}>Permissions</span>, click on <b>Access
-          your camera</b> and select <b>Allow</b>. Navigate back to your profile page and
-          select the camera icon to take that perfect profile picture.
+          To the right of the address bar tap More
+          <MoreIcon style={{ verticalAlign: 'middle' }} />
+          followed by Info{' '}
+          <ErrorIcon
+            style={{ transform: 'rotate(180deg)', verticalAlign: 'middle' }}
+          />
+          . Tap <span style={{ color: '#0074D9' }}>Site Settings</span>. Under{' '}
+          <span style={{ color: '#0074D9' }}>Permissions</span>, click on{' '}
+          <b>Access your camera</b> and select <b>Allow</b>. Navigate back to
+          your profile page and select the camera icon again to take that
+          perfect profile picture.
         </Typography>
         <Typography paragraph>
-          To disable the camera, follow the above steps and select <b>Block</b>. The
-          app will now be denied access to this devices camera.
+          To disable the camera, follow the above steps and select <b>Block</b>.
+          The app will now be denied access to this devices camera.
         </Typography>
         <Button
           style={{
@@ -161,7 +167,7 @@ class WebCam extends Component {
 
   renderCameraDisplay = () => {
     const { classes } = this.props;
-    const { photoTaken, capturedPhotoBase65,cameraDeniedAccess } = this.state;
+    const { photoTaken, capturedPhotoBase65, cameraDeniedAccess } = this.state;
 
     if (photoTaken) {
       return (

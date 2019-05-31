@@ -1,7 +1,6 @@
 import requireLogin from '../middlewares/requireLogin';
 import requireSuperAccess from '../middlewares/requireSuperAccess';
 import { MessageTypeEnum } from '../client/src/utils/constants';
-import { getPriority } from 'os';
 
 const mongoose = require('mongoose');
 const Users = mongoose.model('users');

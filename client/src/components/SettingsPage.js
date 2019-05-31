@@ -19,9 +19,7 @@ import { withStyles } from '@material-ui/core/styles';
 // import Paper from './components/paper';
 
 const styles = theme => ({
-  pageFill: {
-    // paddingBottom: '2.5rem'
-  },
+  pageFill: {},
   root: {
     // display: 'flex',
     // backgroundColor: 'white',
@@ -53,6 +51,26 @@ class UserProfilePage extends Component {
     } else {
       this.setState({ getUserSettings: false });
     }
+
+    if (!('geolocation' in navigator)) {
+      return;
+    }
+
+    let fetchedLocation = { lat: 0, lng: 0 };
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        fetchedLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        console.log(fetchedLocation);
+      },
+      err => {
+        console.log(err);
+      },
+      { timeout: 7000 }
+    );
   }
 
   shouldComponentUpdate(nextProps) {
@@ -164,6 +182,75 @@ class UserProfilePage extends Component {
     );
   };
 
+  addToHomeScreenClick = () => {
+    console.log('addToHomeScreenClick');
+  };
+
+  enableNotificationsClick = () => {
+    console.log('enableNotificationsClick');
+  };
+
+  enableLocationClick = () => {
+    console.log('enableLocationClick');
+  };
+
+  renderEnableButtons = () => {
+    const { resizeScreen } = this.props;
+
+    return (
+      <Grid item style={{ textAlign: 'center' }}>
+        <Grid item>
+          <Button
+            size={resizeScreen ? 'small' : 'medium'}
+            style={{
+              color: 'white',
+              backgroundColor: '#FF4136',
+              minWidth: '250px',
+              marginTop: '24px'
+              // opacity: '0.4'
+            }}
+            onClick={this.addToHomeScreenClick}
+            // disabled={true}
+          >
+            Add to Home screen
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button
+            size={resizeScreen ? 'small' : 'medium'}
+            style={{
+              color: 'white',
+              backgroundColor: '#FF4136',
+              minWidth: '250PX',
+              marginTop: '24px',
+              opacity: '0.4'
+            }}
+            onClick={this.enableNotificationsClick}
+            disabled={true}
+          >
+            Enable Notifications
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button
+            size={resizeScreen ? 'small' : 'medium'}
+            style={{
+              color: 'white',
+              backgroundColor: '#FF4136',
+              minWidth: '250px',
+              marginTop: '24px',
+              opacity: '0.4'
+            }}
+            onClick={this.enableLocationClick}
+            disabled={true}
+          >
+            Enable Location
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  };
+
   submitClick = event => {
     event.preventDefault();
     this.setState({ getUserSettings: true });
@@ -191,6 +278,7 @@ class UserProfilePage extends Component {
               backgroundStyle={{ backgroundColor: '' }}
             />
           </Grid>
+          {this.renderEnableButtons()}
         </Grid>
         <div style={{ height: '40px' }} />
       </div>
