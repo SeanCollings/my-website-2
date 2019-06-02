@@ -42,7 +42,11 @@ class UserProfilePage extends Component {
     value: '',
     getUserSettings: false,
     firstMount: true,
-    showLoader: true
+    showLoader: true,
+    showEnableLocation: false,
+    locationButtonText: 'Enable Location',
+    showEnableNotifications: false,
+    notificationsButtonText: 'Enable Notifications'
   };
 
   componentDidMount() {
@@ -56,21 +60,33 @@ class UserProfilePage extends Component {
       return;
     }
 
-    let fetchedLocation = { lat: 0, lng: 0 };
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        fetchedLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
+    // Check for location permissions
+    if ('geolocation' in navigator) {
+      navigator.permissions.query({ name: 'geolocation' }).then(status => {
+        console.log('geolocation', status.state);
+        if (status.state === 'prompt') {
+          this.setState({ showEnableLocation: true });
+        } else if (status.state === 'denied') {
+          this.setState({ locationButtonText: 'Location Denied' });
+        } else {
+          this.setState({ locationButtonText: 'Location Enabled' });
+        }
+      });
+    }
 
-        console.log(fetchedLocation);
-      },
-      err => {
-        console.log(err);
-      },
-      { timeout: 7000 }
-    );
+    // Only show notifications buttons if browser allows
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      navigator.permissions.query({ name: 'notifications' }).then(status => {
+        console.log('notifications', status.state);
+        if (status.state === 'prompt') {
+          this.setState({ showEnableNotifications: true });
+        } else if (status.state === 'denied') {
+          this.setState({ notificationsButtonText: 'Notifications Denied' });
+        } else {
+          this.setState({ notificationsButtonText: 'Notifications Enabled' });
+        }
+      });
+    }
   }
 
   shouldComponentUpdate(nextProps) {
@@ -156,6 +172,14 @@ class UserProfilePage extends Component {
     );
   }
 
+  configurePushSub = () => {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    console.log('In configurePushSub');
+  };
+
   renderSubmitButton = () => {
     const { resizeScreen } = this.props;
     const { getUserSettings } = this.state;
@@ -188,14 +212,50 @@ class UserProfilePage extends Component {
 
   enableNotificationsClick = () => {
     console.log('enableNotificationsClick');
+    // if ('Notification' in window && 'serviceWorker' in navigator) {
+    //   Notification.requestPermission(result => {
+    //     console.log('User Choice', result);
+    //     if (result !== 'granted') {
+    //       console.log('No notification permission granted!');
+    //     } else {
+    //       console.log('Notifications granted!');
+    //       this.configurePushSub();
+    //       // this.displayNotification();
+    //     }
+    //   });
+    // }
   };
 
   enableLocationClick = () => {
     console.log('enableLocationClick');
+    // navigator.geolocation.getCurrentPosition(
+    //   position => {
+    //     this.setState({
+    //       ...this.state,
+    //       showEnableLocation: false,
+    //       locationButtonText: 'Location Enabled'
+    //     });
+    //   },
+    //   err => {
+    //     console.log('error:', err);
+    //     this.setState({
+    //       ...this.state,
+    //       showEnableLocation: false,
+    //       locationButtonText: 'Location Denied'
+    //     });
+    //   },
+    //   { timeout: Infinity }
+    // );
   };
 
   renderEnableButtons = () => {
     const { resizeScreen } = this.props;
+    const {
+      showEnableLocation,
+      showEnableNotifications,
+      locationButtonText,
+      notificationsButtonText
+    } = this.state;
 
     return (
       <Grid item style={{ textAlign: 'center' }}>
@@ -223,12 +283,12 @@ class UserProfilePage extends Component {
               backgroundColor: '#FF4136',
               minWidth: '250PX',
               marginTop: '24px',
-              opacity: '0.4'
+              opacity: showEnableNotifications ? '' : '0.4'
             }}
             onClick={this.enableNotificationsClick}
-            disabled={true}
+            disabled={showEnableNotifications ? false : true}
           >
-            Enable Notifications
+            {notificationsButtonText}
           </Button>
         </Grid>
         <Grid item>
@@ -239,12 +299,12 @@ class UserProfilePage extends Component {
               backgroundColor: '#FF4136',
               minWidth: '250px',
               marginTop: '24px',
-              opacity: '0.4'
+              opacity: showEnableLocation ? '' : '0.4'
             }}
             onClick={this.enableLocationClick}
-            disabled={true}
+            disabled={showEnableLocation ? false : true}
           >
-            Enable Location
+            {locationButtonText}
           </Button>
         </Grid>
       </Grid>

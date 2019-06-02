@@ -79,46 +79,50 @@ export default app => {
     requireLogin,
     requireSuperAccess,
     async (req, res) => {
-      const { id, body } = req.body;
-
-      if (!body.superUser && body.emailAddress === 'nightharrier@gmail.com')
-        return res.send({
-          type: MessageTypeEnum.error,
-          message: "Whoops! That's not possible..."
-        });
-
       try {
-        const user = await Users.findOneAndUpdate(
-          { _id: id },
-          { $set: body },
-          { useFindAndModify: false }
-        );
+        const { id, body } = req.body;
 
-        if (user._pereritto) {
-          await PererittoUser.findOneAndUpdate(
-            { _id: user._pereritto },
-            { $set: { name: body.givenName } },
-            { useFindAndModify: false }
-          );
-        }
-
-        if (user) {
-          return res.send({
-            type: MessageTypeEnum.success,
-            message: 'User successfully updated'
-          });
-        } else {
+        if (!body.superUser && body.emailAddress === 'nightharrier@gmail.com')
           return res.send({
             type: MessageTypeEnum.error,
-            message: 'Something went wrong!'
+            message: "Whoops! That's not possible..."
+          });
+
+        try {
+          const user = await Users.findOneAndUpdate(
+            { _id: id },
+            { $set: body },
+            { useFindAndModify: false }
+          );
+
+          if (user._pereritto) {
+            await PererittoUser.findOneAndUpdate(
+              { _id: user._pereritto },
+              { $set: { name: body.givenName } },
+              { useFindAndModify: false }
+            );
+          }
+
+          if (user) {
+            return res.send({
+              type: MessageTypeEnum.success,
+              message: 'User successfully updated'
+            });
+          } else {
+            return res.send({
+              type: MessageTypeEnum.error,
+              message: 'Something went wrong!'
+            });
+          }
+        } catch (err) {
+          console.log(err);
+          return res.send({
+            type: MessageTypeEnum.error,
+            message: 'An error occured in update user.'
           });
         }
       } catch (err) {
-        console.log(err);
-        return res.send({
-          type: MessageTypeEnum.error,
-          message: 'An error occured in update user.'
-        });
+        throw err;
       }
     }
   );

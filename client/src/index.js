@@ -5,6 +5,7 @@ import { createStore, applyMiddleware } from 'redux';
 import reduxThunk from 'redux-thunk';
 import { BrowserRouter } from 'react-router-dom';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import * as serviceWorker from './serviceWorker';
 
 import { RESIZE_SCREEN } from './actions/types';
 import { MOBILE_SCREEN_SIZE } from './utils/constants';
@@ -33,6 +34,13 @@ window.addEventListener('resize', () => {
   store.dispatch(resizeScreen(mobileWidth()));
 });
 
+window.addEventListener('beforeinstallprompt', event => {
+  alert('beforeinstallprompt fired');
+  event.preventDefault();
+  // deferredPrompt = event;
+  return false;
+});
+
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
@@ -41,3 +49,5 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root')
 );
+
+serviceWorker.register();

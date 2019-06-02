@@ -25,7 +25,7 @@ const styles = theme => ({
   root: {
     marginLeft: '24px',
     marginRight: '24px',
-    marginTop: '10px'
+    marginTop: '24px'
   }
 });
 
