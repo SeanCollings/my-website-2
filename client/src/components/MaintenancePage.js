@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 
-import Paper from './components/paper';
+// import Paper from './components/paper';
 import TabContainer from './components/tabContainer';
 import UpdatePererittos from './maintenance/UpdatePererittos';
 import UpdateUsers from './maintenance/UpdateUsers';
@@ -37,7 +37,7 @@ class ContactsPage extends Component {
 
     return (
       <div className={classes.pageFill}>
-        <Paper title="Maintenance" />
+        {/* <Paper title="Maintenance" /> */}
         <Tabs
           value={value}
           onChange={this.handleChange}

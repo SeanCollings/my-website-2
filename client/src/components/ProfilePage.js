@@ -21,7 +21,7 @@ class ProfilePage extends Component {
           Home
         </Button> */}
         <Paper
-          title="About Me"
+          // title="About Me"
           content="'Who are you?' you may ask. Good question..."
         />
       </div>

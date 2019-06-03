@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import * as actions from '../actions';
 import { showMessage } from '../actions/snackBarActions';
 import WebCam from './components/WebCam';
+import Paper from './components/paper';
 
 // import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -31,7 +32,7 @@ const styles = theme => ({
     // backgroundColor: 'white',
     marginLeft: '24px',
     marginRight: '24px',
-    marginTop: '24px'
+    marginTop: '10px'
   },
   modalStyles: {
     top: '50%',
@@ -58,7 +59,10 @@ class UserProfilePage extends Component {
     showWarning: false,
     showCamera: false,
     showUploadImage: false,
-    updateUser: false
+    uploadedImage: null,
+    updateUser: false,
+    showUploadedImagePage: false,
+    showTitle: true
   };
 
   componentDidUpdate() {
@@ -74,6 +78,7 @@ class UserProfilePage extends Component {
 
   renderProfilePhoto = () => {
     const { classes, auth } = this.props;
+    const { uploadedImage } = this.state;
 
     if (auth === null || auth === false) return null;
 
@@ -113,7 +118,7 @@ class UserProfilePage extends Component {
                 width: '200px',
                 margin: 'auto'
               }}
-              src={auth.uploadedPhoto}
+              src={uploadedImage ? uploadedImage : auth.uploadedPhoto}
             />
           )}
           <Avatar
@@ -164,12 +169,24 @@ class UserProfilePage extends Component {
               >
                 <CameraIcon />
               </Avatar>
-              <Avatar
-                style={{ marginRight: '30px', backgroundColor: '#900C3F' }}
-                onClick={() => this.uploadImage()}
-              >
-                <ImageIcon />
-              </Avatar>
+              <input
+                accept="image/*"
+                // className={classes.input}
+                style={{ display: 'none' }}
+                id="raised-button-file"
+                multiple={false}
+                type="file"
+                onChange={event => this.uploadImageToScreen(event)}
+              />
+              <label htmlFor="raised-button-file">
+                <Avatar
+                  style={{ marginRight: '30px', backgroundColor: '#900C3F' }}
+                  // onChange={() => this.uploadImage()}
+                >
+                  <ImageIcon />
+                </Avatar>
+              </label>
+
               <Avatar
                 style={{
                   backgroundColor: '#FF4136',
@@ -262,11 +279,52 @@ class UserProfilePage extends Component {
   };
 
   initiateCamera = () => {
-    this.setState({ ...this.state, showModal: false, showCamera: true });
+    this.setState({
+      ...this.state,
+      showModal: false,
+      showCamera: true,
+      showTitle: false
+    });
   };
 
-  uploadImage = () => {
-    this.setState({ ...this.state, showModal: false, showUploadImage: true });
+  uploadImageToScreen = event => {
+    if (event && event.target && event.target.files[0]) {
+      this.setState({ ...this.state, showModal: false });
+      const image = event.target.files[0];
+      // const imageName = image.name;
+      // const imageSize = image.size;
+      const imageType = image.type;
+
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(image);
+
+      reader.onload = event => {
+        var blob = new Blob([event.target.result]);
+        window.URL = window.URL || window.webkitURL;
+        var blobURL = window.URL.createObjectURL(blob);
+        var image = new Image();
+        image.src = blobURL;
+        image.onload = () => {
+          const width = 200;
+          const scaleFactor = width / image.width;
+          const height = image.height * scaleFactor;
+
+          let canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(image, 0, 0, width, height);
+          const resized = canvas.toDataURL(imageType, 1);
+
+          this.setState({
+            ...this.state,
+            uploadedImage: resized,
+            showUploadedImagePage: true
+          });
+        };
+      };
+      reader.onerror = error => console.log(error);
+    }
   };
 
   handleClose = () => {
@@ -277,19 +335,109 @@ class UserProfilePage extends Component {
     this.setState({ showWarning: false });
   };
 
+  cancelUploadUserImage = () => {
+    this.setState({
+      ...this.state,
+      uploadedImage: null,
+      showUploadedImagePage: false
+    });
+  };
+
+  uploadUserImage = () => {
+    this.setState({
+      ...this.state,
+      updateUser: true,
+      showUploadedImagePage: false
+    });
+
+    this.props.uploadUserPhoto(this.state.uploadedImage);
+  };
+
+  renderUploadedImage = () => {
+    const { classes } = this.props;
+    const { uploadedImage } = this.state;
+
+    if (!uploadedImage) return null;
+
+    return (
+      <div className={classes.root}>
+        <Grid
+          item
+          style={{
+            textAlign: 'center'
+          }}
+        >
+          <Avatar
+            style={{
+              height: '200px',
+              width: '200px',
+              margin: 'auto'
+            }}
+            src={uploadedImage}
+          />
+        </Grid>
+        <Grid item style={{ textAlign: 'center', paddingTop: '24px' }}>
+          <Button
+            style={{
+              width: '45%',
+              maxWidth: '250px',
+              color: 'white',
+              backgroundColor: '#FF4136',
+              marginRight: '24px'
+            }}
+            onClick={() => this.cancelUploadUserImage()}
+          >
+            Cancel
+          </Button>
+          <Button
+            style={{
+              width: '45%',
+              maxWidth: '250px',
+              color: 'white',
+              backgroundColor: '#0074D9'
+            }}
+            onClick={() => this.uploadUserImage()}
+          >
+            Upload
+          </Button>
+        </Grid>
+      </div>
+    );
+  };
+
+  renderUserImage = () => {
+    const { showUploadedImagePage } = this.state;
+
+    if (showUploadedImagePage) {
+      return <div>{this.renderUploadedImage()}</div>;
+    }
+
+    return (
+      <div>
+        {this.renderProfilePhoto()}
+        {this.renderSelectionModal()}
+      </div>
+    );
+  };
+
+  setPhoto = dataUri => {
+    this.setState({ ...this.state, updateUser: true, uploadedImage: dataUri });
+  };
+
   render() {
     const { classes, auth } = this.props;
-    const { showCamera } = this.state;
+    const { showCamera, showTitle } = this.state;
+    let username = '';
 
     if (!auth) return null;
+    if (auth.givenName && auth.familyName)
+      username = `${auth.givenName} ${auth.familyName}`;
 
     return (
       <div className={classes.pageFill}>
+        {showTitle ? <Paper title={username} /> : null}
         {!showCamera ? (
-          <div>
-            {this.renderProfilePhoto()}
-            {this.renderSelectionModal()}
-          </div>
+          this.renderUserImage()
         ) : (
           <WebCam
             hideCamera={() =>
@@ -297,7 +445,8 @@ class UserProfilePage extends Component {
                 showCamera: false
               })
             }
-            newPhotoUpload={() => this.setState({ updateUser: true })}
+            showTitle={showTitle => this.setState({ showTitle })}
+            newPhotoUpload={dataUri => this.setPhoto(dataUri)}
           />
         )}
       </div>

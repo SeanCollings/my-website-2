@@ -97,7 +97,7 @@ class PererittoAwards extends Component {
                       ? 'sepia(5%) grayscale(50%)'
                       : ''
                 }}
-                className={classes.award}
+                className={`${classes.award} transform-scale`}
                 alt={allAwards[j].title}
                 src={allAwards[j]._award.image}
                 onClick={() =>

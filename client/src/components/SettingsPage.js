@@ -17,6 +17,11 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import { withStyles } from '@material-ui/core/styles';
 
+import notificationImage from '../images/fry.png';
+import notificationImageSmall from '../images/fry_small.png';
+import notificationIcon from '../images/icons/icon-96x96.png';
+import notificationBadge from '../images/icons/bat.png';
+
 // import Paper from './components/paper';
 
 const styles = theme => ({
@@ -178,11 +183,46 @@ class UserProfilePage extends Component {
     );
   }
 
+  displayConfirmNotification = () => {
+    // Display notifications through service worker
+    if ('serviceWorker' in navigator) {
+      var options = {
+        body: 'Succesfully subscribed to Pure Seanography!',
+        icon: notificationIcon,
+        image: this.props.resizeScreen
+          ? notificationImage
+          : notificationImageSmall,
+        dir: 'ltr',
+        lang: 'en-UK',
+        vibrate: [100, 50, 200],
+        badge: notificationBadge,
+        tag: 'confirm-notification',
+        renotify: true,
+        actions: [
+          {
+            action: 'confirm',
+            title: 'Okay',
+            icon: notificationIcon
+          },
+          {
+            action: 'cancel',
+            title: 'Cancel',
+            icon: notificationIcon
+          }
+        ]
+      };
+
+      navigator.serviceWorker.ready.then(function(swreg) {
+        swreg.showNotification('Successfully subscribed!', options);
+      });
+    }
+  };
+
   configurePushSub = () => {
     if (!('serviceWorker' in navigator)) {
       return;
     }
-
+    this.displayConfirmNotification();
     console.log('In configurePushSub');
   };
 
@@ -236,19 +276,28 @@ class UserProfilePage extends Component {
   };
 
   enableNotificationsClick = () => {
-    console.log('enableNotificationsClick');
-    // if ('Notification' in window && 'serviceWorker' in navigator) {
-    //   Notification.requestPermission(result => {
-    //     console.log('User Choice', result);
-    //     if (result !== 'granted') {
-    //       console.log('No notification permission granted!');
-    //     } else {
-    //       console.log('Notifications granted!');
-    //       this.configurePushSub();
-    //       // this.displayNotification();
-    //     }
-    //   });
-    // }
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      Notification.requestPermission(result => {
+        console.log('User Choice', result);
+        if (result !== 'granted') {
+          console.log('No notification permission granted!');
+          this.setState({
+            ...this.state,
+            showEnableNotifications: false,
+            notificationsButtonText: 'Notifications Denied'
+          });
+        } else {
+          console.log('Notifications granted!');
+          this.setState({
+            ...this.state,
+            showEnableNotifications: false,
+            notificationsButtonText: 'Notifications Enabled'
+          });
+          this.configurePushSub();
+          // this.displayNotification();
+        }
+      });
+    }
   };
 
   enableLocationClick = () => {
@@ -274,7 +323,7 @@ class UserProfilePage extends Component {
   };
 
   renderEnableButtons = () => {
-    const { resizeScreen } = this.props;
+    const { resizeScreen, auth } = this.props;
     const {
       showEnableLocation,
       showEnableNotifications,
@@ -309,10 +358,10 @@ class UserProfilePage extends Component {
               backgroundColor: '#FF4136',
               minWidth: '250PX',
               marginTop: '24px',
-              opacity: showEnableNotifications ? '' : '0.4'
+              opacity: showEnableNotifications && auth.superUser ? '' : '0.4'
             }}
             onClick={this.enableNotificationsClick}
-            disabled={showEnableNotifications ? false : true}
+            disabled={showEnableNotifications && auth.superUser ? false : true}
           >
             {notificationsButtonText}
           </Button>
@@ -333,61 +382,8 @@ class UserProfilePage extends Component {
             {locationButtonText}
           </Button>
         </Grid>
-        <Grid item>
-          <input
-            accept="image/*"
-            // className={classes.input}
-            style={{ display: 'none' }}
-            id="raised-button-file"
-            multiple={false}
-            type="file"
-            onChange={event => this.uploadImage(event)}
-          />
-          <label htmlFor="raised-button-file">
-            <Button
-              component="span"
-              style={{ color: 'white', backgroundColor: '#FF4136' }}
-            >
-              Upload image
-            </Button>
-          </label>
-        </Grid>
       </Grid>
     );
-  };
-
-  uploadImage = event => {
-    if (event && event.target && event.target.files[0]) {
-      const image = event.target.files[0];
-      // const imageName = image.name;
-      const imageType = image.type;
-
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(image);
-
-      reader.onload = event => {
-        var blob = new Blob([event.target.result]);
-        window.URL = window.URL || window.webkitURL;
-        var blobURL = window.URL.createObjectURL(blob);
-        var image = new Image();
-        image.src = blobURL;
-        image.onload = () => {
-          const width = 300;
-          const scaleFactor = width / image.width;
-          const height = image.height * scaleFactor;
-
-          let canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(image, 0, 0, width, height);
-          const resized = canvas.toDataURL(imageType, 1);
-
-          console.log(resized);
-        };
-      };
-      reader.onerror = error => console.log(error);
-    }
   };
 
   submitClick = event => {

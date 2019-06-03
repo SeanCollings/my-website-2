@@ -23,9 +23,9 @@ function PaperSheet(props) {
   return (
     <div style={{ paddingTop: '10px' }}>
       <Paper className={classes.root} elevation={0}>
-        {/* <Typography variant="h5" component="h3" className={classes.textColour}>
+        <Typography variant="h5" component="h3" className={classes.textColour}>
           {props.title}
-        </Typography> */}
+        </Typography>
         <Typography component="p" className={classes.textColour}>
           {props.content}
         </Typography>

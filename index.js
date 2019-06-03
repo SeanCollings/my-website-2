@@ -34,7 +34,8 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(cors());
 }
 app.use(sslRedirect());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '2mb' }));
+app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }));
 
 app.use(
   cookieSession({

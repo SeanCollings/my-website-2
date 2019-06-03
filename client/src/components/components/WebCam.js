@@ -25,7 +25,7 @@ const styles = theme => ({
   root: {
     marginLeft: '24px',
     marginRight: '24px',
-    marginTop: '24px'
+    marginTop: '10px'
   }
 });
 
@@ -61,10 +61,12 @@ class WebCam extends Component {
       capturedPhotoBase65: dataUri,
       showLoader: false
     });
+    this.props.showTitle(true);
   };
 
   onCameraStart(stream) {
     this.setState({ showLoader: false });
+    this.props.showTitle(false);
   }
 
   onCameraStop() {}
@@ -78,6 +80,7 @@ class WebCam extends Component {
       capturedPhotoBase65: null
     });
 
+    this.props.showTitle(true);
     this.props.hideCamera();
 
     return null;
@@ -86,15 +89,15 @@ class WebCam extends Component {
   uploadPhoto = () => {
     // console.log(this.state.capturedPhotoBase65);
     this.props.uploadUserPhoto(this.state.capturedPhotoBase65);
+    this.props.newPhotoUpload(this.state.capturedPhotoBase65);
+    this.props.showTitle(true);
+    this.props.hideCamera();
 
     this.setState({
       ...this.state,
       photoTaken: false,
       capturedPhotoBase65: null
     });
-
-    this.props.hideCamera();
-    this.props.newPhotoUpload();
 
     return null;
   };
@@ -261,7 +264,7 @@ class WebCam extends Component {
                 this.onCameraError(error);
               }}
               isSilentMode={true}
-              sizeFactor={0.3}
+              sizeFactor={0.5}
               isMaxResolution={false}
             />
           </Loader>

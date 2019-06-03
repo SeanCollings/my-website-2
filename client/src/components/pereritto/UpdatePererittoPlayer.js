@@ -18,6 +18,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 // import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui//core/FormControl';
 import Select from '@material-ui/core/Select';
+import Avatar from '@material-ui/core/Avatar';
+import MoreIcon from '@material-ui/icons/MoreVert';
 
 const styles = theme => ({
   root: {
@@ -112,14 +114,58 @@ class UpdatePererittoPlayer extends Component {
     </span>
   );
 
+  toggleUpateType = () => {
+    console.log('toggleUpateType');
+  };
+
   render() {
     const { classes, resizeScreen } = this.props;
     const { updatingPlayer } = this.state;
 
     return (
-      <div style={{ paddingTop: '12px' }}>
+      <div>
         <Grid className={classes.root}>
+          <Grid item style={{ display: 'inline-flex' }}>
+            <Grid item style={{ textAlign: 'center' }}>
+              <form onSubmit={this.onFormSubmit}>
+                <FormControl className={classes.formControl}>
+                  <Select
+                    value={this.state.playerName}
+                    onChange={this.handleChange}
+                    displayEmpty
+                    style={{
+                      opacity: this.state.playerName === '' ? '0.5' : '1'
+                    }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Player
+                    </MenuItem>
+                    {this.renderPlayers()}
+                  </Select>
+                </FormControl>
+              </form>
+            </Grid>
+            <Grid item>
+              <Avatar
+                onClick={() => this.toggleUpateType()}
+                style={{
+                  position: 'absolute',
+                  top: '4px',
+                  backgroundColor: 'transparent',
+                  color: '#ffa07a'
+                }}
+              >
+                <MoreIcon />
+              </Avatar>
+            </Grid>
+          </Grid>
           <Grid item style={{ textAlign: 'center' }}>
+            <DatePicker
+              preventSelection={false}
+              selectedDate={date => this.setState({ selectedDate: date })}
+            />
+          </Grid>
+          <Grid item style={{ textAlign: 'center', marginTop: '12px' }}>
             <Loader
               show={updatingPlayer ? true : false}
               message={resizeScreen ? this.spinnerSmall : this.spinner}
@@ -137,31 +183,6 @@ class UpdatePererittoPlayer extends Component {
                 Update Player
               </Button>
             </Loader>
-          </Grid>
-          <Grid item style={{ textAlign: 'center' }}>
-            <form onSubmit={this.onFormSubmit}>
-              <FormControl className={classes.formControl}>
-                <Select
-                  value={this.state.playerName}
-                  onChange={this.handleChange}
-                  displayEmpty
-                  style={{
-                    opacity: this.state.playerName === '' ? '0.5' : '1'
-                  }}
-                >
-                  <MenuItem value="" disabled>
-                    Select Player
-                  </MenuItem>
-                  {this.renderPlayers()}
-                </Select>
-              </FormControl>
-            </form>
-          </Grid>
-          <Grid item style={{ textAlign: 'center' }}>
-            <DatePicker
-              preventSelection={false}
-              selectedDate={date => this.setState({ selectedDate: date })}
-            />
           </Grid>
         </Grid>
       </div>

@@ -23,7 +23,7 @@ class ProjectsPage extends Component {
     return (
       <div className={classes.pageFill}>
         <Paper
-          title="My Projects"
+          // title="My Projects"
           content="Just some of the projects I have worked on"
         />
         <Grid style={{ paddingTop: '10px' }}>
