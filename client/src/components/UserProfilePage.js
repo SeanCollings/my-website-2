@@ -14,6 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import CameraIcon from '@material-ui/icons/PhotoCamera';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ImageIcon from '@material-ui/icons/Image';
 import Modal from '@material-ui/core/Modal';
 // import Radio from '@material-ui/core/Radio';
 // import RadioGroup from '@material-ui/core/RadioGroup';
@@ -56,6 +57,7 @@ class UserProfilePage extends Component {
     showModal: false,
     showWarning: false,
     showCamera: false,
+    showUploadImage: false,
     updateUser: false
   };
 
@@ -120,7 +122,7 @@ class UserProfilePage extends Component {
               height: '50px',
               top: '-50px',
               left: '60px',
-              backgroundColor: '#FF4136',
+              backgroundColor: '#0074D9',
               color: 'white',
               display: 'inline-flex'
             }}
@@ -152,15 +154,21 @@ class UserProfilePage extends Component {
               item
               style={{
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: 'space-evenly',
                 padding: '10px'
               }}
             >
               <Avatar
-                style={{ marginRight: '80px', backgroundColor: '#900C3F' }}
+                style={{ marginRight: '30px', backgroundColor: '#0074D9' }}
                 onClick={() => this.initiateCamera()}
               >
                 <CameraIcon />
+              </Avatar>
+              <Avatar
+                style={{ marginRight: '30px', backgroundColor: '#900C3F' }}
+                onClick={() => this.uploadImage()}
+              >
+                <ImageIcon />
               </Avatar>
               <Avatar
                 style={{
@@ -179,12 +187,15 @@ class UserProfilePage extends Component {
               variant="inherit"
               style={{
                 display: 'flex',
-                justifyContent: 'center',
+                justifyContent: 'space-evenly',
                 paddingBottom: '10px'
               }}
             >
-              <Typography variant="body1" style={{ marginRight: '70px' }}>
+              <Typography variant="body1" style={{ marginRight: '20px' }}>
                 Camera
+              </Typography>
+              <Typography variant="body1" style={{ marginRight: '20px' }}>
+                Gallery
               </Typography>
               <Typography variant="body1">Remove</Typography>
             </Typography>
@@ -252,6 +263,10 @@ class UserProfilePage extends Component {
 
   initiateCamera = () => {
     this.setState({ ...this.state, showModal: false, showCamera: true });
+  };
+
+  uploadImage = () => {
+    this.setState({ ...this.state, showModal: false, showUploadImage: true });
   };
 
   handleClose = () => {

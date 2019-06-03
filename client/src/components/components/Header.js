@@ -298,7 +298,7 @@ class Header extends Component {
             {this.props.resizeScreen ? '' : this.renderLoginLogout()}
             <Button
               style={{
-                color: '#DEDEDE',
+                color: 'white',
                 backgroundColor: '#FF4136',
                 display: auth || currentRoute.includes('login') ? 'none' : ''
               }}

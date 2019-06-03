@@ -7,7 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import * as serviceWorker from './serviceWorker';
 
-import { RESIZE_SCREEN } from './actions/types';
+import { RESIZE_SCREEN, BEFORE_INSTALL_PROMPT } from './actions/types';
 import { MOBILE_SCREEN_SIZE } from './utils/constants';
 import App from './components/App';
 import reducers from './reducers';
@@ -34,10 +34,12 @@ window.addEventListener('resize', () => {
   store.dispatch(resizeScreen(mobileWidth()));
 });
 
+let deferredPrompt;
 window.addEventListener('beforeinstallprompt', event => {
-  alert('beforeinstallprompt fired');
+  console.log('beforeinstallprompt fired');
   event.preventDefault();
-  // deferredPrompt = event;
+  deferredPrompt = event;
+  store.dispatch({ type: BEFORE_INSTALL_PROMPT, payload: deferredPrompt });
   return false;
 });
 

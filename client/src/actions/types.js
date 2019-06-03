@@ -9,6 +9,8 @@ export const GET_USER_SETTINGS = 'get_user_settings';
 export const SHOW_LOADER = 'show_loader';
 export const HIDE_LOADER = 'hide_loader';
 export const GET_USER_AWARDS = 'get_user_awards';
+export const BEFORE_INSTALL_PROMPT = 'before_install_prompt';
+export const REMOVE_DEFERRED_PROMPT = 'remove_deferred_prompt';
 
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';

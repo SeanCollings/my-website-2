@@ -5,6 +5,7 @@ import Loader from 'react-loader-advanced';
 import MiniLoader from 'react-loader-spinner';
 import * as actions from '../actions';
 import { showMessage } from '../actions/snackBarActions';
+import { removeDeferredPrompt } from '../actions/appActions';
 
 import Button from '@material-ui/core/Button';
 // import Typography from '@material-ui/core/Typography';
@@ -44,26 +45,31 @@ class UserProfilePage extends Component {
     firstMount: true,
     showLoader: true,
     showEnableLocation: false,
+    showAddToHomeScreen: false,
+    addToHomeScreenText: 'Add to Home Screen',
     locationButtonText: 'Enable Location',
     showEnableNotifications: false,
     notificationsButtonText: 'Enable Notifications'
   };
 
   componentDidMount() {
-    if (!this.props.settings) {
+    const { app, settings } = this.props;
+
+    if (!settings) {
       this.props.getUserSettings();
     } else {
       this.setState({ getUserSettings: false });
     }
 
-    if (!('geolocation' in navigator)) {
-      return;
+    // Check if can add to home screen
+    if (app && app.deferredPrompt) {
+      this.setState({ showAddToHomeScreen: true });
     }
 
     // Check for location permissions
     if ('geolocation' in navigator) {
       navigator.permissions.query({ name: 'geolocation' }).then(status => {
-        console.log('geolocation', status.state);
+        // console.log('geolocation', status.state);
         if (status.state === 'prompt') {
           this.setState({ showEnableLocation: true });
         } else if (status.state === 'denied') {
@@ -77,7 +83,7 @@ class UserProfilePage extends Component {
     // Only show notifications buttons if browser allows
     if ('Notification' in window && 'serviceWorker' in navigator) {
       navigator.permissions.query({ name: 'notifications' }).then(status => {
-        console.log('notifications', status.state);
+        // console.log('notifications', status.state);
         if (status.state === 'prompt') {
           this.setState({ showEnableNotifications: true });
         } else if (status.state === 'denied') {
@@ -208,6 +214,25 @@ class UserProfilePage extends Component {
 
   addToHomeScreenClick = () => {
     console.log('addToHomeScreenClick');
+    const { app } = this.props;
+
+    if (app && app.deferredPrompt) {
+      app.deferredPrompt.prompt();
+
+      app.deferredPrompt.userChoice.then(function(choiceResult) {
+        console.log(choiceResult.outcome);
+
+        if (choiceResult.outcome === 'dismissed') {
+          console.log('User cancelled installation');
+          this.setState({ addToHomeScreenText: 'Add to Home Screen' });
+        } else {
+          console.log('User added to home screen');
+          this.setState({ addToHomeScreenText: 'Added to Home Screen' });
+        }
+      });
+
+      this.props.removeDeferredPrompt();
+    }
   };
 
   enableNotificationsClick = () => {
@@ -254,7 +279,8 @@ class UserProfilePage extends Component {
       showEnableLocation,
       showEnableNotifications,
       locationButtonText,
-      notificationsButtonText
+      notificationsButtonText,
+      showAddToHomeScreen
     } = this.state;
 
     return (
@@ -266,11 +292,11 @@ class UserProfilePage extends Component {
               color: 'white',
               backgroundColor: '#FF4136',
               minWidth: '250px',
-              marginTop: '24px'
-              // opacity: '0.4'
+              marginTop: '24px',
+              opacity: showAddToHomeScreen ? '' : '0.4'
             }}
             onClick={this.addToHomeScreenClick}
-            // disabled={true}
+            disabled={showAddToHomeScreen ? false : true}
           >
             Add to Home screen
           </Button>
@@ -307,8 +333,61 @@ class UserProfilePage extends Component {
             {locationButtonText}
           </Button>
         </Grid>
+        <Grid item>
+          <input
+            accept="image/*"
+            // className={classes.input}
+            style={{ display: 'none' }}
+            id="raised-button-file"
+            multiple={false}
+            type="file"
+            onChange={event => this.uploadImage(event)}
+          />
+          <label htmlFor="raised-button-file">
+            <Button
+              component="span"
+              style={{ color: 'white', backgroundColor: '#FF4136' }}
+            >
+              Upload image
+            </Button>
+          </label>
+        </Grid>
       </Grid>
     );
+  };
+
+  uploadImage = event => {
+    if (event && event.target && event.target.files[0]) {
+      const image = event.target.files[0];
+      // const imageName = image.name;
+      const imageType = image.type;
+
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(image);
+
+      reader.onload = event => {
+        var blob = new Blob([event.target.result]);
+        window.URL = window.URL || window.webkitURL;
+        var blobURL = window.URL.createObjectURL(blob);
+        var image = new Image();
+        image.src = blobURL;
+        image.onload = () => {
+          const width = 300;
+          const scaleFactor = width / image.width;
+          const height = image.height * scaleFactor;
+
+          let canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(image, 0, 0, width, height);
+          const resized = canvas.toDataURL(imageType, 1);
+
+          console.log(resized);
+        };
+      };
+      reader.onerror = error => console.log(error);
+    }
   };
 
   submitClick = event => {
@@ -356,5 +435,5 @@ function mapStateToProps({ auth, resizeScreen, settings, snackBar }) {
 
 export default connect(
   mapStateToProps,
-  { ...actions, showMessage }
+  { ...actions, showMessage, removeDeferredPrompt }
 )(withStyles(styles)(UserProfilePage));

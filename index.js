@@ -5,6 +5,7 @@ import passport from 'passport';
 import bodyParser from 'body-parser';
 import path from 'path';
 import sslRedirect from 'heroku-ssl-redirect';
+import cors from 'cors';
 
 import './models/User';
 import './services/passport';
@@ -29,6 +30,9 @@ mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 const app = express();
 
 /* Middlewares start */
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors());
+}
 app.use(sslRedirect());
 app.use(bodyParser.json());
 

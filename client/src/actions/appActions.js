@@ -1,5 +1,11 @@
-import axios from 'axios';
-import { SHOW_LOADER, HIDE_LOADER, GET_VERSION, SHOW_MESSAGE } from './types';
+import axios from '../utils/axios';
+import {
+  SHOW_LOADER,
+  HIDE_LOADER,
+  GET_VERSION,
+  SHOW_MESSAGE,
+  REMOVE_DEFERRED_PROMPT
+} from './types';
 import { MessageTypeEnum } from '../utils/constants';
 
 export const hideLoader = () => {
@@ -21,4 +27,8 @@ export const getReleaseCreation = () => async dispatch => {
 
   if (res.data.type !== MessageTypeEnum.none)
     dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const removeDeferredPrompt = message => {
+  return { type: REMOVE_DEFERRED_PROMPT };
 };

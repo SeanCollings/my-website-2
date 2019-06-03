@@ -51,7 +51,7 @@ export function register(config) {
       }
     });
 
-    window.addEventListener('fetch', function(event) {
+    window.addEventListener('fetch', event => {
       alert('[Service Worker] Fetch:', event);
     });
   }
