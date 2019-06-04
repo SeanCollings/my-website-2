@@ -25,8 +25,11 @@ export const getVersion = () => async dispatch => {
 export const getReleaseCreation = () => async dispatch => {
   const res = await axios.get('/api/get_releasecreated');
 
-  if (res.data.type !== MessageTypeEnum.none)
+  if (res.data.type !== MessageTypeEnum.none) {
     dispatch({ type: SHOW_MESSAGE, payload: res.data });
+  } else {
+    console.log('SNACKBAR:', res.data.message);
+  }
 };
 
 export const removeDeferredPrompt = message => {

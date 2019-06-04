@@ -9,7 +9,10 @@ import {
   GET_USER_SETTINGS,
   GET_WINNER_YEARS,
   CLEAR_WINNERS,
-  GET_USER_AWARDS
+  GET_USER_AWARDS,
+  UPDATE_SUBSCRIPTIONS,
+  SET_SUBSCRIPTION_NULL,
+  TEST_NOTIFICATION
 } from './types';
 
 export const fetchUser = () => async dispatch => {
@@ -145,4 +148,22 @@ export const getUserAwards = () => async dispatch => {
   const res = await axios.get(`/api/get_userawards`);
 
   dispatch({ type: GET_USER_AWARDS, payload: res.data });
+};
+
+export const updateSubscriptions = newSub => async dispatch => {
+  const res = await axios.post('/api/update_subscriptions', {
+    newSub
+  });
+
+  dispatch({ type: UPDATE_SUBSCRIPTIONS, payload: res.data });
+};
+
+export const setSubscriptionNull = () => dispatch => {
+  dispatch({ type: SET_SUBSCRIPTION_NULL });
+};
+
+export const testNotification = () => async dispatch => {
+  await axios.post('/api/test_notification', {});
+
+  dispatch({ type: TEST_NOTIFICATION });
 };

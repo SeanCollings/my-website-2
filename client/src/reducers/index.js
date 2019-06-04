@@ -8,6 +8,7 @@ import winnersReducer from './winnerReducer';
 import settingsReducer from './settingsReducer';
 import appReducer from './appReducer';
 import awardReducer from './awardReducer';
+import subscriptionsReducer from './subscriptionsReducer';
 
 export default combineReducers({
   auth: authreducer,
@@ -18,5 +19,6 @@ export default combineReducers({
   winners: winnersReducer,
   settings: settingsReducer,
   app: appReducer,
-  awards: awardReducer
+  awards: awardReducer,
+  subscriptions: subscriptionsReducer
 });

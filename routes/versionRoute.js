@@ -18,7 +18,7 @@ export default app => {
     try {
       const releaseCreated = process.env.HEROKU_RELEASE_CREATED_AT
         ? new Date(process.env.HEROKU_RELEASE_CREATED_AT)
-        : new Date('2020-01-01');
+        : new Date('2019-06-03T20:42:00Z');
       const version = process.env.HEROKU_RELEASE_VERSION
         ? process.env.HEROKU_RELEASE_VERSION
         : 'v00';
@@ -33,7 +33,7 @@ export default app => {
       } else {
         res.send({
           type: MessageTypeEnum.none,
-          message: ``
+          message: `${userLastLoggedIn} < ${releaseCreated}?`
         });
       }
     } catch (err) {

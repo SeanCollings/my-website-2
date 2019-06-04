@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import sslRedirect from 'heroku-ssl-redirect';
 import cors from 'cors';
+import webPush from 'web-push';
 
 import './models/User';
 import './services/passport';
@@ -15,6 +16,7 @@ import './models/Settings';
 import './models/Award';
 import './models/CurrentAward';
 import './models/PastAward';
+import './models/Subscriptions';
 
 import keys from './config/keys';
 import authRoutes from './routes/authRoutes';
@@ -24,8 +26,21 @@ import winnerRoutes from './routes/winnerRoutes';
 import settingsRoutes from './routes/settingsRoutes';
 import versionRoutes from './routes/versionRoute';
 import awardRoutes from './routes/awardRoutes';
+import subscriptionRoutes from './routes/subscriptionRoutes';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
+
+// const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
+// const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+const publicVapidKey =
+  'BHgha8FLKBDBXtfJIJuDZbiLYtluV0mgg7l0QXhTraSt203FJAAAQpW4E018QCuWztW_qZcb_J3sKjd-RB_-nYw';
+const privateVapidKey = 'OvEudlWribtunVLiy2iPT0kWK-FC75a4jfcdiorsyE0';
+
+webPush.setVapidDetails(
+  'mailto:nightharrier@gmail.com',
+  publicVapidKey,
+  privateVapidKey
+);
 
 const app = express();
 
@@ -55,6 +70,7 @@ winnerRoutes(app);
 settingsRoutes(app);
 versionRoutes(app);
 awardRoutes(app);
+subscriptionRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));

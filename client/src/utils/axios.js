@@ -1,6 +1,6 @@
 import axios from 'axios';
 
 // For testing build
-// export default axios.create({ baseURL: 'http://localhost:5000' });
+export default axios.create({ baseURL: 'http://localhost:5000' });
 // For everything else
-export default axios.create({});
+// export default axios.create({});

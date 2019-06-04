@@ -50,10 +50,6 @@ export function register(config) {
         registerValidSW(swUrl, config);
       }
     });
-
-    window.addEventListener('fetch', event => {
-      console.log('[Service Worker] Fetch:', event);
-    });
   }
 }
 
@@ -77,26 +73,6 @@ function registerValidSW(swUrl, config) {
                   'tabs for this page are closed.'
               );
 
-              // window.self.addEventListener('activate', () => {
-              //   console.log('HERE');
-              //   window.self.clients.claim();
-              // });
-
-              window.addEventListener('fetch', function(event) {
-                alert('[Service Worker] Fetch:', event);
-              });
-
-              window.addEventListener('notificationclick', function(event) {
-                let notification = event.notification;
-                let action = event.action;
-
-                console.log('MEOW', notification);
-
-                if (action === 'confirm') {
-                  console.log('Confirm was chosen');
-                }
-              });
-
               // Execute callback
               if (config && config.onUpdate) {
                 config.onUpdate(registration);
@@ -114,33 +90,11 @@ function registerValidSW(swUrl, config) {
             }
           }
         };
-
-        window.addEventListener('notificationclick', function(event) {
-          let notification = event.notification;
-          let action = event.action;
-
-          console.log('TOASTY', notification);
-
-          if (action === 'confirm') {
-            console.log('Confirm was chosen');
-          }
-        });
       };
     })
     .catch(error => {
       console.error('Error during service worker registration:', error);
     });
-
-  window.addEventListener('notificationclick', function(event) {
-    let notification = event.notification;
-    let action = event.action;
-
-    console.log('MORDOR', notification);
-
-    if (action === 'confirm') {
-      console.log('Confirm was chosen');
-    }
-  });
 }
 
 function checkValidServiceWorker(swUrl, config) {
@@ -178,21 +132,3 @@ export function unregister() {
     });
   }
 }
-
-console.log('My custom service worker is RIGHT HERE!!');
-
-navigator.serviceWorker.addEventListener('notificationclick', function(event) {
-  let notification = event.notification;
-  let action = event.action;
-
-  console.log('WOOF', notification);
-
-  if (action === 'confirm') {
-    console.log('Confirm was chosen');
-  }
-});
-
-navigator.serviceWorker.addEventListener('fetch', () => {
-  console.log('FETCH');
-  window.self.clients.claim();
-});

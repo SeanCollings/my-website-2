@@ -184,7 +184,6 @@ class UserProfilePage extends Component {
   }
 
   displayConfirmNotification = () => {
-    // Display notifications through service worker
     if ('serviceWorker' in navigator) {
       var options = {
         body: 'Succesfully subscribed to Pure Seanography!',
@@ -223,7 +222,6 @@ class UserProfilePage extends Component {
       return;
     }
     this.displayConfirmNotification();
-    console.log('In configurePushSub');
   };
 
   renderSubmitButton = () => {
@@ -294,7 +292,6 @@ class UserProfilePage extends Component {
             notificationsButtonText: 'Notifications Enabled'
           });
           this.configurePushSub();
-          // this.displayNotification();
         }
       });
     }
