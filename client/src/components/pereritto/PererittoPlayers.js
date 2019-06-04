@@ -19,7 +19,6 @@ import trophy from '../../images/trophy.png';
 const styles = theme => ({
   root: {
     minWidth: '100%',
-
     backgroundImage: 'linear-gradient(#FFA07A, #FFDAB9 60%)',
     borderRadius: '35px'
   },

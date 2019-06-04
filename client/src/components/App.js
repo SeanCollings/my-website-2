@@ -20,6 +20,7 @@ import PererittoPage from './PererittoPage';
 import MaintenancePage from './MaintenancePage';
 import UserProfilePage from './UserProfilePage';
 import SettingsPage from './SettingsPage';
+import NotificationsPage from './NotificationsPage';
 
 import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import Header from './components/Header';
@@ -134,6 +135,19 @@ class App extends Component {
     }
 
     return;
+  }
+
+  renderMessaging() {
+    // if (this.props.auth) {
+    return (
+      <Route
+        path="/notifications"
+        render={props => <NotificationsPage {...props} />}
+      />
+    );
+    // }
+
+    // return;
   }
 
   checkRedirect() {
@@ -290,6 +304,7 @@ class App extends Component {
             />
           )}
           {this.renderSettings()}
+          {this.renderMessaging()}
           {this.renderUserProfile()}
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}

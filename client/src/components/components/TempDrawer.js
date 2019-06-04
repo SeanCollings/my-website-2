@@ -25,6 +25,7 @@ import PererittoIcon from '@material-ui/icons/HotTubRounded';
 import ProfileIcon from '@material-ui/icons/PersonOutline';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
+import VibrationIcon from '@material-ui/icons/Vibration';
 
 let googlePic = '';
 
@@ -115,6 +116,11 @@ class TemporaryDrawer extends React.Component {
           {item === 'Pereritto' && (
             <ListItemIcon>
               <PererittoIcon />
+            </ListItemIcon>
+          )}
+          {item === 'Notifications' && (
+            <ListItemIcon>
+              <VibrationIcon />
             </ListItemIcon>
           )}
           <ListItemText primary={item} />

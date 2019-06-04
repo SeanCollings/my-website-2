@@ -8,7 +8,7 @@ class MobileView extends Component {
     window.addEventListener('resize', this.updateDimensions);
   }
 
-  componentWillUnmount() {
+  componentDidUpdate() {
     window.removeEventListener('resize', this.updateDimensions);
   }
 

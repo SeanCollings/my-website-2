@@ -4,7 +4,8 @@ import {
   HIDE_LOADER,
   GET_VERSION,
   SHOW_MESSAGE,
-  REMOVE_DEFERRED_PROMPT
+  REMOVE_DEFERRED_PROMPT,
+  NOTIFICATION_STATE
 } from './types';
 import { MessageTypeEnum } from '../utils/constants';
 
@@ -34,4 +35,8 @@ export const getReleaseCreation = () => async dispatch => {
 
 export const removeDeferredPrompt = message => {
   return { type: REMOVE_DEFERRED_PROMPT };
+};
+
+export const notificationState = status => {
+  return { type: NOTIFICATION_STATE, payload: status };
 };

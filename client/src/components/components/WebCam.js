@@ -38,16 +38,18 @@ class WebCam extends Component {
   };
 
   componentDidMount() {
-    navigator.permissions
-      .query({ name: 'camera' })
-      .then(permissionObj => {
-        if (permissionObj.state === 'denied') {
-          this.setState({ cameraDeniedAccess: true });
-        }
-      })
-      .catch(error => {
-        console.log('Got error :', error);
-      });
+    if ('permissions' in navigator) {
+      navigator.permissions
+        .query({ name: 'camera' })
+        .then(permissionObj => {
+          if (permissionObj.state === 'denied') {
+            this.setState({ cameraDeniedAccess: true });
+          }
+        })
+        .catch(error => {
+          console.log('Got error :', error);
+        });
+    }
   }
 
   onTakePhoto = dataUri => {

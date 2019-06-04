@@ -56,7 +56,7 @@ class UpdatePererittos extends Component {
     return true;
   }
 
-  componentWillUpdate() {
+  componentDidUpdate() {
     if (!this.state.selectedUsers) {
       this.setState({ selectedUsers: this.props.users });
       this.setState({ showSpinner: false });

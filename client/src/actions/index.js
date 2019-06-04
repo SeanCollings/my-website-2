@@ -12,7 +12,8 @@ import {
   GET_USER_AWARDS,
   UPDATE_SUBSCRIPTIONS,
   SET_SUBSCRIPTION_NULL,
-  TEST_NOTIFICATION
+  TEST_NOTIFICATION,
+  GET_NOTIFICATION_GROUPS
 } from './types';
 
 export const fetchUser = () => async dispatch => {
@@ -41,6 +42,12 @@ export const updateUser = attributes => async dispatch => {
   });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const userAllowsNotifications = () => async dispatch => {
+  const res = await axios.get('/api/allow_notifications', {});
+
+  dispatch({ type: FETCH_USER, payload: res.data });
 };
 
 export const verifyUser = route => async dispatch => {
@@ -166,4 +173,10 @@ export const testNotification = () => async dispatch => {
   await axios.post('/api/test_notification', {});
 
   dispatch({ type: TEST_NOTIFICATION });
+};
+
+export const getNotificationGroups = () => async dispatch => {
+  const res = await axios.get('/api/get_notificationgroups');
+
+  dispatch({ type: GET_NOTIFICATION_GROUPS, payload: res.data });
 };

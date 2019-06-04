@@ -8,7 +8,8 @@ const userSchema = new Schema({
   googlePhoto: String,
   uploadedPhoto: String,
   superUser: { type: Boolean, default: false },
-  pererittoUser: { type: Boolean, default: false },
+  pererittoUser: { type: Boolean, default: true },
+  allowNotifications: { type: Boolean, default: false },
   lastLogin: { type: Date, default: new Date(0) },
   _pereritto: { type: Schema.Types.ObjectId, ref: 'pererittos' }
 });

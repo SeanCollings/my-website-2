@@ -63,10 +63,6 @@ class ProjectsPage extends Component {
     if (!winners.winnerYears) this.props.getWinnerYears();
   }
 
-  componentWillUnmount() {
-    // this.props.clearWinners();
-  }
-
   handleChange = (event, value) => {
     this.slider.slickGoTo(value);
     this.setState({ value });

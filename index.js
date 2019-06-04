@@ -17,6 +17,7 @@ import './models/Award';
 import './models/CurrentAward';
 import './models/PastAward';
 import './models/Subscriptions';
+import './models/NotificationGroup';
 
 import keys from './config/keys';
 import authRoutes from './routes/authRoutes';
@@ -27,6 +28,7 @@ import settingsRoutes from './routes/settingsRoutes';
 import versionRoutes from './routes/versionRoute';
 import awardRoutes from './routes/awardRoutes';
 import subscriptionRoutes from './routes/subscriptionRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
@@ -71,6 +73,7 @@ settingsRoutes(app);
 versionRoutes(app);
 awardRoutes(app);
 subscriptionRoutes(app);
+notificationRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));

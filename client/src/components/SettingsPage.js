@@ -7,6 +7,8 @@ import * as actions from '../actions';
 import { showMessage } from '../actions/snackBarActions';
 import { removeDeferredPrompt } from '../actions/appActions';
 
+import SetupNotifications from './settings/SetupNotifications';
+
 import Button from '@material-ui/core/Button';
 // import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -16,11 +18,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import { withStyles } from '@material-ui/core/styles';
-
-import notificationImage from '../images/fry.png';
-import notificationImageSmall from '../images/fry_small.png';
-import notificationIcon from '../images/icons/icon-96x96.png';
-import notificationBadge from '../images/icons/bat.png';
 
 // import Paper from './components/paper';
 
@@ -52,9 +49,7 @@ class UserProfilePage extends Component {
     showEnableLocation: false,
     showAddToHomeScreen: false,
     addToHomeScreenText: 'Add to Home Screen',
-    locationButtonText: 'Enable Location',
-    showEnableNotifications: false,
-    notificationsButtonText: 'Enable Notifications'
+    locationButtonText: 'Enable Location'
   };
 
   componentDidMount() {
@@ -72,7 +67,7 @@ class UserProfilePage extends Component {
     }
 
     // Check for location permissions
-    if ('geolocation' in navigator) {
+    if ('geolocation' in navigator && 'permissions' in navigator) {
       navigator.permissions.query({ name: 'geolocation' }).then(status => {
         // console.log('geolocation', status.state);
         if (status.state === 'prompt') {
@@ -81,20 +76,6 @@ class UserProfilePage extends Component {
           this.setState({ locationButtonText: 'Location Denied' });
         } else {
           this.setState({ locationButtonText: 'Location Enabled' });
-        }
-      });
-    }
-
-    // Only show notifications buttons if browser allows
-    if ('Notification' in window && 'serviceWorker' in navigator) {
-      navigator.permissions.query({ name: 'notifications' }).then(status => {
-        // console.log('notifications', status.state);
-        if (status.state === 'prompt') {
-          this.setState({ showEnableNotifications: true });
-        } else if (status.state === 'denied') {
-          this.setState({ notificationsButtonText: 'Notifications Denied' });
-        } else {
-          this.setState({ notificationsButtonText: 'Notifications Enabled' });
         }
       });
     }
@@ -183,47 +164,6 @@ class UserProfilePage extends Component {
     );
   }
 
-  displayConfirmNotification = () => {
-    if ('serviceWorker' in navigator) {
-      var options = {
-        body: 'Succesfully subscribed to Pure Seanography!',
-        icon: notificationIcon,
-        image: this.props.resizeScreen
-          ? notificationImage
-          : notificationImageSmall,
-        dir: 'ltr',
-        lang: 'en-UK',
-        vibrate: [100, 50, 200],
-        badge: notificationBadge,
-        tag: 'confirm-notification',
-        renotify: true,
-        actions: [
-          {
-            action: 'confirm',
-            title: 'Okay',
-            icon: notificationIcon
-          },
-          {
-            action: 'cancel',
-            title: 'Cancel',
-            icon: notificationIcon
-          }
-        ]
-      };
-
-      navigator.serviceWorker.ready.then(function(swreg) {
-        swreg.showNotification('Successfully subscribed!', options);
-      });
-    }
-  };
-
-  configurePushSub = () => {
-    if (!('serviceWorker' in navigator)) {
-      return;
-    }
-    this.displayConfirmNotification();
-  };
-
   renderSubmitButton = () => {
     const { resizeScreen } = this.props;
     const { getUserSettings } = this.state;
@@ -273,30 +213,6 @@ class UserProfilePage extends Component {
     }
   };
 
-  enableNotificationsClick = () => {
-    if ('Notification' in window && 'serviceWorker' in navigator) {
-      Notification.requestPermission(result => {
-        console.log('User Choice', result);
-        if (result !== 'granted') {
-          console.log('No notification permission granted!');
-          this.setState({
-            ...this.state,
-            showEnableNotifications: false,
-            notificationsButtonText: 'Notifications Denied'
-          });
-        } else {
-          console.log('Notifications granted!');
-          this.setState({
-            ...this.state,
-            showEnableNotifications: false,
-            notificationsButtonText: 'Notifications Enabled'
-          });
-          this.configurePushSub();
-        }
-      });
-    }
-  };
-
   enableLocationClick = () => {
     console.log('enableLocationClick');
     // navigator.geolocation.getCurrentPosition(
@@ -320,12 +236,10 @@ class UserProfilePage extends Component {
   };
 
   renderEnableButtons = () => {
-    const { resizeScreen, auth } = this.props;
+    const { resizeScreen } = this.props;
     const {
       showEnableLocation,
-      showEnableNotifications,
       locationButtonText,
-      notificationsButtonText,
       showAddToHomeScreen
     } = this.state;
 
@@ -348,20 +262,7 @@ class UserProfilePage extends Component {
           </Button>
         </Grid>
         <Grid item>
-          <Button
-            size={resizeScreen ? 'small' : 'medium'}
-            style={{
-              color: 'white',
-              backgroundColor: '#FF4136',
-              minWidth: '250PX',
-              marginTop: '24px',
-              opacity: showEnableNotifications && auth.superUser ? '' : '0.4'
-            }}
-            onClick={this.enableNotificationsClick}
-            disabled={showEnableNotifications && auth.superUser ? false : true}
-          >
-            {notificationsButtonText}
-          </Button>
+          <SetupNotifications />
         </Grid>
         <Grid item>
           <Button

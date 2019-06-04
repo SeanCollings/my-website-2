@@ -1,4 +1,8 @@
 /* eslint-disable */
+self.addEventListener('install', event => {
+  self.skipWaiting();
+});
+
 self.addEventListener('fetch', function(event) {
   // console.log('[Service Worker] Fetch:', event);
 });
@@ -29,7 +33,7 @@ self.addEventListener('push', event => {
   let data = {
     title: 'New',
     content: 'Something new happened!',
-    openUrl: '/pereritto'
+    openUrl: '/'
   };
 
   if (event.data) {
@@ -38,8 +42,9 @@ self.addEventListener('push', event => {
 
   var options = {
     body: data.content,
-    icon: './icons/icon-96x96.png',
+    icon: './icons/spash1.png',
     badge: './icons/bat.png',
+    vibrate: [100, 50, 100, 50, 100],
     data: {
       url: data.openUrl
     }

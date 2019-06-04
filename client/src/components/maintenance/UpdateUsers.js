@@ -45,7 +45,7 @@ class UpdateUsers extends Component {
     this.props.fetchAllUsers([screenType, options[0]]);
   }
 
-  componentWillUpdate() {
+  componentDidUpdate() {
     if (!this.state.selectedUsers) {
       this.setState({ selectedUsers: this.props.users });
       this.setState({ showSpinner: false });

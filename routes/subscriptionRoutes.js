@@ -8,9 +8,9 @@ const Users = mongoose.model('users');
 export default app => {
   app.post('/api/update_subscriptions', async (req, res) => {
     try {
-      console.log('req.user', req.user);
       let userId = null;
       if (req.user) {
+        console.log('req.user', req.user._id);
         userId = req.user._id;
       }
 
@@ -19,7 +19,6 @@ export default app => {
 
       if (newSub) {
         const keys = { auth: newSub.keys.auth, p256dh: newSub.keys.p256dh };
-        console.log(keys);
         await new Subscription({
           endpoint: newSub.endpoint,
           keys,
@@ -36,9 +35,15 @@ export default app => {
 
   app.post('/api/test_notification', async (req, res) => {
     try {
+      let userId = null;
+      if (req.user) {
+        console.log('req.user', req.user._id);
+        userId = req.user._id;
+      }
       const subscriptions = await Subscription.find();
 
       if (subscriptions.length > 0) {
+        console.log('subscriptions.length', subscriptions.length);
         subscriptions.forEach(sub => {
           const pushConfig = {
             endpoint: sub.endpoint,
@@ -49,7 +54,11 @@ export default app => {
           };
           webPush.sendNotification(
             pushConfig,
-            JSON.stringify({ title: 'Splashed', content: 'Splashing now!' })
+            JSON.stringify({
+              title: 'Splashing',
+              content: 'Splashed!',
+              openUrl: '/pereritto'
+            })
           );
         });
 

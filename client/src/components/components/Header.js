@@ -208,6 +208,8 @@ class Header extends Component {
         return 'Maintenance';
       case '/settings':
         return 'Settings';
+      case '/notifications':
+        return 'Notifications';
       default:
         if (currentRoute.includes('profile') && auth) return `Profile`;
 

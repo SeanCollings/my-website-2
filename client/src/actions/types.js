@@ -14,6 +14,8 @@ export const REMOVE_DEFERRED_PROMPT = 'remove_deferred_prompt';
 export const UPDATE_SUBSCRIPTIONS = 'update_subscriptions';
 export const SET_SUBSCRIPTION_NULL = 'set_subscription_null';
 export const TEST_NOTIFICATION = 'test_notification';
+export const NOTIFICATION_STATE = 'notification_state';
+export const GET_NOTIFICATION_GROUPS = 'get_notification_groups';
 
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';

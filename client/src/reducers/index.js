@@ -9,6 +9,7 @@ import settingsReducer from './settingsReducer';
 import appReducer from './appReducer';
 import awardReducer from './awardReducer';
 import subscriptionsReducer from './subscriptionsReducer';
+import notificationsReducer from './notificationsReducer';
 
 export default combineReducers({
   auth: authreducer,
@@ -20,5 +21,6 @@ export default combineReducers({
   settings: settingsReducer,
   app: appReducer,
   awards: awardReducer,
-  subscriptions: subscriptionsReducer
+  subscriptions: subscriptionsReducer,
+  notifications: notificationsReducer
 });
