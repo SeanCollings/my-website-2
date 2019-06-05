@@ -46,15 +46,6 @@ class NotificationsPage extends Component {
     }
   }
 
-  componentDidUpdate() {
-    const { notifications } = this.props;
-    const { allGroups } = this.state;
-
-    if (!notifications.groups && !allGroups) {
-      this.setState({ allGroups: notifications.notifications });
-    }
-  }
-
   handleChange = (event, value) => {
     this.slider.slickGoTo(value);
     this.setState({ value });
@@ -62,7 +53,7 @@ class NotificationsPage extends Component {
 
   render() {
     const { classes, resizeScreen, auth, app } = this.props;
-    const { value, allGroups } = this.state;
+    const { value } = this.state;
 
     const settings = {
       dots: false,
@@ -114,8 +105,8 @@ class NotificationsPage extends Component {
               // beforeChange={(current, next) => this.setState({ value: next })}
               afterChange={current => this.setState({ value: current })}
             >
-              <Notifications allGroups={allGroups} />
-              <NotificationAdmin allGroups={allGroups} />
+              <Notifications />
+              <NotificationAdmin />
             </Slider>
           </div>
         </div>

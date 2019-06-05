@@ -171,8 +171,8 @@ export const setSubscriptionNull = () => dispatch => {
   dispatch({ type: SET_SUBSCRIPTION_NULL });
 };
 
-export const testNotification = () => async dispatch => {
-  await axios.post('/api/test_notification', {});
+export const testNotification = groupId => async dispatch => {
+  await axios.post('/api/test_notification', { groupId });
 
   dispatch({ type: TEST_NOTIFICATION });
 };
@@ -181,4 +181,18 @@ export const getNotificationGroups = () => async dispatch => {
   const res = await axios.get('/api/get_notificationgroups');
 
   dispatch({ type: GET_NOTIFICATION_GROUPS, payload: res.data });
+};
+
+export const createNotificationGroup = (
+  name,
+  icon,
+  groupMembers
+) => async dispatch => {
+  const res = await axios.post('/api/add_notificationgroup', {
+    name,
+    icon,
+    groupMembers
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };

@@ -4,18 +4,15 @@ import webPush from 'web-push';
 const mongoose = require('mongoose');
 const Subscription = mongoose.model('subscriptions');
 const Users = mongoose.model('users');
+const Groups = mongoose.model('notificationgroups');
 
 export default app => {
   app.post('/api/update_subscriptions', async (req, res) => {
     try {
-      let userId = null;
-      if (req.user) {
-        console.log('req.user', req.user._id);
-        userId = req.user._id;
-      }
-
       const { newSub } = req.body;
-      // console.log(newSub);
+      let userId = null;
+
+      if (req.user) userId = req.user._id;
 
       if (newSub) {
         const keys = { auth: newSub.keys.auth, p256dh: newSub.keys.p256dh };
@@ -35,37 +32,46 @@ export default app => {
 
   app.post('/api/test_notification', async (req, res) => {
     try {
-      let userId = null;
-      if (req.user) {
-        console.log('req.user', req.user._id);
-        userId = req.user._id;
-      }
-      const subscriptions = await Subscription.find();
+      const { groupId } = req.body;
+      const group = await Groups.findOne({ _id: groupId });
 
-      if (subscriptions.length > 0) {
-        console.log('subscriptions.length', subscriptions.length);
-        subscriptions.forEach(sub => {
-          const pushConfig = {
-            endpoint: sub.endpoint,
-            keys: {
-              auth: sub.keys.auth,
-              p256dh: sub.keys.p256dh
-            }
-          };
-          webPush.sendNotification(
-            pushConfig,
-            JSON.stringify({
-              title: 'Splashing',
-              content: 'Splashed!',
-              openUrl: '/pereritto'
-            })
-          );
+      const memberIds = [];
+      if (group) {
+        memberIds.push(group.createdById);
+        group.members.map(member => {
+          memberIds.push(member._id);
         });
 
-        return res.sendStatus(200);
-      } else {
-        console.log('No subscriptions found');
-        return res.sendStatus(204);
+        const subscriptions = await Subscription.find({
+          _user: { $in: memberIds }
+        });
+
+        if (subscriptions.length > 0) {
+          console.log('subscriptions.length', subscriptions.length);
+
+          subscriptions.forEach(sub => {
+            const pushConfig = {
+              endpoint: sub.endpoint,
+              keys: {
+                auth: sub.keys.auth,
+                p256dh: sub.keys.p256dh
+              }
+            };
+
+            webPush.sendNotification(
+              pushConfig,
+              JSON.stringify({
+                title: 'Splashing',
+                content: 'Splashed!',
+                openUrl: '/pereritto'
+              })
+            );
+          });
+          return res.sendStatus(200);
+        } else {
+          console.log('No subscriptions found');
+          return res.sendStatus(204);
+        }
       }
     } catch (err) {
       throw err;
