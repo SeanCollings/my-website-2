@@ -36,7 +36,24 @@ const styles = theme => ({
 });
 
 class NotificationsPage extends Component {
-  state = { value: 0 };
+  state = { value: 0, allGroups: null };
+
+  componentDidMount() {
+    const { notifications, app } = this.props;
+
+    if (app.notificationState !== 'granted' && !notifications.groups) {
+      this.props.getNotificationGroups();
+    }
+  }
+
+  componentDidUpdate() {
+    const { notifications } = this.props;
+    const { allGroups } = this.state;
+
+    if (!notifications.groups && !allGroups) {
+      this.setState({ allGroups: notifications.notifications });
+    }
+  }
 
   handleChange = (event, value) => {
     this.slider.slickGoTo(value);
@@ -44,8 +61,8 @@ class NotificationsPage extends Component {
   };
 
   render() {
-    const { classes, resizeScreen, auth } = this.props;
-    const { value } = this.state;
+    const { classes, resizeScreen, auth, app } = this.props;
+    const { value, allGroups } = this.state;
 
     const settings = {
       dots: false,
@@ -54,7 +71,10 @@ class NotificationsPage extends Component {
       speed: 100
     };
 
-    if (auth && auth.allowNotifications && !auth.allowNotifications)
+    if (
+      app.notificationState !== 'granted' ||
+      (auth && auth.allowNotifications && !auth.allowNotifications)
+    )
       return (
         <Grid item className={classes.enableNotifications}>
           <Typography paragraph>Whoopsie Doodle...</Typography>
@@ -94,8 +114,8 @@ class NotificationsPage extends Component {
               // beforeChange={(current, next) => this.setState({ value: next })}
               afterChange={current => this.setState({ value: current })}
             >
-              <Notifications />
-              <NotificationAdmin />
+              <Notifications allGroups={allGroups} />
+              <NotificationAdmin allGroups={allGroups} />
             </Slider>
           </div>
         </div>
@@ -104,8 +124,8 @@ class NotificationsPage extends Component {
   }
 }
 
-function mapStateToProps({ resizeScreen, auth }) {
-  return { auth, resizeScreen };
+function mapStateToProps({ resizeScreen, auth, app, notifications }) {
+  return { auth, resizeScreen, app, notifications };
 }
 
 export default connect(

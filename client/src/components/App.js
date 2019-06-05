@@ -8,7 +8,8 @@ import * as actions from '../actions';
 import {
   showLoader,
   hideLoader,
-  getReleaseCreation
+  getReleaseCreation,
+  notificationState
 } from '../actions/appActions';
 
 import HomePage from './HomePage';
@@ -201,6 +202,21 @@ class App extends Component {
     };
   }
 
+  notificationState = () => {
+    const { app } = this.props;
+    if (
+      'Notification' in window &&
+      'serviceWorker' in navigator &&
+      'permissions' in navigator
+    ) {
+      navigator.permissions.query({ name: 'notifications' }).then(status => {
+        if (app && !app.notificationState) {
+          this.props.notificationState(status.state);
+        }
+      });
+    }
+  };
+
   render() {
     const colour = '#FFC300'; //'#424242'
     const spinner = (
@@ -276,6 +292,8 @@ class App extends Component {
       console.log('getting winners ');
     }
 */
+    this.notificationState();
+
     return (
       <Loader contentStyle={this.checkRoute()} show={false}>
         <Header
@@ -331,6 +349,12 @@ function mapStateToProps({ auth, winners, app, settings }) {
 export default withRouter(
   connect(
     mapStateToProps,
-    { ...actions, showLoader, hideLoader, getReleaseCreation }
+    {
+      ...actions,
+      showLoader,
+      hideLoader,
+      getReleaseCreation,
+      notificationState
+    }
   )(App)
 );

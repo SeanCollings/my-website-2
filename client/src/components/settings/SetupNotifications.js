@@ -149,6 +149,8 @@ class SetupNotifications extends Component {
           });
           this.configurePushSub();
         }
+
+        this.props.notificationState(result);
       });
     }
   };
@@ -171,8 +173,6 @@ class SetupNotifications extends Component {
   render() {
     const { resizeScreen } = this.props;
     const { showEnableNotifications, notificationsButtonText } = this.state;
-
-    this.notificationState();
 
     return (
       <Button

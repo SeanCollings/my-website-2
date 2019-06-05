@@ -58,6 +58,12 @@ export default app => {
               }
             }
             break;
+          case 'User Groups':
+            users = await Users.find({}, { givenName: 1, familyName: 1 }).sort({
+              givenName: 1,
+              familyName: 1
+            });
+            break;
           default:
             users = await Users.find().sort({ familyName: 1, givenName: 1 });
             break;

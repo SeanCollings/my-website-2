@@ -24,11 +24,13 @@ export const fetchUser = () => async dispatch => {
 
 export const fetchAllUsers = parameters => async dispatch => {
   let params = '';
-  parameters.map((parameter, index) => {
-    if (index > 0) return (params += `&param${index + 1}=${parameter}`);
+  if (parameters) {
+    parameters.map((parameter, index) => {
+      if (index > 0) return (params += `&param${index + 1}=${parameter}`);
 
-    return (params += `param${index + 1}=${parameter}`);
-  });
+      return (params += `param${index + 1}=${parameter}`);
+    });
+  }
 
   const res = await axios.get(`/api/get_users?${params}`);
 

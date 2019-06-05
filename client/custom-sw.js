@@ -45,6 +45,8 @@ self.addEventListener('push', event => {
     icon: './icons/spash1.png',
     badge: './icons/bat.png',
     vibrate: [100, 50, 100, 50, 100],
+    tag: 'splashed-notification',
+    // renotify: true,
     data: {
       url: data.openUrl
     }
