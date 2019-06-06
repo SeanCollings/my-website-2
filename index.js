@@ -32,16 +32,10 @@ import notificationRoutes from './routes/notificationRoutes';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
-// const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
-// const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
-const publicVapidKey =
-  'BHgha8FLKBDBXtfJIJuDZbiLYtluV0mgg7l0QXhTraSt203FJAAAQpW4E018QCuWztW_qZcb_J3sKjd-RB_-nYw';
-const privateVapidKey = 'OvEudlWribtunVLiy2iPT0kWK-FC75a4jfcdiorsyE0';
-
 webPush.setVapidDetails(
   'mailto:nightharrier@gmail.com',
-  publicVapidKey,
-  privateVapidKey
+  keys.publicVapidKey,
+  keys.privateVapidKey
 );
 
 const app = express();

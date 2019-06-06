@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 
-import SetupNotifications from './settings/SetupNotifications';
+// import SetupNotifications from './settings/SetupNotifications';
 
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
@@ -103,7 +103,7 @@ class HomePage extends Component {
           </Button>
         </div>
         {this.displayCards()}
-        <SetupNotifications />
+        {/* <SetupNotifications /> */}
         <div
           style={this.state.mediaCards.length > 0 ? { height: '20px' } : {}}
         />

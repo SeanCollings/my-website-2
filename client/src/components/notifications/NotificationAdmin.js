@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
+import Loader from 'react-loader-advanced';
+import MiniLoader from 'react-loader-spinner';
 
-import GroupEditUpdate from './GroupEditUpdate';
+import GroupCreateUpdate from './GroupCreateUpdate';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -14,13 +16,11 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import IconButton from '@material-ui/core/IconButton';
 import Avatar from '@material-ui/core/Avatar';
-import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
-import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
 import Divider from '@material-ui/core/Divider';
 import BackIcon from '@material-ui/icons/ArrowBackIos';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
+import Modal from '@material-ui/core/Modal';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -34,10 +34,26 @@ const styles = theme => ({
     maxWidth: 360,
     backgroundColor: 'white',
     marginTop: '10px',
-    borderRadius: '20px'
+    borderRadius: '15px'
   },
   textField: {
     width: 200
+  },
+  modalStyles: {
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    borderRadius: '5px',
+    maxWidth: '400px',
+    width: '75%',
+    padding: '12px'
+  },
+  paper: {
+    position: 'absolute',
+    // width: '400',
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    outline: 'none'
   }
 });
 
@@ -50,231 +66,32 @@ class NotificationAdmin extends Component {
     groupHeader: 'My Created Groups',
     selectedGroup: null,
     editGroup: false,
-    newGroupMembers: []
+    newGroupMembers: [],
+    showModal: false,
+    groupToDelete: null,
+    deletingGroup: false
   };
 
   componentDidMount() {
+    const { auth } = this.props;
     // Get all users
-    this.props.fetchAllUsers(['User Groups']);
+    if (auth.superUser) this.props.fetchAllUsers(['User Groups']);
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.snackBar.open && this.state.deletingGroup) {
+      this.props.getNotificationGroups();
+      this.setState({ deletingGroup: false });
+    }
+
+    return true;
   }
 
   createGroup = () => {
     this.setState({ createGroup: true });
   };
 
-  createClick = () => {
-    const { groupName, newGroupMembers, groupIcon } = this.state;
-
-    if (groupName.length === 0) return this.setState({ errorGroupName: true });
-
-    this.props.createNotificationGroup(groupName, groupIcon, newGroupMembers);
-    this.cancelCreateGroup();
-  };
-
-  cancelCreateGroup = () => {
-    this.setState({
-      ...this.state,
-      createGroup: false,
-      newGroupMembers: [],
-      groupIcon: null,
-      groupName: ''
-    });
-  };
-
-  handleChange = id => {
-    const { newGroupMembers } = this.state;
-    let found = newGroupMembers.includes(id);
-
-    if (found) {
-      this.setState({ newGroupMembers: newGroupMembers.filter(x => x !== id) });
-    } else {
-      this.setState({ newGroupMembers: [...newGroupMembers, id] });
-    }
-  };
-
-  renderUsersList = () => {
-    const { maintenance, auth } = this.props;
-    const { newGroupMembers } = this.state;
-
-    if (!maintenance.users) return null;
-
-    return maintenance.users.map(user => {
-      const initial = user.givenName.charAt(0).toUpperCase();
-      const username = `${user.givenName} ${user.familyName}`;
-      const display = user._id === auth._id ? 'none' : '';
-      return (
-        <ListItem key={user._id} style={{ display }}>
-          <ListItemAvatar>
-            {user.uploadedPhoto ? (
-              <Avatar
-                src={user.uploadedPhoto}
-                style={{ width: '30px', height: '30px' }}
-              />
-            ) : (
-              <Avatar style={{ width: '30px', height: '30px' }}>
-                {initial}
-              </Avatar>
-            )}
-          </ListItemAvatar>
-          <ListItemText primary={username} />
-          <ListItemSecondaryAction style={{ display }}>
-            <Checkbox
-              edge="end"
-              onChange={() => this.handleChange(user._id)}
-              checked={newGroupMembers.includes(user._id)}
-              id={user._id}
-              style={{
-                color: '#3D9970'
-              }}
-            />
-          </ListItemSecondaryAction>
-        </ListItem>
-      );
-    });
-  };
-
-  uploadImageToScreen = event => {
-    if (event && event.target && event.target.files[0]) {
-      const image = event.target.files[0];
-      const imageType = image.type;
-
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(image);
-
-      reader.onload = event => {
-        var blob = new Blob([event.target.result]);
-        window.URL = window.URL || window.webkitURL;
-        var blobURL = window.URL.createObjectURL(blob);
-        var image = new Image();
-        image.src = blobURL;
-        image.onload = () => {
-          const width = 50;
-          const scaleFactor = width / image.width;
-          const height = image.height * scaleFactor;
-
-          let canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(image, 0, 0, width, height);
-          const resized = canvas.toDataURL(imageType, 0.8);
-
-          this.setState({
-            groupIcon: resized
-          });
-        };
-      };
-      reader.onerror = error => console.log(error);
-    }
-  };
-
-  handleTextChange = event => {
-    const error = event.target.value === 0;
-
-    this.setState({
-      ...this.state,
-      groupName: event.target.value,
-      errorGroupName: error
-    });
-  };
-
-  renderCreateGroup = () => {
-    const { classes } = this.props;
-    const { errorGroupName, groupIcon, groupName } = this.state;
-    return (
-      <div>
-        <Button
-          onClick={() => this.cancelCreateGroup()}
-          style={{
-            backgroundColor: '#FF4136',
-            color: 'white',
-            width: '100px',
-            marginRight: '12px'
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => this.createClick()}
-          style={{
-            backgroundColor: '#3D9970',
-            color: 'white',
-            width: '100px'
-          }}
-        >
-          Create
-        </Button>
-        <Grid
-          item
-          style={{
-            marginLeft: '24px',
-            marginRight: '24px',
-            marginTop: '12px',
-            backgroundColor: 'white',
-            borderRadius: '20px'
-          }}
-        >
-          <TextField
-            id="group-name"
-            className={classes.textField}
-            margin="normal"
-            placeholder="Group Name"
-            error={errorGroupName}
-            value={groupName}
-            onChange={event => this.handleTextChange(event)}
-          />
-          <List>
-            <ListItem style={{ justifyContent: 'center', paddingTop: '0px' }}>
-              <ListItemText primary="Group Icon:" style={{ flex: 'none' }} />
-              <div>
-                <input
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  id="group-image-input"
-                  multiple={false}
-                  type="file"
-                  onChange={event => this.uploadImageToScreen(event)}
-                />
-                <label htmlFor="group-image-input">
-                  <Avatar
-                    src={groupIcon}
-                    style={{
-                      backgroundColor: groupIcon ? 'transparent' : '#3D9970'
-                    }}
-                  >
-                    G
-                  </Avatar>
-                </label>
-              </div>
-              <Avatar
-                onClick={() =>
-                  this.setState({ ...this.state, groupIcon: null })
-                }
-                style={{
-                  display: groupIcon ? '' : 'none',
-                  width: '25px',
-                  height: '25px',
-                  position: 'absolute',
-                  right: '20px',
-                  backgroundColor: '#FF4136'
-                }}
-              >
-                <CloseIcon style={{ width: '15px' }} />
-              </Avatar>
-            </ListItem>
-            <Divider />
-          </List>
-          <Typography style={{ paddingBottom: '8px' }}>Add Members:</Typography>
-          <List style={{ maxHeight: '265px', overflow: 'auto' }}>
-            {this.renderUsersList()}
-          </List>
-        </Grid>
-      </div>
-    );
-  };
-
   editGroup = group => {
-    console.log('Edit:', group.name);
     this.setState({
       ...this.state,
       selectedGroup: group,
@@ -283,29 +100,92 @@ class NotificationAdmin extends Component {
     });
   };
 
+  handleClose = () => {
+    this.setState({ showModal: false });
+  };
+
+  showDeleteModal = () => {
+    const { classes } = this.props;
+    return (
+      <Modal
+        aria-labelledby="confirm-delete"
+        aria-describedby="confirm-delete"
+        open={this.state.showModal}
+        onClose={this.handleClose}
+      >
+        <div className={`${classes.modalStyles} ${classes.paper}`}>
+          <Typography
+            id="modal-title"
+            style={{ textAlign: 'center' }}
+            paragraph
+          >
+            Warning!
+          </Typography>
+          <Typography
+            id="modal-title"
+            style={{ textAlign: 'center' }}
+            paragraph
+          >
+            Are you sure you want to delete the group
+          </Typography>
+          <Button
+            style={{
+              width: '45%',
+              backgroundColor: '#FF4136',
+              color: 'white',
+              marginRight: '10%'
+            }}
+            onClick={() =>
+              this.setState({
+                ...this.state,
+                groupToDelete: null,
+                showModal: false
+              })
+            }
+          >
+            Cancel
+          </Button>
+          <Button
+            style={{
+              width: '45%',
+              backgroundColor: '#3D9970',
+              color: 'white'
+            }}
+            onClick={() => this.deleteGroup()}
+          >
+            Confirm
+          </Button>
+        </div>
+      </Modal>
+    );
+  };
+
+  deleteGroup = () => {
+    const { groupToDelete } = this.state;
+    if (groupToDelete) {
+      this.props.deleteNotificationGroup(
+        groupToDelete.createdById,
+        groupToDelete._id,
+        groupToDelete.name
+      );
+    }
+    this.setState({
+      ...this.state,
+      showModal: false,
+      groupToDelete: null,
+      deletingGroup: true
+    });
+  };
+
   renderEditScreen = () => {
     const { selectedGroup } = this.state;
 
     return (
       <Grid>
-        <GroupEditUpdate
-          isEdit={true}
+        <GroupCreateUpdate
           selectedGroup={selectedGroup}
           cancelAddEdit={() => this.cancelAddEdit()}
         />
-        {/* <Button
-          onClick={() => console.log('Remove group:', selectedGroup.name)}
-          style={{
-            backgroundColor: '#FF4136',
-            color: 'white',
-            marginTop: '12px'
-          }}
-        >
-          Remove Group
-        </Button>
-        <Typography style={{ paddingBottom: '8px', marginTop: '12px' }}>
-          Update Members:
-        </Typography> */}
       </Grid>
     );
   };
@@ -340,7 +220,13 @@ class NotificationAdmin extends Component {
             />
             <ListItemSecondaryAction>
               <IconButton
-                onClick={() => this.editGroup(group)}
+                onClick={() =>
+                  this.setState({
+                    ...this.state,
+                    groupToDelete: group,
+                    showModal: true
+                  })
+                }
                 style={{ paddingRight: '0px' }}
               >
                 <DeleteIcon />
@@ -368,19 +254,27 @@ class NotificationAdmin extends Component {
     });
   };
 
+  spinner = (
+    <span>
+      <MiniLoader type="Oval" color="#3D9970" height={45} width={45} />
+    </span>
+  );
+
   render() {
-    const { classes, auth } = this.props;
-    const { groupHeader, selectedGroup, editGroup } = this.state;
+    const { classes } = this.props;
+    const { groupHeader, selectedGroup, editGroup, deletingGroup } = this.state;
 
     return (
-      <div style={{ paddingTop: ' 12px' }}>
-        {auth.superUser ? (
-          this.state.createGroup ? (
-            // this.renderCreateGroup()
-            <GroupEditUpdate
-              isEdit={false}
-              cancelAddEdit={() => this.cancelAddEdit()}
-            />
+      <div
+        style={{ paddingTop: ' 12px', opacity: deletingGroup ? '0.9' : '1' }}
+      >
+        <Loader
+          show={deletingGroup ? true : false}
+          message={this.spinner}
+          backgroundStyle={{ backgroundColor: 'transparent' }}
+        >
+          {this.state.createGroup ? (
+            <GroupCreateUpdate cancelAddEdit={() => this.cancelAddEdit()} />
           ) : (
             <div>
               <Button
@@ -432,24 +326,34 @@ class NotificationAdmin extends Component {
                   <List className={classes.list}>{this.renderMyGroups()}</List>
                 )}
               </Grid>
+              {this.showDeleteModal()}
             </div>
-          )
-        ) : (
-          <Typography style={{ color: 'bisque' }}>
-            Some sweet admin func coming soon...
-          </Typography>
-        )}
+          )}
+
+          {/* (
+             <Typography style={{ color: 'bisque' }}>
+               Some sweet admin func coming soon...
+             </Typography>
+           )} */}
+        </Loader>
       </div>
     );
   }
 }
 
-function mapStateToProps({ auth, resizeScreen, notifications, maintenance }) {
+function mapStateToProps({
+  auth,
+  resizeScreen,
+  notifications,
+  maintenance,
+  snackBar
+}) {
   return {
     auth,
     resizeScreen,
     notifications,
-    maintenance
+    maintenance,
+    snackBar
   };
 }
 

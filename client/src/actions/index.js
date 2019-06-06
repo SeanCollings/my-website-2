@@ -198,6 +198,68 @@ export const createNotificationGroup = (
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
+export const updateNotificationGroup = (
+  _id,
+  name,
+  icon,
+  groupMembers,
+  createdById
+) => async dispatch => {
+  const res = await axios.post('/api/update_notificationgroup', {
+    _id,
+    name,
+    icon,
+    groupMembers,
+    createdById
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const createNonSuperUserNotificationGroup = (
+  name,
+  icon,
+  groupMembers
+) => async dispatch => {
+  const res = await axios.post('/api/add_nsu_notificationgroup', {
+    name,
+    icon,
+    groupMembers
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const updateNonSuperUserNotificationGroup = (
+  _id,
+  name,
+  icon,
+  // emailAddress,
+  createdById
+) => async dispatch => {
+  const res = await axios.post('/api/update_nsu_notificationgroup', {
+    _id,
+    name,
+    icon,
+    // emailAddress,
+    createdById
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const deleteNotificationGroup = (
+  createdById,
+  groupId,
+  name
+) => async dispatch => {
+  const res = await axios.delete('/api/delete_notificationgroup', {
+    data: { createdById, groupId, name }
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
 export const getGroupMembers = groupId => async dispatch => {
   const res = await axios.get(`/api/get_groupmembers?groupid=${groupId}`);
 

@@ -28,7 +28,7 @@ const styles = theme => ({
     maxWidth: 360,
     backgroundColor: 'white',
     marginTop: '10px',
-    borderRadius: '20px'
+    borderRadius: '15px'
   }
 });
 
@@ -71,7 +71,6 @@ class Notifications extends Component {
   };
 
   renderSelectedGroup = () => {
-    // const { classes } = this.props;
     const { groupMembers } = this.state;
 
     return (
@@ -91,7 +90,7 @@ class Notifications extends Component {
           style={{
             marginTop: '48px',
             backgroundColor: 'white',
-            borderRadius: '20px',
+            borderRadius: '15px',
             maxWidth: '360px'
           }}
         >

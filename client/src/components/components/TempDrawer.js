@@ -86,6 +86,10 @@ class TemporaryDrawer extends React.Component {
       return null;
     }
 
+    if (item === 'Notifications' && !this.props.auth) {
+      return null;
+    }
+
     return (
       <NavLink
         key={item}
