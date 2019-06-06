@@ -139,16 +139,16 @@ class App extends Component {
   }
 
   renderMessaging() {
-    // if (this.props.auth) {
-    return (
-      <Route
-        path="/notifications"
-        render={props => <NotificationsPage {...props} />}
-      />
-    );
-    // }
+    if (this.props.auth) {
+      return (
+        <Route
+          path="/notifications"
+          render={props => <NotificationsPage {...props} />}
+        />
+      );
+    }
 
-    // return;
+    return;
   }
 
   checkRedirect() {

@@ -30,9 +30,12 @@ export default app => {
     }
   });
 
-  app.post('/api/test_notification', async (req, res) => {
+  app.post('/api/send_splash', async (req, res) => {
     try {
+      const { givenName, familyName } = req.user;
       const { groupId } = req.body;
+
+      const originator = `${givenName} ${familyName}`;
       const group = await Groups.findOne({ _id: groupId });
 
       const memberIds = [];
@@ -47,7 +50,7 @@ export default app => {
         });
 
         if (subscriptions.length > 0) {
-          console.log('subscriptions.length', subscriptions.length);
+          console.log('Subscriptions length:', subscriptions.length);
 
           subscriptions.forEach(sub => {
             const pushConfig = {
@@ -61,8 +64,8 @@ export default app => {
             webPush.sendNotification(
               pushConfig,
               JSON.stringify({
-                title: 'Splashing',
-                content: 'Splashed!',
+                title: 'Splashed!',
+                content: `${originator} is Splashing!`,
                 openUrl: '/pereritto'
               })
             );

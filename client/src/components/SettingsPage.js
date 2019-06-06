@@ -323,8 +323,8 @@ UserProfilePage.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-function mapStateToProps({ auth, resizeScreen, settings, snackBar }) {
-  return { auth, resizeScreen, settings, snackBar };
+function mapStateToProps({ auth, resizeScreen, settings, snackBar, app }) {
+  return { auth, resizeScreen, settings, snackBar, app };
 }
 
 export default connect(

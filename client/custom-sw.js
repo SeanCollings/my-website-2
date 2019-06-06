@@ -18,7 +18,21 @@ self.addEventListener('notificationclick', event => {
     notification.close();
   } else {
     console.log(action);
-    notification.close();
+    event.waitUntil(
+      clients.matchAll().then(clis => {
+        const client = clis.find(c => {
+          return c.visibilityState === 'visible';
+        });
+
+        if (client !== undefined) {
+          client.navigate(notification.data.url);
+          client.focus();
+        } else {
+          clients.openWindow(notification.data.url);
+        }
+        notification.close();
+      })
+    );
   }
 });
 
@@ -53,4 +67,8 @@ self.addEventListener('push', event => {
   };
 
   event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+self.addEventListener('sync', function(event) {
+  console.log('[Service Worker] Background syncing', event);
 });

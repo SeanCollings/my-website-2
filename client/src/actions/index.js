@@ -13,7 +13,8 @@ import {
   UPDATE_SUBSCRIPTIONS,
   SET_SUBSCRIPTION_NULL,
   TEST_NOTIFICATION,
-  GET_NOTIFICATION_GROUPS
+  GET_NOTIFICATION_GROUPS,
+  GET_GROUP_MEMBERS
 } from './types';
 
 export const fetchUser = () => async dispatch => {
@@ -171,8 +172,8 @@ export const setSubscriptionNull = () => dispatch => {
   dispatch({ type: SET_SUBSCRIPTION_NULL });
 };
 
-export const testNotification = groupId => async dispatch => {
-  await axios.post('/api/test_notification', { groupId });
+export const sendSplashNotification = groupId => async dispatch => {
+  await axios.post('/api/send_splash', { groupId });
 
   dispatch({ type: TEST_NOTIFICATION });
 };
@@ -195,4 +196,10 @@ export const createNotificationGroup = (
   });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const getGroupMembers = groupId => async dispatch => {
+  const res = await axios.get(`/api/get_groupmembers?groupid=${groupId}`);
+
+  dispatch({ type: GET_GROUP_MEMBERS, payload: res.data });
 };

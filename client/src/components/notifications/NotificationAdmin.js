@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
+import GroupEditUpdate from './GroupEditUpdate';
+
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -17,6 +19,8 @@ import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
 import Divider from '@material-ui/core/Divider';
+import BackIcon from '@material-ui/icons/ArrowBackIos';
+import DeleteIcon from '@material-ui/icons/DeleteForever';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -29,7 +33,8 @@ const styles = theme => ({
     width: '100%',
     maxWidth: 360,
     backgroundColor: 'white',
-    marginTop: '10px'
+    marginTop: '10px',
+    borderRadius: '20px'
   },
   textField: {
     width: 200
@@ -42,6 +47,9 @@ class NotificationAdmin extends Component {
     errorGroupName: false,
     groupName: '',
     groupIcon: null,
+    groupHeader: 'My Created Groups',
+    selectedGroup: null,
+    editGroup: false,
     newGroupMembers: []
   };
 
@@ -92,6 +100,7 @@ class NotificationAdmin extends Component {
 
     return maintenance.users.map(user => {
       const initial = user.givenName.charAt(0).toUpperCase();
+      const username = `${user.givenName} ${user.familyName}`;
       const display = user._id === auth._id ? 'none' : '';
       return (
         <ListItem key={user._id} style={{ display }}>
@@ -107,7 +116,7 @@ class NotificationAdmin extends Component {
               </Avatar>
             )}
           </ListItemAvatar>
-          <ListItemText primary={`${user.givenName} ${user.familyName}`} />
+          <ListItemText primary={username} />
           <ListItemSecondaryAction style={{ display }}>
             <Checkbox
               edge="end"
@@ -201,7 +210,8 @@ class NotificationAdmin extends Component {
             marginLeft: '24px',
             marginRight: '24px',
             marginTop: '12px',
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            borderRadius: '20px'
           }}
         >
           <TextField
@@ -252,13 +262,51 @@ class NotificationAdmin extends Component {
                 <CloseIcon style={{ width: '15px' }} />
               </Avatar>
             </ListItem>
+            <Divider />
           </List>
-          <Typography>Add Members:</Typography>
+          <Typography style={{ paddingBottom: '8px' }}>Add Members:</Typography>
           <List style={{ maxHeight: '265px', overflow: 'auto' }}>
             {this.renderUsersList()}
           </List>
         </Grid>
       </div>
+    );
+  };
+
+  editGroup = group => {
+    console.log('Edit:', group.name);
+    this.setState({
+      ...this.state,
+      selectedGroup: group,
+      groupHeader: `Edit: ${group.name}`,
+      editGroup: true
+    });
+  };
+
+  renderEditScreen = () => {
+    const { selectedGroup } = this.state;
+
+    return (
+      <Grid>
+        <GroupEditUpdate
+          isEdit={true}
+          selectedGroup={selectedGroup}
+          cancelAddEdit={() => this.cancelAddEdit()}
+        />
+        {/* <Button
+          onClick={() => console.log('Remove group:', selectedGroup.name)}
+          style={{
+            backgroundColor: '#FF4136',
+            color: 'white',
+            marginTop: '12px'
+          }}
+        >
+          Remove Group
+        </Button>
+        <Typography style={{ paddingBottom: '8px', marginTop: '12px' }}>
+          Update Members:
+        </Typography> */}
+      </Grid>
     );
   };
 
@@ -272,7 +320,7 @@ class NotificationAdmin extends Component {
     return notifications.groups.map((group, index) => {
       if (group.createdById.toString() !== auth._id.toString()) return null;
 
-      const members = group.members.length;
+      const members = group.members.length + 1;
       return (
         <div key={group._id}>
           <ListItem>
@@ -291,7 +339,13 @@ class NotificationAdmin extends Component {
               secondary={`Members: ${members}`}
             />
             <ListItemSecondaryAction>
-              <IconButton onClick={() => console.log('Edit:', group.name)}>
+              <IconButton
+                onClick={() => this.editGroup(group)}
+                style={{ paddingRight: '0px' }}
+              >
+                <DeleteIcon />
+              </IconButton>
+              <IconButton onClick={() => this.editGroup(group)}>
                 <EditIcon />
               </IconButton>
             </ListItemSecondaryAction>
@@ -304,21 +358,37 @@ class NotificationAdmin extends Component {
     });
   };
 
+  cancelAddEdit = () => {
+    this.setState({
+      ...this.state,
+      editGroup: false,
+      createGroup: false,
+      groupHeader: 'My Created Groups',
+      selectedGroup: null
+    });
+  };
+
   render() {
     const { classes, auth } = this.props;
+    const { groupHeader, selectedGroup, editGroup } = this.state;
 
     return (
       <div style={{ paddingTop: ' 12px' }}>
         {auth.superUser ? (
           this.state.createGroup ? (
-            this.renderCreateGroup()
+            // this.renderCreateGroup()
+            <GroupEditUpdate
+              isEdit={false}
+              cancelAddEdit={() => this.cancelAddEdit()}
+            />
           ) : (
             <div>
               <Button
                 onClick={() => this.createGroup()}
                 style={{
                   backgroundColor: '#3D9970',
-                  color: 'white'
+                  color: 'white',
+                  display: editGroup ? 'none' : ''
                 }}
               >
                 Create Group
@@ -326,13 +396,41 @@ class NotificationAdmin extends Component {
               <Grid
                 item
                 style={{
-                  paddingTop: '12px',
+                  paddingTop: editGroup ? '' : '12px',
                   marginLeft: '24px',
                   marginRight: '24px'
                 }}
               >
-                <Typography style={{ color: 'bisque' }}>My Groups</Typography>
-                <List className={classes.list}>{this.renderMyGroups()}</List>
+                <Typography
+                  style={{
+                    color: 'bisque',
+                    paddingBottom: editGroup ? '12px' : ''
+                    // fontSize: editGroup ? 'large' : ''
+                  }}
+                  onClick={() =>
+                    this.setState({
+                      ...this.state,
+                      selectedGroup: null,
+                      editGroup: false,
+                      groupHeader: 'My Created Groups'
+                    })
+                  }
+                >
+                  <BackIcon
+                    style={{
+                      position: 'relative',
+                      top: '2px',
+                      height: '14px',
+                      display: selectedGroup ? '' : 'none'
+                    }}
+                  />
+                  {groupHeader}
+                </Typography>
+                {editGroup ? (
+                  this.renderEditScreen()
+                ) : (
+                  <List className={classes.list}>{this.renderMyGroups()}</List>
+                )}
               </Grid>
             </div>
           )

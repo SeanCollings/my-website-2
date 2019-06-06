@@ -13,6 +13,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Avatar from '@material-ui/core/Avatar';
 import Divider from '@material-ui/core/Divider';
 import GroupIcon from '@material-ui/icons/SupervisorAccount';
+import PersonIcon from '@material-ui/icons/Person';
+import BackIcon from '@material-ui/icons/ArrowBackIos';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -25,54 +27,120 @@ const styles = theme => ({
     width: '100%',
     maxWidth: 360,
     backgroundColor: 'white',
-    marginTop: '10px'
+    marginTop: '10px',
+    borderRadius: '20px'
   }
 });
 
 class Notifications extends Component {
-  state = { groupHeader: 'Groups', selectedGroup: null };
+  state = {
+    groupHeader: 'All Groups',
+    selectedGroup: null,
+    groupMembers: []
+  };
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { notifications } = nextProps;
+    const { groupMembers } = this.state;
+
+    if (this.props.notifications.members !== notifications.members) {
+      if (notifications.members && notifications.members !== groupMembers) {
+        this.setState({ groupMembers: notifications.members });
+        return true;
+      }
+    }
+
+    return true;
+  }
 
   sendSplash = event => {
     const { selectedGroup } = this.state;
 
     event.preventDefault();
-    this.props.testNotification(selectedGroup._id);
+    this.props.sendSplashNotification(selectedGroup._id);
   };
 
   selectedGroup = group => {
+    this.props.getGroupMembers(group._id);
+
     this.setState({
       ...this.state,
-      groupHeader: `Group: ${group.name}`,
+      groupHeader: `${group.name}`,
       selectedGroup: group
     });
   };
 
   renderSelectedGroup = () => {
-    // const { selectedGroup } = this.state;
+    // const { classes } = this.props;
+    const { groupMembers } = this.state;
 
     return (
-      <Button
-        onClick={event => this.sendSplash(event)}
-        style={{
-          backgroundColor: '#0074D9',
-          color: 'white',
-          marginTop: '96px'
-        }}
-      >
-        Send Splash
-      </Button>
+      <div>
+        <Button
+          onClick={event => this.sendSplash(event)}
+          style={{
+            backgroundColor: '#0074D9',
+            color: 'white',
+            marginTop: '48px'
+          }}
+        >
+          Send Splash
+        </Button>
+        <Grid
+          item
+          style={{
+            marginTop: '48px',
+            backgroundColor: 'white',
+            borderRadius: '20px',
+            maxWidth: '360px'
+          }}
+        >
+          <Typography style={{ paddingTop: '12px' }}>Members:</Typography>
+          {groupMembers.length > 0 ? (
+            <List>
+              {groupMembers.map(member => {
+                const username = `${member.givenName} ${member.familyName}`;
+                const initial = member.givenName.charAt(0).toUpperCase();
+                return (
+                  <ListItem key={member._id}>
+                    <ListItemAvatar>
+                      <Avatar
+                        src={member.uploadedPhoto}
+                        style={{
+                          backgroundColor: member.uploadedPhoto
+                            ? 'transparent'
+                            : '#3D9970',
+                          height: '30px',
+                          width: '30px'
+                        }}
+                      >
+                        {initial}
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={username} />
+                  </ListItem>
+                );
+              })}
+            </List>
+          ) : (
+            <Typography style={{ paddingTop: '12px', paddingBottom: '12px' }}>
+              Loading members...
+            </Typography>
+          )}
+        </Grid>
+      </div>
     );
   };
 
   renderGroups = () => {
-    const { notifications } = this.props;
+    const { notifications, auth } = this.props;
 
     if (!notifications.groups || notifications.groups.length === 0)
       return <Typography>You're not apart of any groups yet...</Typography>;
 
     const groupsLength = notifications.groups.length;
     return notifications.groups.map((group, index) => {
-      const members = group.members.length;
+      const members = group.members.length + 1;
       const initial = group.name.charAt(0).toUpperCase();
       return (
         <div key={group._id}>
@@ -91,9 +159,20 @@ class Notifications extends Component {
               primary={group.name}
               secondary={`Members: ${members}`}
             />
-            <ListItemSecondaryAction>
+            <ListItemSecondaryAction onClick={() => this.selectedGroup(group)}>
+              {group.createdById.toString() === auth._id.toString() ? (
+                <Typography
+                  style={{
+                    fontSize: 'x-small',
+                    marginRight: '16px',
+                    color: '#3D9970'
+                  }}
+                >
+                  Admin
+                </Typography>
+              ) : null}
               <ListItemIcon>
-                <GroupIcon />
+                {members > 2 ? <GroupIcon /> : <PersonIcon />}
               </ListItemIcon>
             </ListItemSecondaryAction>
           </ListItem>
@@ -125,10 +204,19 @@ class Notifications extends Component {
               this.setState({
                 ...this.state,
                 selectedGroup: null,
-                groupHeader: 'Groups'
+                groupHeader: 'All Groups',
+                groupMembers: []
               })
             }
           >
+            <BackIcon
+              style={{
+                position: 'relative',
+                top: '2px',
+                height: '14px',
+                display: selectedGroup ? '' : 'none'
+              }}
+            />
             {groupHeader}
           </Typography>
           {selectedGroup ? (
@@ -142,8 +230,9 @@ class Notifications extends Component {
   }
 }
 
-function mapStateToProps({ resizeScreen, notifications }) {
+function mapStateToProps({ auth, resizeScreen, notifications }) {
   return {
+    auth,
     resizeScreen,
     notifications
   };

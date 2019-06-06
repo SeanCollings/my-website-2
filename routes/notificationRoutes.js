@@ -85,6 +85,34 @@ export default app => {
     }
   );
 
+  app.get('/api/get_groupmembers', async (req, res) => {
+    try {
+      const { groupid } = req.query;
+      const group = await Groups.findOne({ _id: groupid });
+
+      const membersArray = [];
+      if (group) {
+        membersArray.push(group.createdById);
+        group.members.forEach(member => {
+          membersArray.push(member._user);
+        });
+
+        const users = await Users.find(
+          { _id: { $in: membersArray } },
+          { givenName: 1, familyName: 1, uploadedPhoto: 1 }
+        ).sort({ givenName: 1 });
+
+        console.log('Found members:', users.length);
+        return res.send(users);
+      }
+
+      // console.log(membersArray);
+      return res.sendStatus(204);
+    } catch (err) {
+      throw err;
+    }
+  });
+
   app.post('/api/add_groupmember', async (req, res) => {
     try {
       console.log('add_groupmember');

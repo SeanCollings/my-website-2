@@ -32,6 +32,9 @@ const styles = theme => ({
     marginRight: '10px',
     borderRadius: '5px',
     backgroundColor: 'white'
+  },
+  centered: {
+    textAlign: '-webkit-center'
   }
 });
 
@@ -41,7 +44,7 @@ class NotificationsPage extends Component {
   componentDidMount() {
     const { notifications, app } = this.props;
 
-    if (app.notificationState !== 'granted' && !notifications.groups) {
+    if (app.notificationState === 'granted' && !notifications.groups) {
       this.props.getNotificationGroups();
     }
   }
@@ -93,6 +96,15 @@ class NotificationsPage extends Component {
             <Tab label="Notifications" />
             <Tab label="Admin" />
           </Tabs>
+          {!resizeScreen ? (
+            <div
+              className={classes.centered}
+              style={{ display: resizeScreen ? 'none' : '' }}
+            >
+              {value === 0 && <Notifications />}
+              {value === 1 && <NotificationAdmin />}
+            </div>
+          ) : null}
           <div
             style={{
               textAlign: '-webkit-center',
