@@ -9,7 +9,7 @@ const isLocalhost = Boolean(
 );
 
 export function register(config) {
-  console.log('Trying to register the service worker');
+  // console.log('Trying to register the service worker');
   if ('serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
@@ -22,7 +22,7 @@ export function register(config) {
 
     window.addEventListener('load', () => {
       const swUrl = `${process.env.PUBLIC_URL}/custom-sw.js`;
-      console.log('[serviceWorker] swUrl:', swUrl);
+      // console.log('[serviceWorker] swUrl:', swUrl);
 
       if (isLocalhost) {
         // This is running on localhost. Let's check if a service worker still exists or not.

@@ -64,6 +64,9 @@ class SetupNotifications extends Component {
         badge: notificationBadge,
         tag: 'confirm-notification',
         renotify: true,
+        data: {
+          url: '/notifications'
+        },
         actions: [
           {
             action: 'confirm',

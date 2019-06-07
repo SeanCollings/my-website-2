@@ -94,5 +94,6 @@ self.addEventListener('push', event => {
 });
 
 self.addEventListener('sync', function(event) {
-  console.log('[Service Worker] Background syncing', event);
+  console.log('[Service Worker] Background syncing');
+  // console.log('[Service Worker] Background syncing', event);
 });

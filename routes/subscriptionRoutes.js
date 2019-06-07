@@ -61,14 +61,13 @@ export default app => {
               }
             };
 
-            webPush.sendNotification(
-              pushConfig,
-              JSON.stringify({
-                title: 'Splashed!',
-                content: `${originator} is Splashing!`,
-                openUrl: '/pereritto'
-              })
-            );
+            const json = JSON.stringify({
+              title: 'Splashed!',
+              content: `${originator} is Splashing!`,
+              openUrl: '/pereritto'
+            });
+
+            webPush.sendNotification(pushConfig, json);
           });
           return res.sendStatus(200);
         } else {

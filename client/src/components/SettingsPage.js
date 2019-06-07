@@ -197,7 +197,7 @@ class UserProfilePage extends Component {
     if (app && app.deferredPrompt) {
       app.deferredPrompt.prompt();
 
-      app.deferredPrompt.userChoice.then(function(choiceResult) {
+      app.deferredPrompt.userChoice.then(choiceResult => {
         console.log(choiceResult.outcome);
 
         if (choiceResult.outcome === 'dismissed') {
@@ -205,7 +205,11 @@ class UserProfilePage extends Component {
           this.setState({ addToHomeScreenText: 'Add to Home Screen' });
         } else {
           console.log('User added to home screen');
-          this.setState({ addToHomeScreenText: 'Added to Home Screen' });
+          this.setState({
+            ...this.state,
+            showAddToHomeScreen: false,
+            addToHomeScreenText: 'Added to Home Screen'
+          });
         }
       });
 

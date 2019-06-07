@@ -73,8 +73,8 @@ class GroupCreateUpdate extends Component {
     const { groupName, newGroupMembers, groupIcon } = this.state;
 
     if (groupName.length === 0) return this.setState({ errorGroupName: true });
-    if (newGroupMembers.length === 0)
-      return this.setState({ errorEmailAddress: true });
+    // if (newGroupMembers.length === 0)
+    //   return this.setState({ errorEmailAddress: true });
 
     if (auth.superUser) {
       if (selectedGroup) {
