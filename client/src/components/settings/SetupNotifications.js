@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
-import { notificationState } from '../../actions/appActions';
+import { notificationState, getPublicVapidKey } from '../../actions/appActions';
 import { urlBase64ToUint8Array } from '../../utils/utility';
 
 import Button from '@material-ui/core/Button';
@@ -20,6 +20,7 @@ class SetupNotifications extends Component {
 
   componentDidMount() {
     this.checkComponentState();
+    if (!this.props.app.publicVapidKey) this.props.getPublicVapidKey();
   }
 
   componentDidUpdate() {
@@ -103,9 +104,10 @@ class SetupNotifications extends Component {
           console.log('Checking the sub', sub);
           if (sub === null) {
             // Create new subscription
-            var vapidPublicKey =
-              'BHgha8FLKBDBXtfJIJuDZbiLYtluV0mgg7l0QXhTraSt203FJAAAQpW4E018QCuWztW_qZcb_J3sKjd-RB_-nYw';
-            var convertedVapidPublicKey = urlBase64ToUint8Array(vapidPublicKey);
+            const vapidPublicKey = this.props.app.publicVapidKey;
+            const convertedVapidPublicKey = urlBase64ToUint8Array(
+              vapidPublicKey
+            );
 
             return reg.pushManager
               .subscribe({
@@ -174,8 +176,10 @@ class SetupNotifications extends Component {
   };
 
   render() {
-    const { resizeScreen } = this.props;
+    const { resizeScreen, app } = this.props;
     const { showEnableNotifications, notificationsButtonText } = this.state;
+
+    if (!app.publicVapidKey) return null;
 
     return (
       <Button
@@ -202,5 +206,5 @@ function mapStateToProps({ auth, resizeScreen, snackBar, subscriptions, app }) {
 
 export default connect(
   mapStateToProps,
-  { ...actions, notificationState }
+  { ...actions, notificationState, getPublicVapidKey }
 )(SetupNotifications);

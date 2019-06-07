@@ -17,6 +17,7 @@ export const TEST_NOTIFICATION = 'test_notification';
 export const NOTIFICATION_STATE = 'notification_state';
 export const GET_NOTIFICATION_GROUPS = 'get_notification_groups';
 export const GET_GROUP_MEMBERS = 'get_group_members';
+export const GET_PUBLIC_VAPID_KEY = 'get_public_vapid_key';
 
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';

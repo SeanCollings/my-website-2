@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import * as actions from '../actions';
 import Slider from 'react-slick';
 
@@ -73,8 +74,14 @@ class NotificationsPage extends Component {
         <Grid item className={classes.enableNotifications}>
           <Typography paragraph>Whoopsie Doodle...</Typography>
           <Typography paragraph>
-            Please <b>Enable Notifications</b> under settings in order to access
-            this page.
+            Please{' '}
+            <span
+              onClick={() => this.props.history.push('/settings')}
+              style={{ color: '#0074D9' }}
+            >
+              <b>Enable Notifications</b>
+            </span>{' '}
+            under settings in order to access this page.
           </Typography>
           <Typography paragraph>
             Enabling notifications will allow you to communicate with other
@@ -131,7 +138,9 @@ function mapStateToProps({ resizeScreen, auth, app, notifications }) {
   return { auth, resizeScreen, app, notifications };
 }
 
-export default connect(
-  mapStateToProps,
-  actions
-)(withStyles(styles)(NotificationsPage));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    actions
+  )(withStyles(styles)(NotificationsPage))
+);

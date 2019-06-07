@@ -40,4 +40,16 @@ export default app => {
       throw err;
     }
   });
+
+  app.get('/api/get_publicvapidkey', requireLogin, (req, res) => {
+    try {
+      const publicVapidKey = process.env.PUBLIC_VAPID_KEY
+        ? process.env.PUBLIC_VAPID_KEY
+        : 'BHgha8FLKBDBXtfJIJuDZbiLYtluV0mgg7l0QXhTraSt203FJAAAQpW4E018QCuWztW_qZcb_J3sKjd-RB_-nYw';
+
+      res.send(publicVapidKey);
+    } catch (err) {
+      throw err;
+    }
+  });
 };

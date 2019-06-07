@@ -4,7 +4,8 @@ import {
   GET_VERSION,
   BEFORE_INSTALL_PROMPT,
   REMOVE_DEFERRED_PROMPT,
-  NOTIFICATION_STATE
+  NOTIFICATION_STATE,
+  GET_PUBLIC_VAPID_KEY
 } from '../actions/types';
 
 const initialState = {
@@ -12,7 +13,8 @@ const initialState = {
   open: false,
   version: '',
   deferredPrompt: null,
-  notificationState: null
+  notificationState: null,
+  publicVapidKey: null
 };
 
 export default function(state = initialState, action) {
@@ -29,6 +31,8 @@ export default function(state = initialState, action) {
       return { ...state, deferredPrompt: null };
     case NOTIFICATION_STATE:
       return { ...state, notificationState: action.payload };
+    case GET_PUBLIC_VAPID_KEY:
+      return { ...state, publicVapidKey: action.payload };
     default:
       return state;
   }

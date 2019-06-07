@@ -5,7 +5,8 @@ import {
   GET_VERSION,
   SHOW_MESSAGE,
   REMOVE_DEFERRED_PROMPT,
-  NOTIFICATION_STATE
+  NOTIFICATION_STATE,
+  GET_PUBLIC_VAPID_KEY
 } from './types';
 import { MessageTypeEnum } from '../utils/constants';
 
@@ -39,4 +40,10 @@ export const removeDeferredPrompt = message => {
 
 export const notificationState = status => {
   return { type: NOTIFICATION_STATE, payload: status };
+};
+
+export const getPublicVapidKey = () => async dispatch => {
+  const res = await axios.get('/api/get_publicvapidkey');
+
+  dispatch({ type: GET_PUBLIC_VAPID_KEY, payload: res.data });
 };
