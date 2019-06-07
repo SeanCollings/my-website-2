@@ -42,7 +42,7 @@ export default app => {
       if (group) {
         memberIds.push(group.createdById);
         group.members.map(member => {
-          memberIds.push(member._id);
+          memberIds.push(member._user);
         });
 
         const subscriptions = await Subscription.find({
