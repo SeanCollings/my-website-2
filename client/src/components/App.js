@@ -55,7 +55,7 @@ class App extends Component {
     if (this.props.auth !== null && this.props.app.open && this.state.render) {
       this.props.hideLoader();
       if (this.props.auth) {
-        console.log('Getting release creation');
+        // console.log('Getting release creation');
         this.props.getReleaseCreation();
       }
     }

@@ -29,8 +29,8 @@ export const getReleaseCreation = () => async dispatch => {
 
   if (res.data.type !== MessageTypeEnum.none) {
     dispatch({ type: SHOW_MESSAGE, payload: res.data });
-  } else {
-    console.log('SNACKBAR:', res.data.message);
+    // } else {
+    // console.log('SNACKBAR:', res.data.message);
   }
 };
 

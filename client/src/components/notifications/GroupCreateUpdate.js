@@ -192,12 +192,14 @@ class GroupCreateUpdate extends Component {
     if (emailAddress.length === 0) {
       this.setState({ errorEmailAddress: true });
     } else {
-      this.setState({
-        ...this.state,
-        emailAddress: '',
-        errorEmailAddress: false,
-        newGroupMembers: [...newGroupMembers, emailAddress]
-      });
+      if (!newGroupMembers.includes(emailAddress.toLowerCase())) {
+        this.setState({
+          ...this.state,
+          emailAddress: '',
+          errorEmailAddress: false,
+          newGroupMembers: [...newGroupMembers, emailAddress.toLowerCase()]
+        });
+      }
     }
   };
 
@@ -243,9 +245,16 @@ class GroupCreateUpdate extends Component {
               error={errorEmailAddress}
               value={emailAddress}
               onChange={event => this.handleEmailChange(event)}
+              onKeyDown={e =>
+                e.keyCode === 13 ? this.addEmailAddress() : null
+              }
             />
             <AddPersonIcon
-              style={{ position: 'absolute', marginTop: '36px' }}
+              style={{
+                position: 'absolute',
+                marginTop: '36px',
+                opacity: emailAddress.length > 0 ? '1' : '0.2'
+              }}
               onClick={() => this.addEmailAddress()}
             />
             <List style={{ paddingLeft: '12px' }}>
@@ -253,7 +262,7 @@ class GroupCreateUpdate extends Component {
                 <ListItem>
                   <ListItemText
                     style={{ fontSize: 'small', textAlign: 'center' }}
-                    primary="No email address added..."
+                    primary="No email address(s) added..."
                   />
                 </ListItem>
               ) : (

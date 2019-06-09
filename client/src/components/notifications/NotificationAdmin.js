@@ -200,7 +200,7 @@ class NotificationAdmin extends Component {
     return notifications.groups.map((group, index) => {
       if (group.createdById.toString() !== auth._id.toString()) return null;
 
-      const members = group.members.length + 1;
+      // const members = group.members.length + 1;
       return (
         <div key={group._id}>
           <ListItem>
@@ -208,7 +208,9 @@ class NotificationAdmin extends Component {
               <Avatar
                 src={group.icon}
                 style={{
-                  backgroundColor: group.icon ? 'transparent' : '#3D9970'
+                  backgroundColor: group.icon ? 'transparent' : '#3D9970',
+                  width: '25px',
+                  height: '25px'
                 }}
               >
                 G
@@ -216,7 +218,7 @@ class NotificationAdmin extends Component {
             </ListItemAvatar>
             <ListItemText
               primary={group.name}
-              secondary={`Members: ${members}`}
+              // secondary={`Members: ${members}`}
             />
             <ListItemSecondaryAction>
               <IconButton

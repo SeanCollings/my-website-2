@@ -1,6 +1,9 @@
 import requireLogin from '../middlewares/requireLogin';
 import { MessageTypeEnum } from '../client/src/utils/constants';
 
+const mongoose = require('mongoose');
+const Users = mongoose.model('users');
+
 export default app => {
   app.get('/api/get_version', (req, res) => {
     try {
@@ -14,7 +17,7 @@ export default app => {
     }
   });
 
-  app.get('/api/get_releasecreated', requireLogin, (req, res) => {
+  app.get('/api/get_releasecreated', requireLogin, async (req, res) => {
     try {
       const releaseCreated = process.env.HEROKU_RELEASE_CREATED_AT
         ? new Date(process.env.HEROKU_RELEASE_CREATED_AT)
@@ -33,8 +36,15 @@ export default app => {
       } else {
         res.send({
           type: MessageTypeEnum.none,
-          message: `${userLastLoggedIn} < ${releaseCreated}?`
+          message: ``
         });
+      }
+
+      if (req.user) {
+        await Users.updateOne(
+          { _id: req.user._id },
+          { $set: { lastLogin: Date.now() } }
+        );
       }
     } catch (err) {
       throw err;

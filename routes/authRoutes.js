@@ -27,12 +27,12 @@ export default app => {
 
   app.get('/api/current_user', async (req, res) => {
     try {
-      if (req.user) {
-        await Users.updateOne(
-          { _id: req.user._id },
-          { $set: { lastLogin: Date.now() } }
-        );
-      }
+      // if (req.user) {
+      //   await Users.updateOne(
+      //     { _id: req.user._id }
+      // { $set: { lastLogin: Date.now() } }
+      //   );
+      // }
       res.send(req.user);
     } catch (err) {
       throw err;
