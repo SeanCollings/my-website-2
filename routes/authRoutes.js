@@ -38,18 +38,4 @@ export default app => {
       throw err;
     }
   });
-
-  app.get('/api/allow_notifications', async (req, res) => {
-    try {
-      if (req.user) {
-        await Users.updateOne(
-          { _id: req.user._id },
-          { $set: { allowNotifications: true } }
-        );
-      }
-      res.send(req.user);
-    } catch (err) {
-      throw err;
-    }
-  });
 };

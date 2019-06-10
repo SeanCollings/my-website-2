@@ -17,6 +17,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
 import { withStyles } from '@material-ui/core/styles';
 
 // import Paper from './components/paper';
@@ -37,6 +38,17 @@ const styles = theme => ({
   },
   group: {
     margin: `${theme.spacing.unit}px 0`
+  },
+  enableButtons: {
+    backgroundColor: '#FF4136',
+    minWidth: '240px',
+    marginTop: '24px'
+  },
+  infoIcon: {
+    paddingLeft: '10px',
+    position: 'relative',
+    top: '20px',
+    color: 'white'
   }
 });
 
@@ -240,7 +252,7 @@ class UserProfilePage extends Component {
   };
 
   renderEnableButtons = () => {
-    const { resizeScreen } = this.props;
+    const { resizeScreen, classes } = this.props;
     const {
       showEnableLocation,
       locationButtonText,
@@ -253,36 +265,40 @@ class UserProfilePage extends Component {
           <Button
             size={resizeScreen ? 'small' : 'medium'}
             style={{
-              color: 'white',
-              backgroundColor: '#FF4136',
-              minWidth: '250px',
-              marginTop: '24px',
-              opacity: showAddToHomeScreen ? '' : '0.4'
+              opacity: showAddToHomeScreen ? '' : '0.4',
+              color: 'white'
             }}
+            className={classes.enableButtons}
             onClick={this.addToHomeScreenClick}
             disabled={showAddToHomeScreen ? false : true}
           >
             Add to Home screen
           </Button>
+          <InfoIcon
+            className={classes.infoIcon}
+            style={{ opacity: showAddToHomeScreen ? '' : '0.4' }}
+          />
         </Grid>
         <Grid item>
           <SetupNotifications />
         </Grid>
         <Grid item>
           <Button
+            className={classes.enableButtons}
             size={resizeScreen ? 'small' : 'medium'}
             style={{
-              color: 'white',
-              backgroundColor: '#FF4136',
-              minWidth: '250px',
-              marginTop: '24px',
-              opacity: showEnableLocation ? '' : '0.4'
+              opacity: showEnableLocation ? '' : '0.4',
+              color: 'white'
             }}
             onClick={this.enableLocationClick}
             disabled={showEnableLocation ? false : true}
           >
             {locationButtonText}
           </Button>
+          <InfoIcon
+            className={classes.infoIcon}
+            style={{ opacity: showEnableLocation ? '' : '0.4' }}
+          />
         </Grid>
       </Grid>
     );

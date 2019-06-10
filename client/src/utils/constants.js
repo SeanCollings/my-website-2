@@ -5,7 +5,8 @@ export const MENU_LIST = [
   'Contact',
   'Pereritto',
   'Maintenance',
-  'Notifications'
+  'Notifications',
+  'Locations'
 ];
 export const PERERITTO_PATH = '/pereritto';
 export const MAINTENANCE_PATH = '/maintenance';

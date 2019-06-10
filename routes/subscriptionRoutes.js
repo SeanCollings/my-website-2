@@ -1,5 +1,6 @@
-// import requireLogin from '../middlewares/requireLogin';
+import requireLogin from '../middlewares/requireLogin';
 import webPush from 'web-push';
+import { MessageTypeEnum } from '../client/src/utils/constants';
 
 const mongoose = require('mongoose');
 const Subscription = mongoose.model('subscriptions');
@@ -7,7 +8,7 @@ const Users = mongoose.model('users');
 const Groups = mongoose.model('notificationgroups');
 
 export default app => {
-  app.post('/api/update_subscriptions', async (req, res) => {
+  app.post('/api/update_subscriptions', requireLogin, async (req, res) => {
     try {
       const { newSub } = req.body;
       let userId = null;
@@ -30,7 +31,7 @@ export default app => {
     }
   });
 
-  app.post('/api/send_splash', async (req, res) => {
+  app.post('/api/send_splash', requireLogin, async (req, res) => {
     try {
       const { givenName, familyName } = req.user;
       const { groupId } = req.body;
@@ -76,6 +77,41 @@ export default app => {
         }
       }
     } catch (err) {
+      throw err;
+    }
+  });
+
+  app.get('/api/allow_notifications', requireLogin, async (req, res) => {
+    try {
+      if (req.user) {
+        await Users.updateOne(
+          { _id: req.user._id },
+          { $set: { allowNotifications: true } }
+        );
+      }
+      res.send(req.user);
+    } catch (err) {
+      throw err;
+    }
+  });
+
+  app.post('/api/disable_notifications', requireLogin, async (req, res) => {
+    try {
+      const { _id } = req.user;
+
+      await Users.updateOne({ _id }, { $set: { allowNotifications: false } });
+
+      await Subscription.deleteMany({ _user: _id });
+
+      res.send({
+        type: MessageTypeEnum.success,
+        message: "You've successfully disabled notifications!"
+      });
+    } catch (err) {
+      res.send({
+        type: MessageTypeEnum.error,
+        message: 'Something went wrong in disable_notifications'
+      });
       throw err;
     }
   });

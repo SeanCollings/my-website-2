@@ -66,10 +66,7 @@ class NotificationsPage extends Component {
       speed: 100
     };
 
-    if (
-      app.notificationState !== 'granted' ||
-      (auth && auth.allowNotifications && !auth.allowNotifications)
-    )
+    if (app.notificationState !== 'granted' || !auth.allowNotifications)
       return (
         <Grid item className={classes.enableNotifications}>
           <Typography paragraph>Whoopsie Doodle...</Typography>

@@ -230,7 +230,12 @@ export default app => {
 
         const users = await Users.find(
           { _id: { $in: membersArray } },
-          { givenName: 1, familyName: 1, uploadedPhoto: 1 }
+          {
+            givenName: 1,
+            familyName: 1,
+            uploadedPhoto: 1,
+            allowNotifications: 1
+          }
         ).sort({ givenName: 1 });
 
         console.log('Found members:', users.length);

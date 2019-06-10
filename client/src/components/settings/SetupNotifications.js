@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 import * as actions from '../../actions';
 import { notificationState, getPublicVapidKey } from '../../actions/appActions';
 import { urlBase64ToUint8Array } from '../../utils/utility';
+import Loader from 'react-loader-advanced';
+import MiniLoader from 'react-loader-spinner';
 
+import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
 import notificationImage from '../../images/fry.png';
@@ -11,16 +14,42 @@ import notificationImageSmall from '../../images/fry_small.png';
 import notificationIcon from '../../images/icons/icon-96x96.png';
 import notificationBadge from '../../images/icons/bat.png';
 
+import InfoIcon from '@material-ui/icons/InfoOutlined';
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = theme => ({
+  enableButtons: {
+    minWidth: '240px',
+    marginTop: '24px'
+  },
+  infoIcon: {
+    paddingLeft: '10px',
+    position: 'relative',
+    top: '26px',
+    color: 'white'
+  }
+});
+
 class SetupNotifications extends Component {
   state = {
     showEnableNotifications: false,
     notificationsButtonText: 'Enable Notifications',
-    notificationTypeObtained: false
+    notificationTypeObtained: false,
+    updating: false
   };
 
   componentDidMount() {
     this.checkComponentState();
     if (!this.props.app.publicVapidKey) this.props.getPublicVapidKey();
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.snackBar.open && this.state.updating) {
+      this.props.fetchUser();
+      this.setState({ updating: false });
+    }
+
+    return true;
   }
 
   componentDidUpdate() {
@@ -36,7 +65,7 @@ class SetupNotifications extends Component {
   }
 
   checkComponentState() {
-    const { app } = this.props;
+    const { app, auth } = this.props;
     const { notificationTypeObtained } = this.state;
 
     if (app.notificationState && !notificationTypeObtained) {
@@ -45,7 +74,19 @@ class SetupNotifications extends Component {
       } else if (app.notificationState === 'denied') {
         this.setState({ notificationsButtonText: 'Notifications Denied' });
       } else {
-        this.setState({ notificationsButtonText: 'Notifications Enabled' });
+        if (auth.allowNotifications) {
+          this.setState({
+            ...this.state,
+            notificationsButtonText: 'Disable Notifications',
+            showEnableNotifications: true
+          });
+        } else {
+          this.setState({
+            ...this.state,
+            notificationsButtonText: 'Enable Notifications',
+            showEnableNotifications: true
+          });
+        }
       }
       this.setState({ notificationTypeObtained: true });
     }
@@ -92,7 +133,6 @@ class SetupNotifications extends Component {
     if (!('serviceWorker' in navigator)) {
       return;
     }
-
     try {
       let reg;
       navigator.serviceWorker.ready
@@ -116,6 +156,8 @@ class SetupNotifications extends Component {
               })
               .then(newSub => {
                 this.props.updateSubscriptions(newSub);
+                this.props.userAllowsNotifications();
+                this.setState({ updating: false });
               });
           } else {
             // We have a subscription
@@ -136,6 +178,7 @@ class SetupNotifications extends Component {
       'serviceWorker' in navigator &&
       'permissions' in navigator
     ) {
+      this.setState({ updating: true });
       Notification.requestPermission(result => {
         console.log('User Choice', result);
         if (result !== 'granted') {
@@ -143,20 +186,56 @@ class SetupNotifications extends Component {
           this.setState({
             ...this.state,
             showEnableNotifications: false,
-            notificationsButtonText: 'Notifications Denied'
+            notificationsButtonText: 'Notifications Denied',
+            updating: false
           });
         } else {
           console.log('Notifications granted!');
           this.setState({
             ...this.state,
-            showEnableNotifications: false,
-            notificationsButtonText: 'Notifications Enabled'
+            // showEnableNotifications: false,
+            notificationsButtonText: 'Disable Notifications'
           });
           this.configurePushSub();
         }
 
         this.props.notificationState(result);
       });
+    }
+  };
+
+  disableNotificationsClick = () => {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+    try {
+      navigator.serviceWorker.ready
+        .then(swreg => {
+          return swreg.pushManager.getSubscription();
+        })
+        .then(sub => {
+          console.log('Can we unsubscribe', sub);
+          if (sub !== null) {
+            return sub.unsubscribe().then(success => {
+              if (success) {
+                this.setState({
+                  ...this.state,
+                  notificationsButtonText: 'Enable Notifications',
+                  updating: true
+                });
+                this.props.disableNotifications();
+              }
+            });
+          } else {
+            // We have a subscription
+            console.log('User cannot be found');
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -175,27 +254,59 @@ class SetupNotifications extends Component {
     }
   };
 
+  spinner = (
+    <span>
+      <MiniLoader type="TailSpin" color="#FFC300" height={45} width={45} />
+    </span>
+  );
+
+  spinnerSmall = (
+    <span>
+      <MiniLoader type="TailSpin" color="#FFC300" height={30} width={30} />
+    </span>
+  );
+
   render() {
-    const { resizeScreen, app } = this.props;
-    const { showEnableNotifications, notificationsButtonText } = this.state;
+    const { resizeScreen, app, classes, auth } = this.props;
+    const {
+      showEnableNotifications,
+      notificationsButtonText,
+      updating
+    } = this.state;
 
     if (!app.publicVapidKey) return null;
 
     return (
-      <Button
-        size={resizeScreen ? 'small' : 'medium'}
-        style={{
-          color: 'white',
-          backgroundColor: '#FF4136',
-          minWidth: '250PX',
-          marginTop: '24px',
-          opacity: showEnableNotifications ? '' : '0.4'
-        }}
-        onClick={() => this.enableNotificationsClick()}
-        disabled={showEnableNotifications ? false : true}
-      >
-        {notificationsButtonText}
-      </Button>
+      <Grid item style={{ display: 'inline-flex' }}>
+        <Loader
+          show={updating ? true : false}
+          message={resizeScreen ? this.spinnerSmall : this.spinner}
+          backgroundStyle={{ backgroundColor: 'transparent' }}
+          messageStyle={{ paddingTop: '24px' }}
+        >
+          <Button
+            className={classes.enableButtons}
+            size={resizeScreen ? 'small' : 'medium'}
+            style={{
+              color: 'white',
+              backgroundColor: '#FF4136',
+              opacity: showEnableNotifications && !updating ? '' : '0.4'
+            }}
+            onClick={() =>
+              !auth.allowNotifications
+                ? this.enableNotificationsClick()
+                : this.disableNotificationsClick()
+            }
+            disabled={showEnableNotifications && !updating ? false : true}
+          >
+            {notificationsButtonText}
+          </Button>
+        </Loader>
+        <InfoIcon
+          className={classes.infoIcon}
+          style={{ opacity: showEnableNotifications ? '' : '0.4' }}
+        />
+      </Grid>
     );
   }
 }
@@ -207,4 +318,4 @@ function mapStateToProps({ auth, resizeScreen, snackBar, subscriptions, app }) {
 export default connect(
   mapStateToProps,
   { ...actions, notificationState, getPublicVapidKey }
-)(SetupNotifications);
+)(withStyles(styles)(SetupNotifications));

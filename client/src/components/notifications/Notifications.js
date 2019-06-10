@@ -16,6 +16,9 @@ import GroupIcon from '@material-ui/icons/SupervisorAccount';
 import PersonIcon from '@material-ui/icons/Person';
 import BackIcon from '@material-ui/icons/ArrowBackIos';
 import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -36,7 +39,9 @@ class Notifications extends Component {
   state = {
     groupHeader: 'All Groups',
     selectedGroup: null,
-    groupMembers: []
+    groupMembers: null,
+    openList: false,
+    numberGroupMembers: 0
   };
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -61,17 +66,27 @@ class Notifications extends Component {
   };
 
   selectedGroup = group => {
-    this.props.getGroupMembers(group._id);
+    // this.props.getGroupMembers(group._id);
 
     this.setState({
       ...this.state,
       groupHeader: `${group.name}`,
-      selectedGroup: group
+      selectedGroup: group,
+      numberGroupMembers: group.members.length + 1
     });
   };
 
+  handleListClick() {
+    const { openList, groupMembers, selectedGroup } = this.state;
+    this.setState({ openList: !openList });
+
+    if (!groupMembers) {
+      this.props.getGroupMembers(selectedGroup._id);
+    }
+  }
+
   renderSelectedGroup = () => {
-    const { groupMembers } = this.state;
+    const { groupMembers, openList, numberGroupMembers } = this.state;
 
     return (
       <div>
@@ -94,38 +109,51 @@ class Notifications extends Component {
             maxWidth: '360px'
           }}
         >
-          <Typography style={{ paddingTop: '12px' }}>Members:</Typography>
-          {groupMembers.length > 0 ? (
+          <List>
+            <ListItem button onClick={() => this.handleListClick()}>
+              <GroupIcon />
+              <ListItemText primary={`Members: ${numberGroupMembers}`} />
+              {openList ? <ExpandLess /> : <ExpandMore />}
+            </ListItem>
+          </List>
+          <Collapse in={openList} timeout="auto" unmountOnExit>
             <List>
-              {groupMembers.map(member => {
-                const username = `${member.givenName} ${member.familyName}`;
-                const initial = member.givenName.charAt(0).toUpperCase();
-                return (
-                  <ListItem key={member._id}>
-                    <ListItemAvatar>
-                      <Avatar
-                        src={member.uploadedPhoto}
-                        style={{
-                          backgroundColor: member.uploadedPhoto
-                            ? 'transparent'
-                            : '#3D9970',
-                          height: '30px',
-                          width: '30px'
-                        }}
-                      >
-                        {initial}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText primary={username} />
-                  </ListItem>
-                );
-              })}
+              {!groupMembers ? (
+                <ListItem>
+                  <ListItemText primary="Loading members..." />
+                </ListItem>
+              ) : (
+                groupMembers.map(member => {
+                  const username = `${member.givenName} ${member.familyName}`;
+                  const initial = member.givenName.charAt(0).toUpperCase();
+                  return (
+                    <ListItem
+                      key={member._id}
+                      style={{
+                        opacity: member.allowNotifications ? '1' : '0.5'
+                      }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          src={member.uploadedPhoto}
+                          style={{
+                            backgroundColor: member.uploadedPhoto
+                              ? 'transparent'
+                              : '#3D9970',
+                            height: '30px',
+                            width: '30px'
+                          }}
+                        >
+                          {initial}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText primary={username} />
+                    </ListItem>
+                  );
+                })
+              )}
             </List>
-          ) : (
-            <Typography style={{ paddingTop: '12px', paddingBottom: '12px' }}>
-              Loading members...
-            </Typography>
-          )}
+          </Collapse>
         </Grid>
       </div>
     );
@@ -134,7 +162,9 @@ class Notifications extends Component {
   renderGroups = () => {
     const { notifications, auth } = this.props;
 
-    if (!notifications.groups || notifications.groups.length === 0)
+    if (!notifications.groups)
+      return <Typography>Loading your groups...</Typography>;
+    else if (notifications.groups.length === 0)
       return <Typography>You're not apart of any groups yet...</Typography>;
 
     const groupsLength = notifications.groups.length;
@@ -204,7 +234,8 @@ class Notifications extends Component {
                 ...this.state,
                 selectedGroup: null,
                 groupHeader: 'All Groups',
-                groupMembers: []
+                groupMembers: null,
+                openList: false
               })
             }
           >

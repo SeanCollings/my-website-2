@@ -47,12 +47,6 @@ export const updateUser = attributes => async dispatch => {
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
-export const userAllowsNotifications = () => async dispatch => {
-  const res = await axios.get('/api/allow_notifications', {});
-
-  dispatch({ type: FETCH_USER, payload: res.data });
-};
-
 export const verifyUser = route => async dispatch => {
   const res = await axios.get(`/api/${route}`);
 
@@ -170,6 +164,18 @@ export const updateSubscriptions = newSub => async dispatch => {
 
 export const setSubscriptionNull = () => dispatch => {
   dispatch({ type: SET_SUBSCRIPTION_NULL });
+};
+
+export const userAllowsNotifications = () => async dispatch => {
+  const res = await axios.get('/api/allow_notifications', {});
+
+  dispatch({ type: FETCH_USER, payload: res.data });
+};
+
+export const disableNotifications = () => async dispatch => {
+  const res = await axios.post('/api/disable_notifications', {});
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
 export const sendSplashNotification = groupId => async dispatch => {

@@ -26,6 +26,7 @@ import ProfileIcon from '@material-ui/icons/PersonOutline';
 import HomeIcon from '@material-ui/icons/HomeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 import VibrationIcon from '@material-ui/icons/Vibration';
+import LocationIcon from '@material-ui/icons/ExploreOutlined';
 
 let googlePic = '';
 
@@ -90,6 +91,10 @@ class TemporaryDrawer extends React.Component {
       return null;
     }
 
+    if (item === 'Locations' && !this.props.auth) {
+      return null;
+    }
+
     return (
       <NavLink
         key={item}
@@ -125,6 +130,11 @@ class TemporaryDrawer extends React.Component {
           {item === 'Notifications' && (
             <ListItemIcon>
               <VibrationIcon />
+            </ListItemIcon>
+          )}
+          {item === 'Locations' && (
+            <ListItemIcon>
+              <LocationIcon />
             </ListItemIcon>
           )}
           <ListItemText primary={item} />
