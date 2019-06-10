@@ -1,4 +1,5 @@
 import axios from '../utils/axios';
+import { MessageTypeEnum } from '../utils/constants';
 import {
   FETCH_USER,
   VERIFY_USER,
@@ -12,7 +13,7 @@ import {
   GET_USER_AWARDS,
   UPDATE_SUBSCRIPTIONS,
   SET_SUBSCRIPTION_NULL,
-  TEST_NOTIFICATION,
+  GET_SPLASHES,
   GET_NOTIFICATION_GROUPS,
   GET_GROUP_MEMBERS
 } from './types';
@@ -172,16 +173,26 @@ export const userAllowsNotifications = () => async dispatch => {
   dispatch({ type: FETCH_USER, payload: res.data });
 };
 
-export const disableNotifications = () => async dispatch => {
-  const res = await axios.post('/api/disable_notifications', {});
+export const disableNotifications = showConfirmationMessage => async dispatch => {
+  const res = await axios.post('/api/disable_notifications', {
+    showConfirmationMessage
+  });
 
-  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+  if (res.data.type !== MessageTypeEnum.none) {
+    dispatch({ type: SHOW_MESSAGE, payload: res.data });
+  }
+};
+
+export const getSplashes = () => async dispatch => {
+  const res = await axios.get('/api/get_splashes');
+
+  dispatch({ type: GET_SPLASHES, payload: res.data });
 };
 
 export const sendSplashNotification = groupId => async dispatch => {
-  await axios.post('/api/send_splash', { groupId });
+  const res = await axios.post('/api/send_splash', { groupId });
 
-  dispatch({ type: TEST_NOTIFICATION });
+  dispatch({ type: GET_SPLASHES, payload: res.data });
 };
 
 export const getNotificationGroups = () => async dispatch => {

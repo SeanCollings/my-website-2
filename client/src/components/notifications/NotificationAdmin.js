@@ -239,7 +239,11 @@ class NotificationAdmin extends Component {
             </ListItemSecondaryAction>
           </ListItem>
           {groupsLength === index + 1 ? null : (
-            <Divider variant="inset" component="li" />
+            <Divider
+              variant="inset"
+              component="li"
+              style={{ marginLeft: '56px' }}
+            />
           )}
         </div>
       );

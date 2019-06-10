@@ -173,6 +173,8 @@ class SetupNotifications extends Component {
   };
 
   enableNotificationsClick = () => {
+    const { auth } = this.props;
+
     if (
       'Notification' in window &&
       'serviceWorker' in navigator &&
@@ -196,7 +198,34 @@ class SetupNotifications extends Component {
             // showEnableNotifications: false,
             notificationsButtonText: 'Disable Notifications'
           });
-          this.configurePushSub();
+
+          if (!auth.allowNotifications) {
+            navigator.serviceWorker.ready
+              .then(swreg => {
+                return swreg.pushManager.getSubscription();
+              })
+              .then(sub => {
+                console.log('Can we auto unsubscribe', sub);
+                if (sub !== null) {
+                  return sub.unsubscribe().then(success => {
+                    if (success) {
+                      this.props.disableNotifications(false);
+                      this.configurePushSub();
+                    }
+                  });
+                } else {
+                  this.configurePushSub();
+                  console.log('User cannot be found');
+                }
+              })
+              .catch(err => {
+                console.log(err);
+              });
+
+            // this.disableNotificationsClick();
+          } else {
+            this.configurePushSub();
+          }
         }
 
         this.props.notificationState(result);
@@ -223,7 +252,7 @@ class SetupNotifications extends Component {
                   notificationsButtonText: 'Enable Notifications',
                   updating: true
                 });
-                this.props.disableNotifications();
+                this.props.disableNotifications(true);
               }
             });
           } else {
@@ -293,7 +322,7 @@ class SetupNotifications extends Component {
               opacity: showEnableNotifications && !updating ? '' : '0.4'
             }}
             onClick={() =>
-              !auth.allowNotifications
+              !auth.allowNotifications || app.notificationState === 'prompt'
                 ? this.enableNotificationsClick()
                 : this.disableNotificationsClick()
             }

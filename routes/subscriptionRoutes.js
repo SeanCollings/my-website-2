@@ -31,49 +31,70 @@ export default app => {
     }
   });
 
+  app.get('/api/get_splashes', requireLogin, async (req, res) => {
+    try {
+      const { _id } = req.user;
+
+      const splashes = await Users.findOne({ _id }, { splashes: 1 });
+      res.send(splashes);
+    } catch (err) {
+      throw err;
+    }
+  });
+
   app.post('/api/send_splash', requireLogin, async (req, res) => {
     try {
-      const { givenName, familyName } = req.user;
+      const { _id, givenName, familyName, splashes } = req.user;
       const { groupId } = req.body;
 
       const originator = `${givenName} ${familyName}`;
-      const group = await Groups.findOne({ _id: groupId });
 
-      const memberIds = [];
-      if (group) {
-        memberIds.push(group.createdById);
-        group.members.map(member => {
-          memberIds.push(member._user);
-        });
+      if (splashes > 0) {
+        console.log('Splashes left:', splashes);
+        const group = await Groups.findOne({ _id: groupId });
 
-        const subscriptions = await Subscription.find({
-          _user: { $in: memberIds }
-        });
+        const memberIds = [];
+        if (group) {
+          memberIds.push(group.createdById);
+          group.members.map(member => {
+            memberIds.push(member._user);
+          });
 
-        if (subscriptions.length > 0) {
-          console.log('Subscriptions length:', subscriptions.length);
+          const subscriptions = await Subscription.find({
+            _user: { $in: memberIds }
+          });
 
-          subscriptions.forEach(sub => {
-            const pushConfig = {
-              endpoint: sub.endpoint,
-              keys: {
-                auth: sub.keys.auth,
-                p256dh: sub.keys.p256dh
-              }
-            };
+          if (subscriptions.length > 0) {
+            console.log('Subscriptions length:', subscriptions.length);
 
-            const json = JSON.stringify({
-              title: 'Splashed!',
-              content: `${originator} is Splashing!`,
-              openUrl: '/pereritto'
+            subscriptions.forEach(sub => {
+              const pushConfig = {
+                endpoint: sub.endpoint,
+                keys: {
+                  auth: sub.keys.auth,
+                  p256dh: sub.keys.p256dh
+                }
+              };
+
+              const json = JSON.stringify({
+                title: 'Splashed!',
+                content: `${originator} is Splashing from ${group.name}!`,
+                openUrl: '/pereritto'
+              });
+
+              webPush.sendNotification(pushConfig, json);
             });
 
-            webPush.sendNotification(pushConfig, json);
-          });
-          return res.sendStatus(200);
-        } else {
-          console.log('No subscriptions found');
-          return res.sendStatus(204);
+            await Users.updateOne(
+              { _id },
+              { $set: { splashes: splashes - 1, lastSplashed: new Date() } }
+            );
+
+            return res.send({ splashes: splashes - 1 });
+          } else {
+            console.log('No subscriptions found');
+            return res.sendStatus(204);
+          }
         }
       }
     } catch (err) {
@@ -98,15 +119,23 @@ export default app => {
   app.post('/api/disable_notifications', requireLogin, async (req, res) => {
     try {
       const { _id } = req.user;
+      const { showConfirmationMessage } = req.body;
 
       await Users.updateOne({ _id }, { $set: { allowNotifications: false } });
 
       await Subscription.deleteMany({ _user: _id });
 
-      res.send({
-        type: MessageTypeEnum.success,
-        message: "You've successfully disabled notifications!"
-      });
+      if (showConfirmationMessage) {
+        res.send({
+          type: MessageTypeEnum.success,
+          message: "You've successfully disabled notifications!"
+        });
+      } else {
+        res.send({
+          type: MessageTypeEnum.none,
+          message: ''
+        });
+      }
     } catch (err) {
       res.send({
         type: MessageTypeEnum.error,

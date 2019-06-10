@@ -70,7 +70,6 @@ self.addEventListener('push', event => {
     };
 
     if (event.data) {
-      console.log('Event.data:', event.data);
       data = JSON.parse(event.data.text());
     }
     console.log('DATA:', data);

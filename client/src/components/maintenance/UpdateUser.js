@@ -62,6 +62,7 @@ class UpdateUser extends Component {
     this.nameInput = React.createRef();
     this.surnameInput = React.createRef();
     this.emailInput = React.createRef();
+    this.splashInput = React.createRef();
     this.superUserInput = React.createRef();
     this.pererittoInput = React.createRef();
   }
@@ -90,6 +91,7 @@ class UpdateUser extends Component {
         givenName: this.nameInput.current.value,
         familyName: this.surnameInput.current.value,
         emailAddress: this.emailInput.current.value,
+        splashes: this.splashInput.current.value,
         superUser: this.superUserInput.current.checked,
         pererittoUser: this.pererittoInput.current.checked
       }
@@ -102,7 +104,7 @@ class UpdateUser extends Component {
     }
   };
 
-  editField = (reference, field) => {
+  editField = (reference, field, isNumber) => {
     const { classes } = this.props;
 
     return (
@@ -120,6 +122,7 @@ class UpdateUser extends Component {
         defaultValue={field}
         inputProps={{ ref: reference }}
         onChange={() => this.preventSave()}
+        type={isNumber ? 'number' : ''}
       />
     );
   };
@@ -216,6 +219,23 @@ class UpdateUser extends Component {
               classes={{ root: classes.table }}
             >
               {this.editField(this.emailInput, data.email)}
+            </TableCell>
+          </TableRow>
+          <TableRow className={classes.tableRow}>
+            <TableCell
+              component="th"
+              scope="row"
+              align="right"
+              className={classes.tableCellLeft}
+              classes={{ root: classes.table }}
+            >
+              Splashes:
+            </TableCell>
+            <TableCell
+              className={classes.tableCellRight}
+              classes={{ root: classes.table }}
+            >
+              {this.editField(this.splashInput, data.splashes, true)}
             </TableCell>
           </TableRow>
           <TableRow className={classes.tableRow}>

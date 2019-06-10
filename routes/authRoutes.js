@@ -33,6 +33,25 @@ export default app => {
       // { $set: { lastLogin: Date.now() } }
       //   );
       // }
+
+      if (req.user) {
+        const user = await Users.findOne(
+          { _id: req.user._id },
+          { splashes: 1, lastSplashed: 1 }
+        );
+
+        const today = new Date();
+        const isToday =
+          user.lastSplashed.getDate() === today.getDate() &&
+          user.lastSplashed.getMonth() === today.getMonth() &&
+          user.lastSplashed.getFullYear() === today.getFullYear();
+
+        if (!isToday && user.splashes < 5)
+          await Users.updateOne(
+            { _id: req.user._id },
+            { $set: { splashes: 5 } }
+          );
+      }
       res.send(req.user);
     } catch (err) {
       throw err;

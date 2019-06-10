@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
+import Loader from 'react-loader-advanced';
+import MiniLoader from 'react-loader-spinner';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -41,11 +43,16 @@ class Notifications extends Component {
     selectedGroup: null,
     groupMembers: null,
     openList: false,
-    numberGroupMembers: 0
+    numberGroupMembers: 0,
+    updating: false
   };
 
+  componentDidMount() {
+    this.props.getSplashes();
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
-    const { notifications } = nextProps;
+    const { notifications, subscriptions } = nextProps;
     const { groupMembers } = this.state;
 
     if (this.props.notifications.members !== notifications.members) {
@@ -55,6 +62,10 @@ class Notifications extends Component {
       }
     }
 
+    if (this.props.subscriptions.splashes !== subscriptions.splashes) {
+      this.setState({ updating: false });
+    }
+
     return true;
   }
 
@@ -62,6 +73,7 @@ class Notifications extends Component {
     const { selectedGroup } = this.state;
 
     event.preventDefault();
+    this.setState({ updating: true });
     this.props.sendSplashNotification(selectedGroup._id);
   };
 
@@ -85,21 +97,42 @@ class Notifications extends Component {
     }
   }
 
+  spinner = (
+    <span>
+      <MiniLoader type="TailSpin" color="#FFC300" height={36} width={36} />
+    </span>
+  );
+
   renderSelectedGroup = () => {
-    const { groupMembers, openList, numberGroupMembers } = this.state;
+    const { subscriptions } = this.props;
+    const { groupMembers, openList, numberGroupMembers, updating } = this.state;
+
+    const canSplash = subscriptions.splashes > 0;
 
     return (
       <div>
-        <Button
-          onClick={event => this.sendSplash(event)}
-          style={{
-            backgroundColor: '#0074D9',
-            color: 'white',
-            marginTop: '48px'
-          }}
+        <Loader
+          show={updating ? true : false}
+          message={this.spinner}
+          backgroundStyle={{ backgroundColor: 'transparent' }}
+          messageStyle={{ paddingTop: '48px' }}
         >
-          Send Splash
-        </Button>
+          <Button
+            onClick={event => this.sendSplash(event)}
+            style={{
+              backgroundColor: '#0074D9',
+              color: 'white',
+              marginTop: '48px',
+              opacity: updating || !canSplash ? '0.4' : '1'
+            }}
+            disabled={updating || !canSplash ? true : false}
+          >
+            Send Splash
+          </Button>
+        </Loader>
+        <Typography style={{ paddingTop: '12px', color: 'bisque' }}>
+          Splashes Left: {subscriptions.splashes}
+        </Typography>
         <Grid
           item
           style={{
@@ -111,9 +144,13 @@ class Notifications extends Component {
         >
           <List>
             <ListItem button onClick={() => this.handleListClick()}>
-              <GroupIcon />
+              <GroupIcon style={{ opacity: '0.54' }} />
               <ListItemText primary={`Members: ${numberGroupMembers}`} />
-              {openList ? <ExpandLess /> : <ExpandMore />}
+              {openList ? (
+                <ExpandLess style={{ opacity: '0.54' }} />
+              ) : (
+                <ExpandMore style={{ opacity: '0.54' }} />
+              )}
             </ListItem>
           </List>
           <Collapse in={openList} timeout="auto" unmountOnExit>
@@ -260,11 +297,12 @@ class Notifications extends Component {
   }
 }
 
-function mapStateToProps({ auth, resizeScreen, notifications }) {
+function mapStateToProps({ auth, resizeScreen, notifications, subscriptions }) {
   return {
     auth,
     resizeScreen,
-    notifications
+    notifications,
+    subscriptions
   };
 }
 

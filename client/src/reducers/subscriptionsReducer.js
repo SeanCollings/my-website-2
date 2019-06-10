@@ -1,11 +1,12 @@
 import {
   UPDATE_SUBSCRIPTIONS,
   SET_SUBSCRIPTION_NULL,
-  TEST_NOTIFICATION
+  GET_SPLASHES
 } from '../actions/types';
 
 const intialState = {
-  subscription: null
+  subscription: null,
+  splashes: null
 };
 
 export default function(state = intialState, action) {
@@ -14,8 +15,8 @@ export default function(state = intialState, action) {
       return { ...state, subscription: action.payload };
     case SET_SUBSCRIPTION_NULL:
       return { ...state, subscription: null };
-    case TEST_NOTIFICATION:
-      return state;
+    case GET_SPLASHES:
+      return { ...state, splashes: action.payload.splashes };
     default:
       return state;
   }

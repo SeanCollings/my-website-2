@@ -18,7 +18,7 @@ export default app => {
 
         switch (req.query.param1) {
           case MAINTENANCE_MENU.ALL_USERS.type:
-            users = await Users.find().sort({ familyName: 1, givenName: 1 });
+            users = await Users.find().sort({ givenName: 1, familyName: 1 });
             break;
           case MAINTENANCE_MENU.PERERITTO_USERS.type:
             users = await Users.find({ pererittoUser: true }).sort({

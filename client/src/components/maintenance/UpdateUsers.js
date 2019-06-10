@@ -197,6 +197,7 @@ class UpdateUsers extends Component {
                     name: user.givenName,
                     surname: user.familyName,
                     email: user.emailAddress,
+                    splashes: user.splashes,
                     superUser: user.superUser,
                     pererittoUser: user.pererittoUser,
                     lastLogin: user.lastLogin

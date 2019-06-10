@@ -7,6 +7,8 @@ const userSchema = new Schema({
   emailAddress: String,
   googlePhoto: String,
   uploadedPhoto: String,
+  splashes: { type: Number, default: 5 },
+  lastSplashed: { type: Date, default: new Date(0) },
   superUser: { type: Boolean, default: false },
   pererittoUser: { type: Boolean, default: true },
   allowNotifications: { type: Boolean, default: false },
