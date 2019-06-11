@@ -1,6 +1,8 @@
 /* eslint-disable */
 /* eslint no-restricted-globals: "off" */
 import * as precaching from 'workbox-precaching';
+import axios from './utils/axios';
+import { readAllData, deleteItemFromData } from './utils/utility';
 // your own imports
 
 if (self.__precacheManifest) {
@@ -8,10 +10,30 @@ if (self.__precacheManifest) {
 }
 
 // your own code
+const CACHE_STATIC = 'static-v0';
+// const CACHE_DYNAMIC = 'dynamic-v1';
+
+const STATIC_FILES = [
+  '/favicon.ico',
+  '/css/Roboto.css',
+  '/css/MaterialIcons.css',
+  '/icons/icon-144x144.png',
+  '/icons/icon-96x96.png',
+  '/manifest.json'
+];
 
 self.addEventListener('install', event => {
   console.log('[Service Worker] Installing Service Worker ...', event);
-  self.skipWaiting();
+
+  event.waitUntil(
+    caches.open(CACHE_STATIC).then(cache => {
+      console.log('[Service Worker] Precaching the app...');
+
+      cache.addAll(STATIC_FILES);
+      self.skipWaiting();
+    })
+  );
+  // self.skipWaiting();
 });
 
 self.addEventListener('activate', function(event) {
@@ -19,10 +41,24 @@ self.addEventListener('activate', function(event) {
   return self.clients.claim();
 });
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', event => {
   // console.log('[Service Worker] Fetch:', event);
   // console.log('[Service Worker] Event.Request:', event.request);
-  event.respondWith(fetch(event.request));
+
+  const url = '/api/add_notificationgroup';
+  // If request url is the same as 'url'
+  // console.log(event.request.url);
+  if (event.request.url.indexOf(url) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+        console.log('ClonedRes:', clonedRes);
+        return res;
+      })
+    );
+  } else {
+    event.respondWith(fetch(event.request));
+  }
 });
 
 self.addEventListener('notificationclick', event => {
@@ -95,4 +131,36 @@ self.addEventListener('push', event => {
 self.addEventListener('sync', function(event) {
   console.log('[Service Worker] Background syncing');
   // console.log('[Service Worker] Background syncing', event);
+
+  if (event.tag === 'sync-new-splash') {
+    console.log('[Service Worker] Syncing new Splashes');
+    event.waitUntil(
+      readAllData('send-splash').then(data => {
+        console.log('DATA from sync', data[0].id);
+
+        fetch('/api/send_splash', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ groupId: data[0].id })
+        })
+          .then(res => {
+            console.log('Sent data', res);
+            deleteItemFromData('send-splash', data[0].id);
+          })
+          .catch(function(err) {
+            console.log('Error while sending data', err);
+          });
+        // axios
+        //   .post('/api/send_splash', { groupId: data[0].id })
+        //   .then(res => {
+        //     deleteItemFromData('send-splash', data[0].id);
+        //   })
+        //   .catch(function(err) {
+        //     console.log('Error while sending data', err);
+        //   });
+      })
+    );
+  }
 });

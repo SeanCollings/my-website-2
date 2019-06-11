@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
+import { showMessage } from '../../actions/snackBarActions';
 import Loader from 'react-loader-advanced';
 import MiniLoader from 'react-loader-spinner';
+
+import { MessageTypeEnum } from '../../utils/constants';
+import { writeData } from '../../utils/utility';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -73,8 +77,32 @@ class Notifications extends Component {
     const { selectedGroup } = this.state;
 
     event.preventDefault();
-    this.setState({ updating: true });
-    this.props.sendSplashNotification(selectedGroup._id);
+
+    if (!navigator.onLine) {
+      if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        navigator.serviceWorker.ready.then(sw => {
+          // Write post to IndexedDB
+          writeData('send-splash', { id: selectedGroup._id })
+            .then(() => {
+              // Register sync event with the service worker
+              // Choose id param to distinguish between different sync tasks
+              return sw.sync.register('sync-new-splash');
+            })
+            .then(() => {
+              this.props.showMessage(
+                MessageTypeEnum.info,
+                'Your Splash has been synced!'
+              );
+            })
+            .catch(function(err) {
+              console.log(err);
+            });
+        });
+      }
+    } else {
+      this.props.sendSplashNotification(selectedGroup._id);
+      this.setState({ updating: true });
+    }
   };
 
   selectedGroup = group => {
@@ -99,7 +127,7 @@ class Notifications extends Component {
 
   spinner = (
     <span>
-      <MiniLoader type="TailSpin" color="#FFC300" height={36} width={36} />
+      <MiniLoader type="TailSpin" color="#3D9970" height={36} width={36} />
     </span>
   );
 
@@ -297,16 +325,23 @@ class Notifications extends Component {
   }
 }
 
-function mapStateToProps({ auth, resizeScreen, notifications, subscriptions }) {
+function mapStateToProps({
+  auth,
+  resizeScreen,
+  notifications,
+  subscriptions,
+  maintenance: { users }
+}) {
   return {
     auth,
     resizeScreen,
     notifications,
-    subscriptions
+    subscriptions,
+    users
   };
 }
 
 export default connect(
   mapStateToProps,
-  actions
+  { ...actions, showMessage }
 )(withStyles(styles)(Notifications));

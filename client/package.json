@@ -9,6 +9,7 @@
     "before-build-webpack": "^0.2.9",
     "cra-append-sw": "^2.6.1",
     "http-proxy-middleware": "^0.19.1",
+    "idb": "^4.0.3",
     "lodash.merge": "^4.6.1",
     "material-table": "^1.36.1",
     "react": "^16.8.6",
