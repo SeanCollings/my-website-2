@@ -124,7 +124,7 @@ class PererittoPlayers extends Component {
   renderPlayerList = (playerTally, lastWinDate) => {
     const { classes } = this.props;
 
-    if (playerTally) {
+    if (playerTally && playerTally.length > 0) {
       playerTally.sort(function(a, b) {
         return b.count - a.count;
       });

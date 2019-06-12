@@ -26,7 +26,7 @@ export const fetchUser = () => dispatch => {
 
   if ('indexedDB' in window) {
     readAllData('current-user').then(data => {
-      dispatch({ type: FETCH_USER, payload: data[0] });
+      if (data) dispatch({ type: FETCH_USER, payload: data[0] });
     });
   }
 };
@@ -130,7 +130,8 @@ export const getWinnerYears = () => async dispatch => {
 
   if ('indexedDB' in window) {
     readAllData('winner-years').then(data => {
-      dispatch({ type: GET_WINNER_YEARS, payload: data[0].data });
+      if (data && data.length > 0)
+        dispatch({ type: GET_WINNER_YEARS, payload: data[0].data });
     });
   }
 };
@@ -140,9 +141,15 @@ export const clearWinners = () => {
 };
 
 export const getUserSettings = () => async dispatch => {
-  const res = await axios.get(`/api/get_usersettings`);
+  axios.get(`/api/get_usersettings`).then(res => {
+    dispatch({ type: GET_USER_SETTINGS, payload: res.data });
+  });
 
-  dispatch({ type: GET_USER_SETTINGS, payload: res.data });
+  if ('indexedDB' in window) {
+    readAllData('user-settings').then(data => {
+      if (data) dispatch({ type: GET_USER_SETTINGS, payload: data[0] });
+    });
+  }
 };
 
 export const updateProfilePic = option => async dispatch => {

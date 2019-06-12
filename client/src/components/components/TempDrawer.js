@@ -4,7 +4,7 @@ import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Gravatar from 'react-gravatar';
 import { getVersion } from '../../actions/appActions';
-import { clearAllData } from '../../utils/utility';
+import { clearAllTables } from '../../utils/utility';
 
 import { withStyles } from '@material-ui/core/styles';
 // import Drawer from '@material-ui/core/Drawer';
@@ -54,7 +54,7 @@ class TemporaryDrawer extends React.Component {
 
   removeUser = () => {
     if ('indexedDB' in window) {
-      clearAllData('current-user');
+      clearAllTables();
     }
   };
 

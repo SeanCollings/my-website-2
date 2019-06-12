@@ -52,6 +52,7 @@ self.addEventListener('fetch', event => {
   // console.log('[Service Worker] Fetch:', event);
 
   const urlGetCurrentUser = '/api/current_user';
+  const urlGetUserSettings = '/api/get_usersettings';
   const urlAddNotificationGroups = '/api/add_notificationgroup';
   const urlGetNotificationGroups = '/api/get_notificationgroups';
   const urlGetWinners = '/api/get_winners';
@@ -70,6 +71,25 @@ self.addEventListener('fetch', event => {
           })
           .then(data => {
             writeData('current-user', {
+              ...data,
+              id: new Date()
+            });
+          });
+
+        return res;
+      })
+    );
+  } else if (event.request.url.indexOf(urlGetUserSettings) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+
+        clearAllData('user-settings')
+          .then(() => {
+            return clonedRes.json();
+          })
+          .then(data => {
+            writeData('user-settings', {
               ...data,
               id: new Date()
             });

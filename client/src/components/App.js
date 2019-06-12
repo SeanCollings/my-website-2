@@ -22,6 +22,7 @@ import MaintenancePage from './MaintenancePage';
 import UserProfilePage from './UserProfilePage';
 import SettingsPage from './SettingsPage';
 import NotificationsPage from './NotificationsPage';
+import LocationsPage from './LocationsPage';
 
 import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import Header from './components/Header';
@@ -60,21 +61,13 @@ class App extends Component {
       }
     }
 
-    if (this.props.auth && this.props.settings === null) {
+    if (this.props.auth && !this.props.settings) {
       this.props.getUserSettings();
     }
   }
 
   renderPereritto() {
     if (this.props.pererittoUser) {
-      // if (
-      // !this.props.winners &&
-      // this.props.location.pathname !== PERERITTO_PATH
-      // ) {
-      //console.log('getting winners');
-      //this.props.getWinners();
-      // }
-
       return (
         <Route
           path={PERERITTO_PATH}
@@ -144,6 +137,19 @@ class App extends Component {
         <Route
           path="/notifications"
           render={props => <NotificationsPage {...props} />}
+        />
+      );
+    }
+
+    return;
+  }
+
+  renderLocations() {
+    if (this.props.auth) {
+      return (
+        <Route
+          path="/locations"
+          render={props => <LocationsPage {...props} />}
         />
       );
     }
@@ -324,6 +330,7 @@ class App extends Component {
           {this.renderSettings()}
           {this.renderMessaging()}
           {this.renderUserProfile()}
+          {this.renderLocations()}
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}
         </Switch>

@@ -2,6 +2,7 @@ import * as idb from 'idb';
 
 export const DB_TABLES = [
   'current-user',
+  'user-settings',
   'send-splash',
   'notification-groups',
   'winners',
@@ -47,6 +48,18 @@ export const clearAllData = table => {
     // Clear all from store
     store.clear();
     return tx.complete;
+  });
+};
+
+export const clearAllTables = () => {
+  return seanDB.then(db => {
+    DB_TABLES.forEach(table => {
+      var tx = db.transaction(table, 'readwrite');
+      var store = tx.objectStore(table);
+      // Clear all from store
+      store.clear();
+      return tx.complete;
+    });
   });
 };
 

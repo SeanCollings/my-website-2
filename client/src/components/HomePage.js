@@ -6,6 +6,7 @@ import * as actions from '../actions';
 
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 // import Header from './components/Header';
 // import Loader from './loaderCircular';
 // import Loader from './components/loaderLinear';
@@ -19,6 +20,16 @@ const styles = theme => ({
   },
   pageFill: {
     paddingBottom: '2.5rem'
+  },
+  content: {
+    padding: '12px 12px 0px 12px',
+    maxWidth: '400px',
+    color: '#dedede',
+    margin: 'auto',
+    textAlign: 'center'
+  },
+  textColor: {
+    color: '#dedede'
   }
 });
 
@@ -101,6 +112,25 @@ class HomePage extends Component {
           >
             Remove
           </Button>
+        </div>
+        <div className={classes.content}>
+          <Typography paragraph className={classes.textColor}>
+            This app started out as an online profile/ skill showcase, but went
+            the adjacent angle-way. Now, all the juicy dev is hidden behind a
+            login screen - only Google OAuth for now.
+          </Typography>
+          <Typography paragraph className={classes.textColor}>
+            I will, sometime in the future, return to all the pages visible but
+            I'm having a lot more fun designing the app to fit some of my
+            tailored needs.
+          </Typography>
+          <Typography paragraph className={classes.textColor}>
+            But enjoy what you can see :)
+          </Typography>
+          <Typography paragraph className={classes.textColor}>
+            PS: This app is designed mobile-first, so some of the desktop views
+            may not be styled correctly just yet...
+          </Typography>
         </div>
         {this.displayCards()}
         {/* <SetupNotifications /> */}

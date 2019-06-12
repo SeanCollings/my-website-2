@@ -11,16 +11,13 @@ export default app => {
   app.post('/api/update_subscriptions', requireLogin, async (req, res) => {
     try {
       const { newSub } = req.body;
-      let userId = null;
-
-      if (req.user) userId = req.user._id;
 
       if (newSub) {
         const keys = { auth: newSub.keys.auth, p256dh: newSub.keys.p256dh };
         await new Subscription({
           endpoint: newSub.endpoint,
           keys,
-          _user: userId ? userId : '5cce28ef8f0e6c0b48bda9b3'
+          _user: req.user._id
         }).save();
 
         return res.sendStatus(200);
@@ -68,21 +65,25 @@ export default app => {
             console.log('Subscriptions length:', subscriptions.length);
 
             subscriptions.forEach(sub => {
-              const pushConfig = {
-                endpoint: sub.endpoint,
-                keys: {
-                  auth: sub.keys.auth,
-                  p256dh: sub.keys.p256dh
-                }
-              };
+              try {
+                const pushConfig = {
+                  endpoint: sub.endpoint,
+                  keys: {
+                    auth: sub.keys.auth,
+                    p256dh: sub.keys.p256dh
+                  }
+                };
 
-              const json = JSON.stringify({
-                title: 'Splashed!',
-                content: `${originator} is Splashing from ${group.name}!`,
-                openUrl: '/pereritto'
-              });
+                const json = JSON.stringify({
+                  title: 'Splashed!',
+                  content: `${originator} is Splashing from ${group.name}!`,
+                  openUrl: '/pereritto'
+                });
 
-              webPush.sendNotification(pushConfig, json);
+                webPush.sendNotification(pushConfig, json);
+              } catch (err) {
+                console.log('Web Push Error:', err);
+              }
             });
 
             await Users.updateOne(
