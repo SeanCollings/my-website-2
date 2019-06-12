@@ -116,7 +116,7 @@ class DatePicker extends Component {
 
     if (data && data.length) {
       data.forEach(date => {
-        if (date.date) {
+        if (date.date.length > 0) {
           modifiers[date._id] = new Date(date.date);
           modifiersStyles[date._id] = {
             color: 'white',

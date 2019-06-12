@@ -1,5 +1,6 @@
 import axios from '../utils/axios';
 import { MessageTypeEnum } from '../utils/constants';
+import { readAllData } from '../utils/utility';
 import {
   FETCH_USER,
   VERIFY_USER,
@@ -18,10 +19,16 @@ import {
   GET_GROUP_MEMBERS
 } from './types';
 
-export const fetchUser = () => async dispatch => {
-  const res = await axios.get('/api/current_user');
+export const fetchUser = () => dispatch => {
+  axios.get('/api/current_user').then(res => {
+    dispatch({ type: FETCH_USER, payload: res.data });
+  });
 
-  dispatch({ type: FETCH_USER, payload: res.data });
+  if ('indexedDB' in window) {
+    readAllData('current-user').then(data => {
+      dispatch({ type: FETCH_USER, payload: data[0] });
+    });
+  }
 };
 
 export const fetchAllUsers = parameters => async dispatch => {
@@ -55,9 +62,15 @@ export const verifyUser = route => async dispatch => {
 };
 
 export const getPererittoUsers = () => async dispatch => {
-  const res = await axios.get(`/api/get_pereritto`);
+  axios.get(`/api/get_pereritto`).then(res => {
+    dispatch({ type: GET_PERERITTO_USERS, payload: res.data });
+  });
 
-  dispatch({ type: GET_PERERITTO_USERS, payload: res.data });
+  if ('indexedDB' in window) {
+    readAllData('pereritto-players').then(data => {
+      dispatch({ type: GET_PERERITTO_USERS, payload: data });
+    });
+  }
 };
 
 export const addPererittoUser = (
@@ -96,23 +109,30 @@ export const deletePererittoUser = (_id, _pereritto) => async dispatch => {
 };
 
 export const getWinners = year => async dispatch => {
-  const res = await axios.get(`/api/get_winners?year=${year}`);
+  axios.get('/api/get_winners').then(res => {
+    dispatch({ type: GET_WINNERS, payload: res.data });
+  });
 
-  let payload = { data: res.data, year: null };
-
-  if (payload.data && payload.data.length > 0 && payload.data[0].year)
-    payload = { ...payload, year: payload.data[0].year };
-
-  dispatch({ type: GET_WINNERS, payload });
+  if ('indexedDB' in window) {
+    readAllData('winners').then(data => {
+      dispatch({ type: GET_WINNERS, payload: data });
+    });
+  }
 
   // May Potentially break everything?
   // dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
 export const getWinnerYears = () => async dispatch => {
-  const res = await axios.get(`/api/get_winneryears`);
+  axios.get(`/api/get_winneryears`).then(res => {
+    dispatch({ type: GET_WINNER_YEARS, payload: res.data });
+  });
 
-  dispatch({ type: GET_WINNER_YEARS, payload: res.data });
+  if ('indexedDB' in window) {
+    readAllData('winner-years').then(data => {
+      dispatch({ type: GET_WINNER_YEARS, payload: data[0].data });
+    });
+  }
 };
 
 export const clearWinners = () => {
@@ -196,9 +216,15 @@ export const sendSplashNotification = groupId => async dispatch => {
 };
 
 export const getNotificationGroups = () => async dispatch => {
-  const res = await axios.get('/api/get_notificationgroups');
+  axios.get('/api/get_notificationgroups').then(res => {
+    dispatch({ type: GET_NOTIFICATION_GROUPS, payload: res.data });
+  });
 
-  dispatch({ type: GET_NOTIFICATION_GROUPS, payload: res.data });
+  if ('indexedDB' in window) {
+    readAllData('notification-groups').then(data => {
+      dispatch({ type: GET_NOTIFICATION_GROUPS, payload: data });
+    });
+  }
 };
 
 export const createNotificationGroup = (

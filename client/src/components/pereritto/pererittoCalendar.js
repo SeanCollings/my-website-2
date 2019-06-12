@@ -13,11 +13,9 @@ class PererittoCalendar extends Component {
     const { resizeScreen, winners, renderPage } = this.props;
     const selectedYearsArray = [];
 
-    if (winners && winners.winnerYears && winners.winners) {
-      Object.keys(winners.winners).forEach(key => {
-        Object.keys(winners.winners[key]).forEach(date => {
-          selectedYearsArray.push(winners.winners[key][date]);
-        });
+    if (winners && winners.winners) {
+      winners.winners.forEach(winner => {
+        selectedYearsArray.push(winner);
       });
     }
 

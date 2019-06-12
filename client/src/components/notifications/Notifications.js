@@ -5,6 +5,7 @@ import { showMessage } from '../../actions/snackBarActions';
 import Loader from 'react-loader-advanced';
 import MiniLoader from 'react-loader-spinner';
 
+import RenderGroups from './RenderGroups';
 import { MessageTypeEnum } from '../../utils/constants';
 import { writeData } from '../../utils/utility';
 
@@ -14,12 +15,12 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Avatar from '@material-ui/core/Avatar';
-import Divider from '@material-ui/core/Divider';
+// import Divider from '@material-ui/core/Divider';
 import GroupIcon from '@material-ui/icons/SupervisorAccount';
-import PersonIcon from '@material-ui/icons/Person';
+// import PersonIcon from '@material-ui/icons/Person';
 import BackIcon from '@material-ui/icons/ArrowBackIos';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
@@ -93,6 +94,10 @@ class Notifications extends Component {
                 MessageTypeEnum.info,
                 'Your Splash has been synced!'
               );
+
+              navigator.serviceWorker.addEventListener('message', event => {
+                this.props.showMessage(MessageTypeEnum.info, event.data);
+              });
             })
             .catch(function(err) {
               console.log(err);
@@ -107,7 +112,6 @@ class Notifications extends Component {
 
   selectedGroup = group => {
     // this.props.getGroupMembers(group._id);
-
     this.setState({
       ...this.state,
       groupHeader: `${group.name}`,
@@ -224,62 +228,8 @@ class Notifications extends Component {
     );
   };
 
-  renderGroups = () => {
-    const { notifications, auth } = this.props;
-
-    if (!notifications.groups)
-      return <Typography>Loading your groups...</Typography>;
-    else if (notifications.groups.length === 0)
-      return <Typography>You're not apart of any groups yet...</Typography>;
-
-    const groupsLength = notifications.groups.length;
-    return notifications.groups.map((group, index) => {
-      const members = group.members.length + 1;
-      const initial = group.name.charAt(0).toUpperCase();
-      return (
-        <div key={group._id}>
-          <ListItem button onClick={() => this.selectedGroup(group)}>
-            <ListItemAvatar>
-              <Avatar
-                src={group.icon}
-                style={{
-                  backgroundColor: group.icon ? 'transparent' : '#3D9970'
-                }}
-              >
-                {initial}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={group.name}
-              secondary={`Members: ${members}`}
-            />
-            <ListItemSecondaryAction onClick={() => this.selectedGroup(group)}>
-              {group.createdById.toString() === auth._id.toString() ? (
-                <Typography
-                  style={{
-                    fontSize: 'x-small',
-                    marginRight: '16px',
-                    color: '#3D9970'
-                  }}
-                >
-                  Admin
-                </Typography>
-              ) : null}
-              <ListItemIcon>
-                {members > 2 ? <GroupIcon /> : <PersonIcon />}
-              </ListItemIcon>
-            </ListItemSecondaryAction>
-          </ListItem>
-          {groupsLength === index + 1 ? null : (
-            <Divider variant="inset" component="li" />
-          )}
-        </div>
-      );
-    });
-  };
-
   render() {
-    const { classes } = this.props;
+    const { classes, auth, notifications } = this.props;
     const { groupHeader, selectedGroup } = this.state;
 
     return (
@@ -317,7 +267,13 @@ class Notifications extends Component {
           {selectedGroup ? (
             this.renderSelectedGroup()
           ) : (
-            <List className={classes.list}>{this.renderGroups()}</List>
+            <List className={classes.list}>
+              <RenderGroups
+                auth={auth}
+                groups={notifications.groups}
+                selectGroup={this.selectedGroup}
+              />
+            </List>
           )}
         </Grid>
       </div>

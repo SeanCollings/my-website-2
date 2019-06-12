@@ -1,10 +1,14 @@
 /* eslint-disable */
 /* eslint no-restricted-globals: "off" */
 import * as precaching from 'workbox-precaching';
-import axios from './utils/axios';
-import { readAllData, deleteItemFromData } from './utils/utility';
-// your own imports
+import {
+  readAllData,
+  writeData,
+  deleteItemFromData,
+  clearAllData
+} from './utils/utility';
 
+// your own imports
 if (self.__precacheManifest) {
   precaching.precacheAndRoute(self.__precacheManifest);
 }
@@ -41,14 +45,40 @@ self.addEventListener('activate', function(event) {
   return self.clients.claim();
 });
 
+const isInCache = (requestURL, cacheArr) =>
+  cacheArr.some(url => url === requestURL.replace(self.origin, ''));
+
 self.addEventListener('fetch', event => {
   // console.log('[Service Worker] Fetch:', event);
-  // console.log('[Service Worker] Event.Request:', event.request);
 
-  const url = '/api/add_notificationgroup';
+  const urlGetCurrentUser = '/api/current_user';
+  const urlAddNotificationGroups = '/api/add_notificationgroup';
+  const urlGetNotificationGroups = '/api/get_notificationgroups';
+  const urlGetWinners = '/api/get_winners';
+  const urlGetWinnerYears = '/api/get_winneryears';
+  const urlGetPererittoPlayers = '/api/get_pereritto';
+
   // If request url is the same as 'url'
-  // console.log(event.request.url);
-  if (event.request.url.indexOf(url) > -1) {
+  if (event.request.url.indexOf(urlGetCurrentUser) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+
+        clearAllData('current-user')
+          .then(() => {
+            return clonedRes.json();
+          })
+          .then(data => {
+            writeData('current-user', {
+              ...data,
+              id: new Date()
+            });
+          });
+
+        return res;
+      })
+    );
+  } else if (event.request.url.indexOf(urlAddNotificationGroups) > -1) {
     event.respondWith(
       fetch(event.request).then(res => {
         var clonedRes = res.clone();
@@ -56,6 +86,87 @@ self.addEventListener('fetch', event => {
         return res;
       })
     );
+  } else if (event.request.url.indexOf(urlGetNotificationGroups) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+
+        clearAllData('notification-groups')
+          .then(() => {
+            return clonedRes.json();
+          })
+          .then(data => {
+            for (let key in data) {
+              writeData('notification-groups', {
+                ...data[key],
+                id: data[key]._id
+              });
+            }
+          });
+
+        return res;
+      })
+    );
+  } else if (event.request.url.indexOf(urlGetWinners) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+
+        clearAllData('winners')
+          .then(() => {
+            return clonedRes.json();
+          })
+          .then(data => {
+            for (let key in data) {
+              writeData('winners', {
+                ...data[key],
+                id: data[key]._id
+              });
+            }
+          });
+        return res;
+      })
+    );
+  } else if (event.request.url.indexOf(urlGetWinnerYears) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+
+        clearAllData('winner-years')
+          .then(() => {
+            return clonedRes.json();
+          })
+          .then(data => {
+            writeData('winner-years', {
+              data,
+              id: new Date()
+            });
+          });
+        return res;
+      })
+    );
+  } else if (event.request.url.indexOf(urlGetPererittoPlayers) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+
+        clearAllData('pereritto-players')
+          .then(() => {
+            return clonedRes.json();
+          })
+          .then(data => {
+            for (let key in data) {
+              writeData('pereritto-players', {
+                ...data[key],
+                id: data[key]._id
+              });
+            }
+          });
+        return res;
+      })
+    );
+  } else if (isInCache(event.request.url, STATIC_FILES)) {
+    event.respondWith(caches.match(event.request));
   } else {
     event.respondWith(fetch(event.request));
   }
@@ -148,18 +259,19 @@ self.addEventListener('sync', function(event) {
           .then(res => {
             console.log('Sent data', res);
             deleteItemFromData('send-splash', data[0].id);
+
+            const msgChannel = new MessageChannel();
+            self.clients.matchAll().then(clients => {
+              clients.forEach(client => {
+                client.postMessage('Your splash has been sent', [
+                  msgChannel.port2
+                ]);
+              });
+            });
           })
           .catch(function(err) {
             console.log('Error while sending data', err);
           });
-        // axios
-        //   .post('/api/send_splash', { groupId: data[0].id })
-        //   .then(res => {
-        //     deleteItemFromData('send-splash', data[0].id);
-        //   })
-        //   .catch(function(err) {
-        //     console.log('Error while sending data', err);
-        //   });
       })
     );
   }

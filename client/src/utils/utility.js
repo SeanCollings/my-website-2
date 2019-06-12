@@ -1,10 +1,22 @@
 import * as idb from 'idb';
 
-const seanDB = idb.openDB('sean-db', 1, {
+export const DB_TABLES = [
+  'current-user',
+  'send-splash',
+  'notification-groups',
+  'winners',
+  'winner-years',
+  'pereritto-players',
+  'awards'
+];
+
+const seanDB = idb.openDB('sean-db', 2, {
   upgrade(db) {
-    if (!db.objectStoreNames.contains('send-splash')) {
-      db.createObjectStore('send-splash', { keyPath: 'id' });
-    }
+    DB_TABLES.forEach(table => {
+      if (!db.objectStoreNames.contains(table)) {
+        db.createObjectStore(table, { keyPath: 'id' });
+      }
+    });
   }
 });
 
@@ -30,7 +42,6 @@ export const readAllData = table => {
 
 export const clearAllData = table => {
   return seanDB.then(db => {
-    // get access to db returned from dbPromise
     var tx = db.transaction(table, 'readwrite');
     var store = tx.objectStore(table);
     // Clear all from store

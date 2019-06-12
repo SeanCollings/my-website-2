@@ -4,6 +4,7 @@ import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Gravatar from 'react-gravatar';
 import { getVersion } from '../../actions/appActions';
+import { clearAllData } from '../../utils/utility';
 
 import { withStyles } from '@material-ui/core/styles';
 // import Drawer from '@material-ui/core/Drawer';
@@ -51,6 +52,12 @@ class TemporaryDrawer extends React.Component {
     if (!this.props.version) this.props.getVersion();
   }
 
+  removeUser = () => {
+    if ('indexedDB' in window) {
+      clearAllData('current-user');
+    }
+  };
+
   renderLoginLogout() {
     switch (this.props.auth) {
       case null:
@@ -66,7 +73,7 @@ class TemporaryDrawer extends React.Component {
         );
       default:
         return (
-          <Link href="/api/logout">
+          <Link href="/api/logout" onClick={() => this.removeUser()}>
             <ListItem button>
               <ListItemIcon>
                 {<LogoutIcon style={{ transform: 'rotate(180deg)' }} />}

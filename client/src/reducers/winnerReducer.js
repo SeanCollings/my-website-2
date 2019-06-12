@@ -9,16 +9,7 @@ const intialState = {
 export default function(state = intialState, action) {
   switch (action.type) {
     case GET_WINNERS:
-      if (!state.selectedYears.includes(action.payload.year)) {
-        state.selectedYears.push(action.payload.year);
-        let winners = {};
-        winners[action.payload.year] = action.payload.data;
-        return {
-          ...state,
-          winners: { ...state.winners, ...winners }
-        };
-      }
-      return state;
+      return { ...state, winners: action.payload };
     case GET_WINNER_YEARS:
       return { ...state, winnerYears: action.payload };
     case CLEAR_WINNERS:

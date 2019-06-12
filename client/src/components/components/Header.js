@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import Gravatar from 'react-gravatar';
 
 import { MENU_LIST } from '../../utils/constants';
+import { clearAllData } from '../../utils/utility';
 
 // import Avatar from './avatar';
 // import LongMenu from './LongMenu';
@@ -153,6 +154,12 @@ class Header extends Component {
     }
   }
 
+  removeUser = () => {
+    if ('indexedDB' in window) {
+      clearAllData('current-user');
+    }
+  };
+
   renderLoginLogout() {
     switch (this.props.auth) {
       case null:
@@ -176,7 +183,11 @@ class Header extends Component {
         );
       default:
         return (
-          <Button key={'login'} style={{ color: '#DEDEDE' }}>
+          <Button
+            key={'login'}
+            style={{ color: '#DEDEDE' }}
+            onClick={() => this.removeUser()}
+          >
             <Link
               color="inherit"
               underline="none"

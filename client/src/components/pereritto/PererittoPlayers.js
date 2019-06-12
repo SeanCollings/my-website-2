@@ -124,27 +124,31 @@ class PererittoPlayers extends Component {
   renderPlayerList = (playerTally, lastWinDate) => {
     const { classes } = this.props;
 
-    playerTally.sort(function(a, b) {
-      return b.count - a.count;
-    });
+    if (playerTally) {
+      playerTally.sort(function(a, b) {
+        return b.count - a.count;
+      });
 
-    const maxCount = playerTally[0].count;
+      const maxCount = playerTally[0].count;
 
-    playerTally = playerTally.map(player => {
-      return {
-        ...player,
-        winner: player.count > 0 && player.count === maxCount
-      };
-    });
+      playerTally = playerTally.map(player => {
+        return {
+          ...player,
+          winner: player.count > 0 && player.count === maxCount
+        };
+      });
 
-    return (
-      <List
-        className={classes.root}
-        style={{ maxWidth: this.props.resizeScreen ? '280px' : '600px' }}
-      >
-        {this.renderPlayers(playerTally, lastWinDate)}
-      </List>
-    );
+      return (
+        <List
+          className={classes.root}
+          style={{ maxWidth: this.props.resizeScreen ? '280px' : '600px' }}
+        >
+          {this.renderPlayers(playerTally, lastWinDate)}
+        </List>
+      );
+    }
+
+    return null;
   };
 
   buildPlayerTally = () => {
@@ -167,13 +171,8 @@ class PererittoPlayers extends Component {
       });
     });
 
-    if (
-      winners.winners &&
-      winners.winners[selectedYear] &&
-      winners.winners[selectedYear].length > 0 &&
-      selectedYear
-    ) {
-      winners.winners[selectedYear].map(winner => {
+    if (winners.winners) {
+      winners.winners.map(winner => {
         if (winner.year === selectedYear) {
           let playerWinDate = new Date(winner.date);
           if (playerWinDate > OverallWinDate) OverallWinDate = playerWinDate;
@@ -203,7 +202,7 @@ class PererittoPlayers extends Component {
     const year = event.target.value;
 
     if (!this.state.loadedYears.includes(year)) {
-      this.props.getWinners(year);
+      // this.props.getWinners(year);
       this.setState({ loadedYears: [...this.state.loadedYears, year] });
     }
 

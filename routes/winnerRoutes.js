@@ -30,9 +30,10 @@ const getPlayers = async winner => {
 export default app => {
   app.get('/api/get_winners', requireLogin, async (req, res) => {
     try {
-      const winners = await WinnerDates.find({
-        year: parseInt(req.query.year)
-      });
+      // const winners = await WinnerDates.find({
+      //   year: parseInt(req.query.year)
+      // });
+      const winners = await WinnerDates.find();
       const players = await PererittoUsers.find();
 
       if (winners.length > 0 && players.length > 0) {
