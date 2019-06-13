@@ -8,10 +8,11 @@ export const DB_TABLES = [
   'winners',
   'winner-years',
   'pereritto-players',
-  'awards'
+  'awards',
+  'group-members'
 ];
 
-const seanDB = idb.openDB('sean-db', 2, {
+const seanDB = idb.openDB('sean-db', 1, {
   upgrade(db) {
     DB_TABLES.forEach(table => {
       if (!db.objectStoreNames.contains(table)) {

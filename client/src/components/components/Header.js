@@ -132,14 +132,20 @@ class Header extends Component {
     }
 
     if (settings === null) {
-      return <Avatar>{initials}</Avatar>;
+      return <Avatar alt="av-initials">{initials}</Avatar>;
     }
 
     if (settings.profilePic === 'google') {
-      return <Avatar src={auth.googlePhoto ? auth.googlePhoto : ''} />;
+      return (
+        <Avatar
+          alt="av-google"
+          src={auth.googlePhoto ? auth.googlePhoto : ''}
+        />
+      );
     } else if (settings.profilePic === 'gravatar') {
       return (
         <Gravatar
+          alt="av-grav"
           email={auth ? auth.emailAddress : ''}
           size={40}
           style={{ borderRadius: '50%' }}
@@ -148,9 +154,9 @@ class Header extends Component {
         />
       );
     } else if (settings.profilePic === 'profilePhoto' && auth.uploadedPhoto) {
-      return <Avatar src={auth.uploadedPhoto} />;
+      return <Avatar alt="av-upload" src={auth.uploadedPhoto} />;
     } else {
-      return <Avatar>{initials}</Avatar>;
+      return <Avatar alt="av-initials">{initials}</Avatar>;
     }
   }
 

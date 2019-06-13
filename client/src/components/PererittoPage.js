@@ -72,7 +72,7 @@ class ProjectsPage extends Component {
     const { classes, superUser, resizeScreen } = this.props;
     const { value } = this.state;
 
-    if (!this.props.pererittoUsers) {
+    if (!this.props.pererittoUsers || this.props.pererittoUsers.length === 0) {
       return (
         <div
           style={{

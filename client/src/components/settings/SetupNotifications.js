@@ -95,7 +95,8 @@ class SetupNotifications extends Component {
   displayConfirmNotification = () => {
     if ('serviceWorker' in navigator) {
       var options = {
-        body: 'Succesfully subscribed to Pure Seanography!',
+        body:
+          'You have subscribed to the Pure Seanography notification service',
         icon: notificationIcon,
         image: this.props.resizeScreen
           ? notificationImage
@@ -108,23 +109,23 @@ class SetupNotifications extends Component {
         renotify: true,
         data: {
           url: '/notifications'
-        },
-        actions: [
-          {
-            action: 'confirm',
-            title: 'Okay',
-            icon: notificationIcon
-          },
-          {
-            action: 'cancel',
-            title: 'Cancel',
-            icon: notificationIcon
-          }
-        ]
+        }
+        // actions: [
+        //   {
+        //     action: 'confirm',
+        //     title: 'Okay',
+        //     icon: notificationIcon
+        //   },
+        //   {
+        //     action: 'cancel',
+        //     title: 'Cancel',
+        //     icon: notificationIcon
+        //   }
+        // ]
       };
 
       navigator.serviceWorker.ready.then(function(swreg) {
-        swreg.showNotification('Successfully subscribed!', options);
+        swreg.showNotification('Successfully subscribed', options);
       });
     }
   };
@@ -233,7 +234,20 @@ class SetupNotifications extends Component {
     }
   };
 
+  setNotificationsToDisabled = () => {
+    this.setState({
+      ...this.state,
+      notificationsButtonText: 'Enable Notifications',
+      updating: true
+    });
+    this.props.disableNotifications(true);
+  };
+
   disableNotificationsClick = () => {
+    console.log(
+      this.props.auth.allowNotifications,
+      this.props.app.notificationState
+    );
     if (!('serviceWorker' in navigator)) {
       return;
     }
@@ -247,17 +261,12 @@ class SetupNotifications extends Component {
           if (sub !== null) {
             return sub.unsubscribe().then(success => {
               if (success) {
-                this.setState({
-                  ...this.state,
-                  notificationsButtonText: 'Enable Notifications',
-                  updating: true
-                });
-                this.props.disableNotifications(true);
+                this.setNotificationsToDisabled();
               }
             });
           } else {
-            // We have a subscription
             console.log('User cannot be found');
+            this.setNotificationsToDisabled();
           }
         })
         .catch(err => {

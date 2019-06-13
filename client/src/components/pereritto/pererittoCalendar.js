@@ -27,7 +27,8 @@ class PererittoCalendar extends Component {
             style={{
               display: resizeScreen ? '' : 'none',
               color: '#FFC300',
-              paddingBottom: '5px'
+              marginBottom: '5px',
+              border: '1px solid'
             }}
             size="small"
             onClick={() => this.setState({ showMoreMonths: !showMoreMonths })}

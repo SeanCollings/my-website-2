@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 import * as actions from '../actions';
 import Slider from 'react-slick';
 
 import Notifications from './notifications/Notifications';
 import NotificationAdmin from './notifications/NotificationAdmin';
+import WhoopsieDoodle from '../components/components/WhoopsieDoodle';
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+// import Grid from '@material-ui/core/Grid';
+// import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
@@ -67,25 +67,7 @@ class NotificationsPage extends Component {
     };
 
     if (app.notificationState !== 'granted' || !auth.allowNotifications)
-      return (
-        <Grid item className={classes.enableNotifications}>
-          <Typography paragraph>Whoopsie Doodle...</Typography>
-          <Typography paragraph>
-            Please{' '}
-            <span
-              onClick={() => this.props.history.push('/settings')}
-              style={{ color: '#0074D9' }}
-            >
-              <b>Enable Notifications</b>
-            </span>{' '}
-            under settings in order to access this page.
-          </Typography>
-          <Typography paragraph>
-            Enabling notifications will allow you to communicate with other
-            members of this app either individually, or via group messaging.
-          </Typography>
-        </Grid>
-      );
+      return <WhoopsieDoodle toEnable="Notifications" />;
 
     return (
       <div className={classes.pageFill}>
@@ -135,9 +117,7 @@ function mapStateToProps({ resizeScreen, auth, app, notifications }) {
   return { auth, resizeScreen, app, notifications };
 }
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    actions
-  )(withStyles(styles)(NotificationsPage))
-);
+export default connect(
+  mapStateToProps,
+  actions
+)(withStyles(styles)(NotificationsPage));
