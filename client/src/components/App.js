@@ -9,7 +9,8 @@ import {
   showLoader,
   hideLoader,
   getReleaseCreation,
-  notificationState
+  notificationState,
+  locationState
 } from '../actions/appActions';
 
 import HomePage from './HomePage';
@@ -43,6 +44,8 @@ class App extends Component {
     this.props.showLoader(welcomeMessage);
     this.setState({ welcomeMessage });
     this.props.fetchUser();
+
+    this.locationState();
 
     setTimeout(
       function() {
@@ -223,6 +226,17 @@ class App extends Component {
     }
   };
 
+  locationState = () => {
+    const { app } = this.props;
+    if ('geolocation' in navigator && 'permissions' in navigator) {
+      navigator.permissions.query({ name: 'geolocation' }).then(status => {
+        if (app && !app.locationState) {
+          this.props.locationState(status.state);
+        }
+      });
+    }
+  };
+
   render() {
     const colour = '#FFC300'; //'#424242'
     const spinner = (
@@ -361,7 +375,8 @@ export default withRouter(
       showLoader,
       hideLoader,
       getReleaseCreation,
-      notificationState
+      notificationState,
+      locationState
     }
   )(App)
 );

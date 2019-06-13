@@ -6,6 +6,7 @@ import {
   SHOW_MESSAGE,
   REMOVE_DEFERRED_PROMPT,
   NOTIFICATION_STATE,
+  LOCATION_STATE,
   GET_PUBLIC_VAPID_KEY
 } from './types';
 import { MessageTypeEnum } from '../utils/constants';
@@ -40,6 +41,10 @@ export const removeDeferredPrompt = message => {
 
 export const notificationState = status => {
   return { type: NOTIFICATION_STATE, payload: status };
+};
+
+export const locationState = status => {
+  return { type: LOCATION_STATE, payload: status };
 };
 
 export const getPublicVapidKey = () => async dispatch => {

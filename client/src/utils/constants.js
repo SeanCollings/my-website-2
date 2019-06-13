@@ -10,6 +10,7 @@ export const MENU_LIST = [
 ];
 export const PERERITTO_PATH = '/pereritto';
 export const MAINTENANCE_PATH = '/maintenance';
+export const LOCATIONS_PATH = '/locations';
 
 export const MOBILE_SCREEN_SIZE = 700;
 

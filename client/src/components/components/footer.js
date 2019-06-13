@@ -3,7 +3,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
-import { MAINTENANCE_PATH } from '../../utils/constants';
+import { MAINTENANCE_PATH, LOCATIONS_PATH } from '../../utils/constants';
 // import version from '../../utils/version.js';
 
 const styles = {
@@ -31,7 +31,8 @@ function footer(props) {
         style={{
           // color: '#DEDEDE',
           color: pathName === MAINTENANCE_PATH ? '#154360' : '#DEDEDE',
-          alignItems: 'center'
+          alignItems: 'center',
+          display: pathName === LOCATIONS_PATH ? 'none' : ''
         }}
         component="div"
       >

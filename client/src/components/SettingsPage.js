@@ -40,7 +40,6 @@ const styles = theme => ({
     margin: `${theme.spacing.unit}px 0`
   },
   enableButtons: {
-    backgroundColor: '#FF4136',
     minWidth: '240px',
     marginTop: '24px'
   },
@@ -266,7 +265,8 @@ class UserProfilePage extends Component {
             size={resizeScreen ? 'small' : 'medium'}
             style={{
               opacity: showAddToHomeScreen ? '' : '0.4',
-              color: 'white'
+              color: 'white',
+              backgroundColor: '#FF4136'
             }}
             className={classes.enableButtons}
             onClick={this.addToHomeScreenClick}
@@ -288,7 +288,8 @@ class UserProfilePage extends Component {
             size={resizeScreen ? 'small' : 'medium'}
             style={{
               opacity: showEnableLocation ? '' : '0.4',
-              color: 'white'
+              color: 'white',
+              backgroundColor: '#FF4136'
             }}
             onClick={this.enableLocationClick}
             disabled={showEnableLocation ? false : true}

@@ -19,10 +19,10 @@ const styles = theme => ({
 });
 
 class LocationsBeginEnd extends Component {
-  state = { locationsStart: false, onlineUsers: 3 };
+  state = { locationsStart: false, onlineUsers: 0 };
 
   startLocations = () => {
-    const onlineUsers = !this.state.locationsStart ? 4 : 3;
+    const onlineUsers = !this.state.locationsStart ? 1 : 0;
 
     this.setState({
       ...this.state,

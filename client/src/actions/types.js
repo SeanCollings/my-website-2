@@ -15,6 +15,7 @@ export const UPDATE_SUBSCRIPTIONS = 'update_subscriptions';
 export const SET_SUBSCRIPTION_NULL = 'set_subscription_null';
 export const GET_SPLASHES = 'get_splashes';
 export const NOTIFICATION_STATE = 'notification_state';
+export const LOCATION_STATE = 'location_state';
 export const GET_NOTIFICATION_GROUPS = 'get_notification_groups';
 export const GET_GROUP_MEMBERS = 'get_group_members';
 export const GET_PUBLIC_VAPID_KEY = 'get_public_vapid_key';

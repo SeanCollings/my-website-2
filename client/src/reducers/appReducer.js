@@ -5,6 +5,7 @@ import {
   BEFORE_INSTALL_PROMPT,
   REMOVE_DEFERRED_PROMPT,
   NOTIFICATION_STATE,
+  LOCATION_STATE,
   GET_PUBLIC_VAPID_KEY
 } from '../actions/types';
 
@@ -14,6 +15,7 @@ const initialState = {
   version: '',
   deferredPrompt: null,
   notificationState: null,
+  locationState: null,
   publicVapidKey: null
 };
 
@@ -31,6 +33,8 @@ export default function(state = initialState, action) {
       return { ...state, deferredPrompt: null };
     case NOTIFICATION_STATE:
       return { ...state, notificationState: action.payload };
+    case LOCATION_STATE:
+      return { ...state, locationState: action.payload };
     case GET_PUBLIC_VAPID_KEY:
       return { ...state, publicVapidKey: action.payload };
     default:

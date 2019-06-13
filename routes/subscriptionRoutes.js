@@ -77,7 +77,7 @@ export default app => {
                 const json = JSON.stringify({
                   title: 'Splashed!',
                   content: `${originator} is Splashing from ${group.name}!`,
-                  openUrl: '/pereritto'
+                  openUrl: '/notifications'
                 });
 
                 webPush.sendNotification(pushConfig, json);
