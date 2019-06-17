@@ -230,24 +230,24 @@ class UserProfilePage extends Component {
 
   enableLocationClick = () => {
     console.log('enableLocationClick');
-    // navigator.geolocation.getCurrentPosition(
-    //   position => {
-    //     this.setState({
-    //       ...this.state,
-    //       showEnableLocation: false,
-    //       locationButtonText: 'Location Enabled'
-    //     });
-    //   },
-    //   err => {
-    //     console.log('error:', err);
-    //     this.setState({
-    //       ...this.state,
-    //       showEnableLocation: false,
-    //       locationButtonText: 'Location Denied'
-    //     });
-    //   },
-    //   { timeout: Infinity }
-    // );
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({
+          ...this.state,
+          showEnableLocation: false,
+          locationButtonText: 'Location Enabled'
+        });
+      },
+      err => {
+        console.log('error:', err);
+        this.setState({
+          ...this.state,
+          showEnableLocation: false,
+          locationButtonText: 'Location Denied'
+        });
+      },
+      { timeout: Infinity }
+    );
   };
 
   renderEnableButtons = () => {

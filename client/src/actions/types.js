@@ -27,3 +27,6 @@ export const RESIZE_SCREEN = 'resize_screen';
 
 export const GET_VERSION = 'get_Version';
 export const GET_RELEASE_CREATED = 'get_release_created';
+
+export const PUSHER_AUTH = 'pusher_auth';
+export const UPDATE_LOCATION = 'update_location';

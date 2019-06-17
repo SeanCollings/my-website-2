@@ -29,6 +29,7 @@ import versionRoutes from './routes/versionRoute';
 import awardRoutes from './routes/awardRoutes';
 import subscriptionRoutes from './routes/subscriptionRoutes';
 import notificationRoutes from './routes/notificationRoutes';
+import pusher from './services/pusher';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
@@ -68,6 +69,7 @@ versionRoutes(app);
 awardRoutes(app);
 subscriptionRoutes(app);
 notificationRoutes(app);
+pusher(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));
