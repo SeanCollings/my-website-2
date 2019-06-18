@@ -5,7 +5,7 @@ import Loader from 'react-loader-advanced';
 import MiniLoader from 'react-loader-spinner';
 import * as actions from '../actions';
 import { showMessage } from '../actions/snackBarActions';
-import { removeDeferredPrompt } from '../actions/appActions';
+import { removeDeferredPrompt, locationState } from '../actions/appActions';
 
 import SetupNotifications from './settings/SetupNotifications';
 
@@ -232,6 +232,7 @@ class UserProfilePage extends Component {
     console.log('enableLocationClick');
     navigator.geolocation.getCurrentPosition(
       position => {
+        this.props.locationState('granted');
         this.setState({
           ...this.state,
           showEnableLocation: false,
@@ -350,5 +351,5 @@ function mapStateToProps({ auth, resizeScreen, settings, snackBar, app }) {
 
 export default connect(
   mapStateToProps,
-  { ...actions, showMessage, removeDeferredPrompt }
+  { ...actions, showMessage, removeDeferredPrompt, locationState }
 )(withStyles(styles)(UserProfilePage));

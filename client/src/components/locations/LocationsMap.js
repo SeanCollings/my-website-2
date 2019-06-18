@@ -17,6 +17,7 @@ import { MAP_OPTIONS } from './mapOptions';
 import PlaceIcon from '../../images/icons/icon-96x96.png';
 // import PinIcon from '../../images/icons/pin-icon.png';
 // import PlaceIcon2 from '../../images/custom-icon.png';
+import MarkerIcon from '../../images/map-marker.png';
 
 class LocationsMap extends Component {
   state = {
@@ -147,6 +148,10 @@ class LocationsMap extends Component {
     const { zoomLevel, directions, otherPlayerDirections } = this.state;
 
     const icon = { url: PlaceIcon, scaledSize: { width: 24, height: 24 } };
+    const iconMarker = {
+      url: MarkerIcon,
+      scaledSize: { width: 42, height: 42 }
+    };
     // const position = { lat: -33.917825, lng: 18.42408 };
     // console.log('LocationsMap:', this.props.markerPosition);
 
@@ -165,10 +170,7 @@ class LocationsMap extends Component {
         options={MAP_OPTIONS}
         onZoomChanged={() => this.handleZoomChanged()}
       >
-        <Marker
-          position={locationPOI}
-          // options={{ icon }}
-        />
+        <Marker position={locationPOI} options={{ icon: iconMarker }} />
         {/* {currentPlayer && (<Marker
           // position={this.state.center}
           position={currentPlayer}

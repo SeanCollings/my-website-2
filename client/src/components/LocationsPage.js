@@ -1,42 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import LocationsMap from './locations/LocationsMap';
-import LocationsBeginEnd from './locations/LocationsBeginEnd';
+import LocationSelected from './locations/LocationSelected';
+import LocationGroups from './locations/LocationGroups';
+import CreateLocationsGroup from './locations/CreateLocationsGroup';
 import WhoopsieDoodle from '../components/components/WhoopsieDoodle';
 
+import Grid from '@material-ui/core/Grid';
+
 class LocationsPage extends Component {
-  state = {
-    currentPlayer: null,
-    otherPlayers: [
-      // { lat: -33.941897, lng: 18.375396 },
-      { lat: -33.943376, lng: 18.459384, name: 'Jarrod' },
-      { lat: -33.930353, lng: 18.423266, name: 'Matthew' }
-    ],
-    showOtherPlayers: false
-  };
+  state = { locationSelected: false, createGroup: false, editGroup: false };
 
   componentWillUnmount() {
     this._isMounted = false;
   }
 
-  setPosition = position => {
-    console.log('Position:', position);
-
-    if (position && position.lat !== -33.8911836)
-      position = { lat: -33.8911836, lng: 18.5107103 };
-    this.setState({
-      ...this.state,
-      currentPlayer: position ? { lat: position.lat, lng: position.lng } : null,
-      showOtherPlayers: position ? true : false
-    });
-  };
-
   render() {
-    const { resizeScreen, app } = this.props;
-    const { currentPlayer, otherPlayers, showOtherPlayers } = this.state;
-    const heightFactor = resizeScreen ? '56px' : '64px';
-    const beginEndHeight = '56px';
+    const { app } = this.props;
+    const { locationSelected, createEditGroup, editGroup } = this.state;
 
     if (app.locationState !== 'granted')
       return <WhoopsieDoodle toEnable="Location" />;
@@ -45,34 +26,43 @@ class LocationsPage extends Component {
 
     return (
       <div>
-        <LocationsBeginEnd
-          height={beginEndHeight}
-          setPosition={this.setPosition}
-          otherPlayersLength={otherPlayers.length}
-        />
-        <LocationsMap
-          currentPlayer={currentPlayer ? currentPlayer : null}
-          locationPOI={locationPOI}
-          otherPlayers={showOtherPlayers ? otherPlayers : null}
-          // googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyByWkAe9UopNpFK6TPEEJ4ak4fMtS7IZD8&amp;v=3.exp&amp;libraries=geometry,drawing,places,visualization"
-          googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDD0nkesefYmPhscdaz0EO9XK_MwD5i9QE&amp;v=3.exp&amp;libraries=geometry,drawing,places,visualization"
-          loadingElement={<div style={{ height: `100vh` }} />}
-          containerElement={<div style={{ height: '100%' }} />}
-          mapElement={
-            <div
-              style={{
-                height: `calc(100vh - ${heightFactor} - ${beginEndHeight})`
-              }}
+        {!locationSelected ? (
+          <Grid
+            style={{
+              paddingTop: '12px',
+              marginLeft: '24px',
+              marginRight: '24px'
+            }}
+          >
+            <CreateLocationsGroup
+              createEditGroup={createEditGroup}
+              editgroup={editGroup}
+              createGroupClicked={() =>
+                this.setState({ createEditGroup: !createEditGroup })
+              }
             />
-          }
-        />
+            {createEditGroup ? (
+              <div>Test</div>
+            ) : (
+              <div>
+                <LocationGroups
+                  selectedGroup={selectedGroup =>
+                    console.log('SelectedGroup:', selectedGroup)
+                  }
+                />
+              </div>
+            )}
+          </Grid>
+        ) : (
+          <LocationSelected locationPOI={locationPOI} />
+        )}
       </div>
     );
   }
 }
 
-function mapStateToProps({ resizeScreen, app, auth }) {
-  return { resizeScreen, app, auth };
+function mapStateToProps({ app }) {
+  return { app };
 }
 
 export default connect(mapStateToProps)(LocationsPage);
