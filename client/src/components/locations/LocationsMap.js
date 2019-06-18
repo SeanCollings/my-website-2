@@ -30,8 +30,6 @@ class LocationsMap extends Component {
     otherPlayerDirections: null
   };
 
-  componentDidMount() {}
-
   componentDidUpdate() {
     const { otherPlayers } = this.props;
     // console.log('MAP:', this.map);

@@ -32,15 +32,13 @@ class LocationsSelected extends Component {
   };
 
   render() {
-    const { resizeScreen, locationPOI } = this.props;
+    const { locationPOI, topHeight, heightFactor } = this.props;
     const { currentPlayer, otherPlayers, showOtherPlayers } = this.state;
-    const heightFactor = resizeScreen ? '56px' : '64px';
-    const beginEndHeight = '56px';
 
     return (
       <div>
         <LocationsBeginEnd
-          height={beginEndHeight}
+          height={topHeight}
           setPosition={this.setPosition}
           otherPlayersLength={otherPlayers ? otherPlayers.length : 0}
         />
@@ -54,7 +52,7 @@ class LocationsSelected extends Component {
           mapElement={
             <div
               style={{
-                height: `calc(100vh - ${heightFactor} - ${beginEndHeight})`
+                height: `calc(100vh - ${heightFactor} - ${topHeight})`
               }}
             />
           }
@@ -64,8 +62,4 @@ class LocationsSelected extends Component {
   }
 }
 
-function mapStateToProps({ resizeScreen }) {
-  return { resizeScreen };
-}
-
-export default connect(mapStateToProps)(LocationsSelected);
+export default connect(null)(LocationsSelected);

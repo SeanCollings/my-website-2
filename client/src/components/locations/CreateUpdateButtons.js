@@ -2,7 +2,17 @@ import React, { Component } from 'react';
 
 import Button from '@material-ui/core/Button';
 
-class CreateLocationsGroup extends Component {
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = theme => ({
+  button: {
+    color: 'white',
+    border: '1px solid',
+    minWidth: '100px'
+  }
+});
+
+class CreateUpdateButtons extends Component {
   state = { editGroup: false };
 
   createEditGroup = () => {
@@ -11,39 +21,40 @@ class CreateLocationsGroup extends Component {
 
   render() {
     const {
-      createGroupClicked,
+      classes,
+      cancelCreateClicked,
+      createConfirmClicked,
       // creatingGroup,
       editGroup,
-      createEditGroup
+      createEditGroup,
+      mapDisplayed
     } = this.props;
 
     return (
-      <div>
+      <div style={{ textAlign: 'center' }}>
         <Button
-          onClick={createGroupClicked}
+          onClick={cancelCreateClicked}
+          className={classes.button}
           style={{
-            backgroundColor: '#3D9970',
-            color: 'white',
+            marginRight: '24px',
             display: createEditGroup ? '' : 'none'
           }}
         >
           Cancel
         </Button>
         <Button
-          onClick={createGroupClicked}
+          onClick={createConfirmClicked}
+          className={classes.button}
           style={{
-            backgroundColor: '#3D9970',
-            color: 'white',
             display: editGroup ? 'none' : ''
           }}
         >
-          {createEditGroup ? 'Create' : 'Create Group'}
+          {!mapDisplayed ? 'Create' : 'Confirm'}
         </Button>
         {/* <Button
           onClick={this.createEditGroup()}
+          className={classes.button}
           style={{
-            backgroundColor: '#3D9970',
-            color: 'white',
             display: editGroup ? '' : 'none'
           }}
         >
@@ -54,4 +65,4 @@ class CreateLocationsGroup extends Component {
   }
 }
 
-export default CreateLocationsGroup;
+export default withStyles(styles)(CreateUpdateButtons);

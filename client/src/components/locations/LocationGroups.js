@@ -22,7 +22,6 @@ const styles = theme => ({
     width: '100%',
     maxWidth: 360,
     backgroundColor: 'white',
-    marginTop: '10px',
     borderRadius: '15px'
   }
 });

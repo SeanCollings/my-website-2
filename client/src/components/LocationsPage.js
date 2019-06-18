@@ -3,21 +3,63 @@ import { connect } from 'react-redux';
 
 import LocationSelected from './locations/LocationSelected';
 import LocationGroups from './locations/LocationGroups';
-import CreateLocationsGroup from './locations/CreateLocationsGroup';
+import CreateUpdateButtons from './locations/CreateUpdateButtons';
+import CreateUpateGroups from './locations/CreateUpdateGroups';
 import WhoopsieDoodle from '../components/components/WhoopsieDoodle';
 
 import Grid from '@material-ui/core/Grid';
 
 class LocationsPage extends Component {
-  state = { locationSelected: false, createGroup: false, editGroup: false };
+  state = {
+    locationSelected: false,
+    createGroup: false,
+    editGroup: false,
+    mapDisplayed: false,
+    hideLocationSelection: false
+  };
 
   componentWillUnmount() {
     this._isMounted = false;
   }
 
+  cancelCreateClicked = () => {
+    const { mapDisplayed, createEditGroup } = this.state;
+
+    if (mapDisplayed) {
+      this.setState({ mapDisplayed: false });
+    } else {
+      this.setState({
+        ...this.state,
+        createEditGroup: !createEditGroup,
+        mapDisplayed: false
+      });
+    }
+  };
+
+  createConfirmClicked = () => {
+    const { createEditGroup, mapDisplayed } = this.state;
+
+    if (!createEditGroup) {
+      this.setState({ createEditGroup: true });
+    } else {
+      if (mapDisplayed) {
+        this.setState({ mapDisplayed: false });
+      } else {
+        console.log('Create the group');
+      }
+    }
+  };
+
   render() {
-    const { app } = this.props;
-    const { locationSelected, createEditGroup, editGroup } = this.state;
+    const { app, resizeScreen } = this.props;
+    const {
+      locationSelected,
+      createEditGroup,
+      editGroup,
+      mapDisplayed
+    } = this.state;
+    const topHeight = '56px';
+    const heightFactor = resizeScreen ? '56px' : '64px';
 
     if (app.locationState !== 'granted')
       return <WhoopsieDoodle toEnable="Location" />;
@@ -28,23 +70,43 @@ class LocationsPage extends Component {
       <div>
         {!locationSelected ? (
           <Grid
+            item
             style={{
-              paddingTop: '12px',
-              marginLeft: '24px',
-              marginRight: '24px'
+              marginLeft: !mapDisplayed ? '24px' : '',
+              marginRight: !mapDisplayed ? '24px' : ''
             }}
           >
-            <CreateLocationsGroup
-              createEditGroup={createEditGroup}
-              editgroup={editGroup}
-              createGroupClicked={() =>
-                this.setState({ createEditGroup: !createEditGroup })
-              }
-            />
+            <Grid
+              container
+              alignItems="center"
+              justify="center"
+              style={{
+                height: topHeight
+              }}
+            >
+              <CreateUpdateButtons
+                createEditGroup={createEditGroup}
+                editgroup={editGroup}
+                cancelCreateClicked={() => this.cancelCreateClicked()}
+                createConfirmClicked={() => this.createConfirmClicked()}
+                mapDisplayed={mapDisplayed}
+              />
+            </Grid>
             {createEditGroup ? (
-              <div>Test</div>
+              <CreateUpateGroups
+                topHeight={topHeight}
+                heightFactor={heightFactor}
+                mapDisplayed={() =>
+                  this.setState({
+                    ...this.state,
+                    mapDisplayed: true,
+                    hideLocationSelection: false
+                  })
+                }
+                hideMap={mapDisplayed}
+              />
             ) : (
-              <div>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <LocationGroups
                   selectedGroup={selectedGroup =>
                     console.log('SelectedGroup:', selectedGroup)
@@ -54,15 +116,19 @@ class LocationsPage extends Component {
             )}
           </Grid>
         ) : (
-          <LocationSelected locationPOI={locationPOI} />
+          <LocationSelected
+            height={topHeight}
+            heightFactor={heightFactor}
+            locationPOI={locationPOI}
+          />
         )}
       </div>
     );
   }
 }
 
-function mapStateToProps({ app }) {
-  return { app };
+function mapStateToProps({ app, resizeScreen }) {
+  return { app, resizeScreen };
 }
 
 export default connect(mapStateToProps)(LocationsPage);
