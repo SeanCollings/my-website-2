@@ -23,6 +23,11 @@ const styles = theme => ({
     maxWidth: 360,
     backgroundColor: 'white',
     borderRadius: '15px'
+  },
+  borderLeft: {
+    borderLeft: 'solid 1px #e0e0e0',
+    paddingLeft: '12px',
+    marginLeft: '10px'
   }
 });
 
@@ -40,9 +45,7 @@ class LocationGroups extends Component {
   };
 
   renderGroups = () => {
-    const { locations, auth } = this.props;
-
-    console.log('Locations', locations);
+    const { locations, auth, classes } = this.props;
 
     if (!locations.groups)
       return (
@@ -64,14 +67,14 @@ class LocationGroups extends Component {
     const groupsLength = locations.groups.length;
 
     return locations.groups.map((group, index) => {
-      const members = group.members.length;
+      const members = group.members.length + 1;
       const initial = group.name.charAt(0).toUpperCase();
       const createdByUser =
         group.createdById.toString() === auth._id.toString();
 
       return (
         <div key={group._id}>
-          <ListItem button onClick={() => this.props.selectGroup(group)}>
+          <ListItem button onClick={() => this.selectGroup(group)}>
             <ListItemAvatar>
               <Avatar
                 src={group.icon}
@@ -87,7 +90,8 @@ class LocationGroups extends Component {
               secondary={`Members: ${members}`}
             />
             <ListItemSecondaryAction
-              onClick={() => this.props.editGroup(group)}
+              onClick={() => this.editGroup(group)}
+              className={createdByUser ? classes.borderLeft : null}
             >
               {createdByUser ? (
                 <Typography
@@ -97,7 +101,7 @@ class LocationGroups extends Component {
                     color: '#3D9970'
                   }}
                 >
-                  Edit
+                  Admin
                 </Typography>
               ) : null}
               <ListItemIcon>

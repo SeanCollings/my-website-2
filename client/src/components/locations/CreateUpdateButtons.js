@@ -23,12 +23,17 @@ class CreateUpdateButtons extends Component {
     const {
       classes,
       cancelCreateClicked,
-      createConfirmClicked,
-      // creatingGroup,
+      confirmCreateClicked,
       editGroup,
       createEditGroup,
       mapDisplayed
     } = this.props;
+
+    const createButtonText = !mapDisplayed
+      ? !createEditGroup
+        ? 'Create Group'
+        : 'Create'
+      : 'Confirm';
 
     return (
       <div style={{ textAlign: 'center' }}>
@@ -43,13 +48,13 @@ class CreateUpdateButtons extends Component {
           Cancel
         </Button>
         <Button
-          onClick={createConfirmClicked}
+          onClick={confirmCreateClicked}
           className={classes.button}
           style={{
             display: editGroup ? 'none' : ''
           }}
         >
-          {!mapDisplayed ? 'Create' : 'Confirm'}
+          {createButtonText}
         </Button>
         {/* <Button
           onClick={this.createEditGroup()}

@@ -12,6 +12,12 @@ const styles = theme => ({});
 class UploadIcon extends Component {
   state = { groupIcon: null };
 
+  componentDidMount() {
+    const { groupIcon } = this.props;
+
+    if (groupIcon) this.setState({ groupIcon });
+  }
+
   uploadImageToScreen = event => {
     if (event && event.target && event.target.files[0]) {
       const image = event.target.files[0];

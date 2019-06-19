@@ -10,23 +10,26 @@ class SetGroupLocation extends Component {
   // state = { location: { lat: -33.917825, lng: 18.42408 } };
 
   render() {
-    const { markerPosition } = this.props;
+    const { markerPosition, showErrors } = this.props;
 
     return (
       <Grid container justify="center" alignItems="center">
         <Typography style={{ display: !markerPosition ? 'none' : '' }}>
           Location:
         </Typography>
-        <Typography style={{ fontStyle: 'italic' }}>
+        <Typography
+          style={{ fontStyle: 'italic', color: showErrors ? '#FF4136' : '' }}
+          onClick={this.props.showMap}
+        >
           {markerPosition
-            ? `${markerPosition.lat.toFixed(6)}, ${markerPosition.lng.toFixed(
-                6
+            ? `${markerPosition.lat.toFixed(5)}, ${markerPosition.lng.toFixed(
+                5
               )}`
-            : 'select location'}
+            : 'Select location'}
         </Typography>
         <IconButton
           onClick={this.props.showMap}
-          style={{ paddingRight: '0px' }}
+          style={{ paddingRight: '0px', color: showErrors ? '#FF4136' : '' }}
         >
           <AddLocationIcon />
         </IconButton>

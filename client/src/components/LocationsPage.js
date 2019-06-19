@@ -15,7 +15,9 @@ class LocationsPage extends Component {
     createGroup: false,
     editGroup: false,
     mapDisplayed: false,
-    hideLocationSelection: false
+    hideLocationSelection: false,
+    savePosition: false,
+    creatingUpdatingGroup: false
   };
 
   componentWillUnmount() {
@@ -36,16 +38,24 @@ class LocationsPage extends Component {
     }
   };
 
-  createConfirmClicked = () => {
+  confirmCreateClicked = () => {
     const { createEditGroup, mapDisplayed } = this.state;
 
     if (!createEditGroup) {
-      this.setState({ createEditGroup: true });
+      this.setState({
+        ...this.state,
+        createEditGroup: true,
+        creatingUpdatingGroup: false
+      });
     } else {
       if (mapDisplayed) {
-        this.setState({ mapDisplayed: false });
+        this.setState({
+          ...this.state,
+          mapDisplayed: false,
+          savePosition: true
+        });
       } else {
-        console.log('Create the group');
+        this.setState({ creatingUpdatingGroup: true });
       }
     }
   };
@@ -56,7 +66,9 @@ class LocationsPage extends Component {
       locationSelected,
       createEditGroup,
       editGroup,
-      mapDisplayed
+      mapDisplayed,
+      savePosition,
+      creatingUpdatingGroup
     } = this.state;
     const topHeight = '56px';
     const heightFactor = resizeScreen ? '56px' : '64px';
@@ -88,7 +100,7 @@ class LocationsPage extends Component {
                 createEditGroup={createEditGroup}
                 editgroup={editGroup}
                 cancelCreateClicked={() => this.cancelCreateClicked()}
-                createConfirmClicked={() => this.createConfirmClicked()}
+                confirmCreateClicked={() => this.confirmCreateClicked()}
                 mapDisplayed={mapDisplayed}
               />
             </Grid>
@@ -104,6 +116,15 @@ class LocationsPage extends Component {
                   })
                 }
                 hideMap={mapDisplayed}
+                savePosition={savePosition}
+                positionSaved={() => this.setState({ savePosition: false })}
+                creatingUpdatingGroup={creatingUpdatingGroup}
+                createUpdateComplete={() =>
+                  this.setState({
+                    creatingUpdatingGroup: false
+                  })
+                }
+                showAllGroups={() => this.cancelCreateClicked()}
               />
             ) : (
               <div style={{ display: 'flex', justifyContent: 'center' }}>

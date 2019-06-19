@@ -16,12 +16,13 @@ export const getLocationGroups = () => async dispatch => {
 
 export const createLocationGroups = (
   name,
+  icon,
   location,
   groupMembers
 ) => async dispatch => {
-  console.log('Action location:', location);
   const res = await axios.post('/api/add_locationgroup', {
     name,
+    icon,
     location,
     groupMembers
   });

@@ -37,25 +37,41 @@ export default app => {
 
   app.post('/api/add_locationgroup', requireLogin, async (req, res) => {
     try {
-      const { name, location, groupMembers } = req.body;
+      const { name, icon, location, groupMembers } = req.body;
       const createdBy = `${req.user.givenName} ${req.user.familyName}`;
       const createdById = req.user._id;
 
-      console.log('Location', location);
-      // const group = await new Groups({
-      //   name,
-      //   location,
-      //   createdBy,
-      //   createdById,
-      //   createdDate: new Date()
-      // }).save();
+      const group = await new LocationGroups({
+        name,
+        icon,
+        location,
+        createdBy,
+        createdById,
+        createdDate: new Date()
+      }).save();
+
+      const superUser = await Users.findOne(
+        { _id: createdById },
+        { superUser: 1 }
+      );
 
       const membersArray = [];
-      groupMembers.forEach(member => {
-        membersArray.push({ _user: member });
-      });
+      if (superUser.superUser) {
+        groupMembers.forEach(member => {
+          membersArray.push({ _user: member });
+        });
+      } else {
+        const users = await Users.find(
+          { emailAddress: { $in: groupMembers } },
+          { _id: 1 }
+        );
 
-      await Groups.updateOne(group, {
+        users.forEach(member => {
+          if (member) membersArray.push({ _user: member['_id'] });
+        });
+      }
+
+      await LocationGroups.updateOne(group, {
         $push: { members: { $each: membersArray } }
       });
 
