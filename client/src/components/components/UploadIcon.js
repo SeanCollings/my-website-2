@@ -13,9 +13,17 @@ class UploadIcon extends Component {
   state = { groupIcon: null };
 
   componentDidMount() {
-    const { groupIcon } = this.props;
+    const { groupIcon, editGroup } = this.props;
 
-    if (groupIcon) this.setState({ groupIcon });
+    if (!editGroup) {
+      this.setState({ groupIcon });
+    } else {
+      if (!groupIcon) {
+        this.setState({ groupIcon: editGroup.icon });
+      } else {
+        this.setState({ groupIcon });
+      }
+    }
   }
 
   uploadImageToScreen = event => {
@@ -55,6 +63,11 @@ class UploadIcon extends Component {
     }
   };
 
+  clearGroupIcon = () => {
+    this.setState({ groupIcon: null });
+    this.props.clearGroupIcon();
+  };
+
   render() {
     const { letter, colorMain, colorText } = this.props;
     const { groupIcon } = this.state;
@@ -88,7 +101,7 @@ class UploadIcon extends Component {
           </label>
         </div>
         <IconButton
-          onClick={() => this.setState({ groupIcon: null })}
+          onClick={() => this.clearGroupIcon()}
           style={{ paddingRight: '0px', marginLeft: '24px' }}
         >
           <CancelIcon />

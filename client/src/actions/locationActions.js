@@ -29,3 +29,29 @@ export const createLocationGroups = (
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
+
+export const updateLocationGroups = (
+  _id,
+  name,
+  icon,
+  location,
+  groupMembers
+) => async dispatch => {
+  const res = await axios.post('/api/update_locationgroup', {
+    _id,
+    name,
+    icon,
+    location,
+    groupMembers
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const deleteGroup = (_id, name) => async dispatch => {
+  const res = await axios.delete('/api/delete_locationgroup', {
+    data: { _id, name }
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};

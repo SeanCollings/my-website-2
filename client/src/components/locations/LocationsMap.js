@@ -30,6 +30,12 @@ class LocationsMap extends Component {
     otherPlayerDirections: null
   };
 
+  componentDidMount() {
+    const { locationPOI } = this.props;
+
+    if (locationPOI) this.setState({ center: locationPOI });
+  }
+
   componentDidUpdate() {
     const { otherPlayers } = this.props;
     // console.log('MAP:', this.map);
@@ -151,7 +157,7 @@ class LocationsMap extends Component {
       scaledSize: { width: 42, height: 42 }
     };
     // const position = { lat: -33.917825, lng: 18.42408 };
-    // console.log('LocationsMap:', this.props.markerPosition);
+    // console.log('LocationsMap:', this.props.locationPOI);
 
     return (
       <GoogleMap

@@ -77,7 +77,7 @@ class LocationsBeginEnd extends Component {
   };
 
   render() {
-    const { height, classes } = this.props;
+    const { topHeight, classes } = this.props;
     const { locationsStart, onlineUsers } = this.state;
 
     return (
@@ -86,7 +86,7 @@ class LocationsBeginEnd extends Component {
         direction="row"
         justify="flex-start"
         alignItems="center"
-        style={{ height }}
+        style={{ height: topHeight }}
       >
         <Button
           className={classes.button}

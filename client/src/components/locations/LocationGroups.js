@@ -74,12 +74,12 @@ class LocationGroups extends Component {
 
       return (
         <div key={group._id}>
-          <ListItem button onClick={() => this.selectGroup(group)}>
+          <ListItem button onClick={() => this.props.selectedGroup(group)}>
             <ListItemAvatar>
               <Avatar
                 src={group.icon}
                 style={{
-                  backgroundColor: group.icon ? 'transparent' : '#3D9970'
+                  backgroundColor: group.icon ? 'transparent' : '#900C3F'
                 }}
               >
                 {initial}
@@ -90,7 +90,7 @@ class LocationGroups extends Component {
               secondary={`Members: ${members}`}
             />
             <ListItemSecondaryAction
-              onClick={() => this.editGroup(group)}
+              onClick={() => this.props.editGroup(group)}
               className={createdByUser ? classes.borderLeft : null}
             >
               {createdByUser ? (

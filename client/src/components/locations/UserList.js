@@ -11,7 +11,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 
 class UserList extends Component {
-  state = { newGroupMembers: [] };
+  state = { newGroupMembers: [], userListUpdated: false };
 
   componentDidMount() {
     const { auth, userList } = this.props;
@@ -19,6 +19,19 @@ class UserList extends Component {
     // Get all users
     if (auth.superUser) this.props.fetchAllUsers(['User Groups']);
     if (userList) this.setState({ newGroupMembers: userList });
+  }
+
+  componentDidUpdate() {
+    const { editGroup, userList, auth } = this.props;
+    const { userListUpdated } = this.state;
+
+    if (editGroup && !userListUpdated && auth.superUser) {
+      this.setState({
+        ...this.state,
+        newGroupMembers: userList,
+        userListUpdated: true
+      });
+    }
   }
 
   handleChange = id => {

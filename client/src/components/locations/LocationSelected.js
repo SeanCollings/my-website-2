@@ -38,7 +38,7 @@ class LocationsSelected extends Component {
     return (
       <div>
         <LocationsBeginEnd
-          height={topHeight}
+          topHeight={topHeight}
           setPosition={this.setPosition}
           otherPlayersLength={otherPlayers ? otherPlayers.length : 0}
         />

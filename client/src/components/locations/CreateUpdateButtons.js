@@ -15,15 +15,11 @@ const styles = theme => ({
 class CreateUpdateButtons extends Component {
   state = { editGroup: false };
 
-  createEditGroup = () => {
-    console.log('Creating or updating group');
-  };
-
   render() {
     const {
       classes,
       cancelCreateClicked,
-      confirmCreateClicked,
+      confirmCreateUpdateClicked,
       editGroup,
       createEditGroup,
       mapDisplayed
@@ -32,7 +28,9 @@ class CreateUpdateButtons extends Component {
     const createButtonText = !mapDisplayed
       ? !createEditGroup
         ? 'Create Group'
-        : 'Create'
+        : !editGroup
+        ? 'Create'
+        : 'Update'
       : 'Confirm';
 
     return (
@@ -47,24 +45,9 @@ class CreateUpdateButtons extends Component {
         >
           Cancel
         </Button>
-        <Button
-          onClick={confirmCreateClicked}
-          className={classes.button}
-          style={{
-            display: editGroup ? 'none' : ''
-          }}
-        >
+        <Button onClick={confirmCreateUpdateClicked} className={classes.button}>
           {createButtonText}
         </Button>
-        {/* <Button
-          onClick={this.createEditGroup()}
-          className={classes.button}
-          style={{
-            display: editGroup ? '' : 'none'
-          }}
-        >
-          Update
-        </Button> */}
       </div>
     );
   }

@@ -11,9 +11,9 @@ import Grid from '@material-ui/core/Grid';
 
 class LocationsPage extends Component {
   state = {
-    locationSelected: false,
+    selectedGroup: null,
     createGroup: false,
-    editGroup: false,
+    editGroup: null,
     mapDisplayed: false,
     hideLocationSelection: false,
     savePosition: false,
@@ -33,12 +33,14 @@ class LocationsPage extends Component {
       this.setState({
         ...this.state,
         createEditGroup: !createEditGroup,
-        mapDisplayed: false
+        mapDisplayed: false,
+        editGroup: null,
+        creatingUpdatingGroup: false
       });
     }
   };
 
-  confirmCreateClicked = () => {
+  confirmCreateUpdateClicked = () => {
     const { createEditGroup, mapDisplayed } = this.state;
 
     if (!createEditGroup) {
@@ -55,7 +57,7 @@ class LocationsPage extends Component {
           savePosition: true
         });
       } else {
-        this.setState({ creatingUpdatingGroup: true });
+        this.setState({ ...this.state, creatingUpdatingGroup: true });
       }
     }
   };
@@ -63,7 +65,7 @@ class LocationsPage extends Component {
   render() {
     const { app, resizeScreen } = this.props;
     const {
-      locationSelected,
+      selectedGroup,
       createEditGroup,
       editGroup,
       mapDisplayed,
@@ -76,11 +78,11 @@ class LocationsPage extends Component {
     if (app.locationState !== 'granted')
       return <WhoopsieDoodle toEnable="Location" />;
 
-    const locationPOI = { lat: -33.917825, lng: 18.42408 };
+    // const locationPOI = { lat: -33.917825, lng: 18.42408 };
 
     return (
       <div>
-        {!locationSelected ? (
+        {!selectedGroup ? (
           <Grid
             item
             style={{
@@ -98,9 +100,11 @@ class LocationsPage extends Component {
             >
               <CreateUpdateButtons
                 createEditGroup={createEditGroup}
-                editgroup={editGroup}
+                editGroup={editGroup}
                 cancelCreateClicked={() => this.cancelCreateClicked()}
-                confirmCreateClicked={() => this.confirmCreateClicked()}
+                confirmCreateUpdateClicked={() =>
+                  this.confirmCreateUpdateClicked()
+                }
                 mapDisplayed={mapDisplayed}
               />
             </Grid>
@@ -125,12 +129,20 @@ class LocationsPage extends Component {
                   })
                 }
                 showAllGroups={() => this.cancelCreateClicked()}
+                editGroup={editGroup}
               />
             ) : (
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <LocationGroups
                   selectedGroup={selectedGroup =>
-                    console.log('SelectedGroup:', selectedGroup)
+                    this.setState({ selectedGroup })
+                  }
+                  editGroup={selectedGroup =>
+                    this.setState({
+                      ...this.state,
+                      editGroup: selectedGroup,
+                      createEditGroup: true
+                    })
                   }
                 />
               </div>
@@ -138,9 +150,9 @@ class LocationsPage extends Component {
           </Grid>
         ) : (
           <LocationSelected
-            height={topHeight}
+            topHeight={topHeight}
             heightFactor={heightFactor}
-            locationPOI={locationPOI}
+            locationPOI={selectedGroup.location}
           />
         )}
       </div>

@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createLocationGroups } from '../../actions/locationActions';
+import {
+  createLocationGroups,
+  updateLocationGroups,
+  deleteGroup
+} from '../../actions/locationActions';
 
 import UploadIcon from '../components/UploadIcon';
 import SetGroupLocation from './SetGroupLocation';
@@ -15,6 +19,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -28,6 +34,10 @@ const styles = theme => ({
   },
   textField: {
     width: 200
+  },
+  deleteButton: {
+    marginBottom: '-12px',
+    marginTop: '6px'
   }
 });
 
@@ -38,17 +48,45 @@ class CreateUpateGroups extends Component {
     markerPosition: null,
     tempPosition: null,
     userList: null,
-    showErrors: false
+    showErrors: false,
+    deletingGroup: false
   };
 
+  componentDidMount() {
+    const { editGroup, auth } = this.props;
+
+    const membersArray = [];
+    if (auth.superUser && editGroup) {
+      editGroup.members.forEach(member => {
+        membersArray.push(member._user);
+      });
+    }
+
+    if (editGroup) {
+      this.setState({
+        ...this.state,
+        groupName: editGroup.name,
+        groupIcon: editGroup.icon,
+        markerPosition: editGroup.location,
+        userList: auth.superUser ? [...membersArray] : null
+      });
+    }
+  }
+
   componentDidUpdate() {
-    const { savePosition, creatingUpdatingGroup, snackBar } = this.props;
+    const {
+      savePosition,
+      creatingUpdatingGroup,
+      snackBar,
+      editGroup
+    } = this.props;
     const {
       tempPosition,
       groupName,
       markerPosition,
       groupIcon,
-      userList
+      userList,
+      deletingGroup
     } = this.state;
 
     if (savePosition) {
@@ -61,17 +99,31 @@ class CreateUpateGroups extends Component {
         this.props.createUpdateComplete();
         this.setState({ showErrors: true });
       } else {
-        this.props.createLocationGroups(
-          groupName,
-          groupIcon,
-          markerPosition,
-          userList
-        );
+        if (editGroup) {
+          this.props.updateLocationGroups(
+            editGroup._id,
+            groupName,
+            groupIcon,
+            markerPosition,
+            userList
+          );
+        } else {
+          this.props.createLocationGroups(
+            groupName,
+            groupIcon,
+            markerPosition,
+            userList
+          );
+        }
       }
     }
 
-    if (snackBar.open && creatingUpdatingGroup) {
-      this.props.createUpdateComplete();
+    if (editGroup && !snackBar.open && deletingGroup) {
+      this.props.deleteGroup(editGroup._id, editGroup.name);
+    }
+
+    if (snackBar.open && (creatingUpdatingGroup || deletingGroup)) {
+      this.setState({ deletingGroup: false });
       this.props.showAllGroups();
     }
   }
@@ -86,6 +138,10 @@ class CreateUpateGroups extends Component {
     });
   };
 
+  deleteGroup = () => {
+    this.setState({ deletingGroup: true });
+  };
+
   showMapSelected = () => {
     this.props.mapDisplayed();
   };
@@ -97,14 +153,16 @@ class CreateUpateGroups extends Component {
       heightFactor,
       topHeight,
       hideMap,
-      creatingUpdatingGroup
+      creatingUpdatingGroup,
+      editGroup
     } = this.props;
     const {
       groupIcon,
       groupName,
       markerPosition,
       userList,
-      showErrors
+      showErrors,
+      deletingGroup
     } = this.state;
 
     const groupFirstLetter = groupName.charAt(0).toUpperCase();
@@ -129,18 +187,35 @@ class CreateUpateGroups extends Component {
             selectedPosition={markerPosition}
           />
         ) : (
-          <Loader showLoader={creatingUpdatingGroup} spinnerColor={'#900C3F'}>
-            <div style={{ opacity: creatingUpdatingGroup ? '0.6' : '1' }}>
-              <TextField
-                id="group-name"
-                className={classes.textField}
-                margin="normal"
-                label="Group Name"
-                // placeholder="Group Name"
-                error={showErrors && groupName.length === 0}
-                value={groupName}
-                onChange={event => this.handleTextChange(event)}
-              />
+          <Loader
+            showLoader={creatingUpdatingGroup || deletingGroup}
+            spinnerColor={'#900C3F'}
+          >
+            <div
+              style={{
+                opacity: creatingUpdatingGroup || deletingGroup ? '0.6' : '1'
+              }}
+            >
+              <Grid container direction="column" alignItems="center">
+                {editGroup ? (
+                  <Button
+                    onClick={() => this.deleteGroup()}
+                    className={classes.deleteButton}
+                  >
+                    Delete
+                  </Button>
+                ) : null}
+                <TextField
+                  id="group-name"
+                  className={classes.textField}
+                  margin="normal"
+                  label="Group Name"
+                  // placeholder="Group Name"
+                  error={showErrors && groupName.length === 0}
+                  value={groupName}
+                  onChange={event => this.handleTextChange(event)}
+                />
+              </Grid>
               <List>
                 <ListItem
                   style={{
@@ -160,7 +235,9 @@ class CreateUpateGroups extends Component {
                     colorMain={'#900C3F'}
                     colorText={'white'}
                     setGroupIcon={groupIcon => this.setState({ groupIcon })}
+                    clearGroupIcon={() => this.setState({ groupIcon: null })}
                     groupIcon={groupIcon}
+                    editGroup={editGroup}
                   />
                 </ListItem>
                 <ListItem style={{ paddingTop: '0px' }}>
@@ -188,6 +265,7 @@ class CreateUpateGroups extends Component {
                       checkboxColor={'#900C3F'}
                       setUserList={userList => this.setState({ userList })}
                       userList={userList}
+                      editGroup={editGroup}
                     />
                   </List>
                 </div>
@@ -215,5 +293,5 @@ function mapStateToProps({ auth, snackBar }) {
 
 export default connect(
   mapStateToProps,
-  { createLocationGroups }
+  { createLocationGroups, updateLocationGroups, deleteGroup }
 )(withStyles(styles)(CreateUpateGroups));

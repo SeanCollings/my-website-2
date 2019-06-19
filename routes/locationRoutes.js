@@ -56,24 +56,26 @@ export default app => {
       );
 
       const membersArray = [];
-      if (superUser.superUser) {
-        groupMembers.forEach(member => {
-          membersArray.push({ _user: member });
-        });
-      } else {
-        const users = await Users.find(
-          { emailAddress: { $in: groupMembers } },
-          { _id: 1 }
-        );
+      if (groupMembers) {
+        if (superUser.superUser) {
+          groupMembers.forEach(member => {
+            membersArray.push({ _user: member });
+          });
+        } else {
+          const users = await Users.find(
+            { emailAddress: { $in: groupMembers } },
+            { _id: 1 }
+          );
 
-        users.forEach(member => {
-          if (member) membersArray.push({ _user: member['_id'] });
+          users.forEach(member => {
+            if (member) membersArray.push({ _user: member['_id'] });
+          });
+        }
+
+        await LocationGroups.updateOne(group, {
+          $push: { members: { $each: membersArray } }
         });
       }
-
-      await LocationGroups.updateOne(group, {
-        $push: { members: { $each: membersArray } }
-      });
 
       res.send({
         type: MessageTypeEnum.success,
@@ -83,6 +85,63 @@ export default app => {
       res.send({
         type: MessageTypeEnum.error,
         message: `Something went wrong in add_notificationgroup`
+      });
+      throw err;
+    }
+  });
+
+  app.post('/api/update_locationgroup', requireLogin, async (req, res) => {
+    try {
+      const { superUser } = req.user;
+      const { _id, name, icon, location, groupMembers } = req.body;
+
+      await LocationGroups.updateOne(
+        { _id },
+        { $unset: { members: '' }, $set: { name, icon, location } }
+      );
+
+      if (superUser) {
+        const membersArray = [];
+        groupMembers.forEach(member => {
+          membersArray.push({ _user: member });
+        });
+
+        await LocationGroups.updateOne(
+          { _id },
+          {
+            $push: { members: { $each: membersArray } }
+          }
+        );
+      } else {
+        console.log('Not a super User');
+      }
+
+      return res.send({
+        type: MessageTypeEnum.success,
+        message: `${name} updated successfully!`
+      });
+    } catch (err) {
+      res.send({
+        type: MessageTypeEnum.error,
+        message: `Something went wrong in update_notificationgroup`
+      });
+      throw err;
+    }
+  });
+
+  app.delete('/api/delete_locationgroup', requireLogin, async (req, res) => {
+    try {
+      const { _id, name } = req.body;
+
+      await LocationGroups.deleteOne({ _id });
+      return res.send({
+        type: MessageTypeEnum.success,
+        message: `${name} deleted!`
+      });
+    } catch (err) {
+      res.send({
+        type: MessageTypeEnum.error,
+        message: `Something went wrong in delete_locationgroup`
       });
       throw err;
     }
