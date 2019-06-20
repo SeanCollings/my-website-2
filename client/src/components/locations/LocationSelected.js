@@ -12,7 +12,8 @@ class LocationsSelected extends Component {
       { lat: -33.943376, lng: 18.459384, name: 'Jarrod' },
       { lat: -33.930353, lng: 18.423266, name: 'Matthew' }
     ],
-    showOtherPlayers: false
+    showOtherPlayers: false,
+    pusher: null
   };
 
   componentWillUnmount() {
@@ -30,7 +31,7 @@ class LocationsSelected extends Component {
   };
 
   render() {
-    const { locationPOI, topHeight, heightFactor } = this.props;
+    const { locationPOI, topHeight, heightFactor, groupId } = this.props;
     const { currentPlayer, otherPlayers, showOtherPlayers } = this.state;
 
     return (
@@ -40,6 +41,7 @@ class LocationsSelected extends Component {
           setPosition={this.setPosition}
           otherPlayersLength={otherPlayers ? otherPlayers.length : 0}
           returnToGroups={() => this.props.returnToGroups()}
+          groupId={groupId}
         />
         <LocationsMap
           currentPlayer={currentPlayer ? currentPlayer : null}

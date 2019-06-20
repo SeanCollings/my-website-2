@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -64,8 +65,14 @@ class LocationsBeginEnd extends Component {
   };
 
   toggleLocations = () => {
-    const { otherPlayersLength } = this.props;
-    console.log(otherPlayersLength);
+    const {
+      otherPlayersLength
+      // groupId, auth
+    } = this.props;
+
+    // Pusher goes here
+
+    // console.log(otherPlayersLength);
     const onlineUsers = !this.state.locationsStart ? otherPlayersLength + 1 : 0;
 
     this.setState({
@@ -112,4 +119,8 @@ class LocationsBeginEnd extends Component {
   }
 }
 
-export default withStyles(styles)(LocationsBeginEnd);
+function mapStateToProps({ auth }) {
+  return { auth };
+}
+
+export default connect(mapStateToProps)(withStyles(styles)(LocationsBeginEnd));

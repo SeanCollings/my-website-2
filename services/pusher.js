@@ -16,6 +16,7 @@ const pusher = new Pusher({
 
 export default app => {
   app.get('/api/get_pusherkey', requireLogin, (req, res) => {
+    console.log(keys.pusherKey);
     res.send(keys.pusherKey);
   });
 

@@ -154,6 +154,7 @@ class LocationsPage extends Component {
             heightFactor={heightFactor}
             locationPOI={selectedGroup.location}
             returnToGroups={() => this.setState({ selectedGroup: false })}
+            groupId={selectedGroup._id}
           />
         )}
       </div>
