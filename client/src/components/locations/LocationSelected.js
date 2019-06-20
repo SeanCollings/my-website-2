@@ -39,6 +39,7 @@ class LocationsSelected extends Component {
           topHeight={topHeight}
           setPosition={this.setPosition}
           otherPlayersLength={otherPlayers ? otherPlayers.length : 0}
+          returnToGroups={() => this.props.returnToGroups()}
         />
         <LocationsMap
           currentPlayer={currentPlayer ? currentPlayer : null}

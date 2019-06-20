@@ -24,7 +24,7 @@ class LocationsMap extends Component {
     locations: {},
     users_online: [],
     current_user: '',
-    zoomLevel: 15,
+    zoomLevel: 14,
     directions: null,
     otherPlayerDirections: null
   };

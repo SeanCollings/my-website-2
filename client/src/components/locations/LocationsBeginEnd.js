@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 // import DropDownIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
+import BackIcon from '@material-ui/icons/ArrowBack';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -88,6 +89,10 @@ class LocationsBeginEnd extends Component {
         alignItems="center"
         style={{ height: topHeight }}
       >
+        <BackIcon
+          onClick={() => this.props.returnToGroups()}
+          style={{ paddingLeft: '24px', color: '#dedede' }}
+        />
         <Button
           className={classes.button}
           style={{
@@ -98,7 +103,7 @@ class LocationsBeginEnd extends Component {
           }}
           onClick={() => this.toggleLocations()}
         >
-          {locationsStart ? 'Leave' : 'Start'}
+          {locationsStart ? 'Stop' : 'Start'}
         </Button>
         <Typography className={classes.text}>Online: {onlineUsers}</Typography>
         {/* <DropDownIcon style={{color: 'white'}}/> */}
