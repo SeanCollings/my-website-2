@@ -36,14 +36,6 @@ class LocationGroups extends Component {
     this.props.getLocationGroups();
   }
 
-  selectGroup = selectedGroup => {
-    console.log('SelectedGroup:', selectedGroup);
-  };
-
-  editGroup = selectedGroup => {
-    console.log('EditGroup:', selectedGroup);
-  };
-
   renderGroups = () => {
     const { locations, auth, classes } = this.props;
 
@@ -97,8 +89,7 @@ class LocationGroups extends Component {
                 <Typography
                   style={{
                     fontSize: 'x-small',
-                    marginRight: '16px',
-                    color: '#3D9970'
+                    color: '#900C3F'
                   }}
                 >
                   Admin

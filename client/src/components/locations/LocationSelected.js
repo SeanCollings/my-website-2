@@ -22,12 +22,10 @@ class LocationsSelected extends Component {
   setPosition = position => {
     console.log('Position:', position);
 
-    if (position && position.lat !== -33.8911836)
-      position = { lat: -33.8911836, lng: 18.5107103 };
     this.setState({
       ...this.state,
-      currentPlayer: position ? { lat: position.lat, lng: position.lng } : null,
-      showOtherPlayers: position ? true : false
+      currentPlayer: position ? { lat: position.lat, lng: position.lng } : null
+      // showOtherPlayers: position ? true : false
     });
   };
 

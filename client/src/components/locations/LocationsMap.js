@@ -6,7 +6,6 @@ import {
   withGoogleMap,
   GoogleMap,
   Marker,
-  // DirectionsRenderer,
   Polyline
 } from 'react-google-maps';
 import { MAP_OPTIONS } from './mapOptions';
@@ -127,7 +126,7 @@ class LocationsMap extends Component {
               const overViewCoords = result.routes[0].overview_path;
               directionsArr.push(overViewCoords);
               // console.log('directionsArr', directionsArr);
-              this.setState({ otherPlayerDirections: directionsArr });
+              // this.setState({ otherPlayerDirections: directionsArr });
             }
           }
         );
@@ -207,22 +206,12 @@ class LocationsMap extends Component {
             })
           : null}
         {currentPlayer && directions && (
-          // <DirectionsRenderer
-          //   directions={directions}
-          //   options={{
-          //     suppressMarkers: true,
-          //     polylineOptions: {
-          //       strokeWeight: 4,
-          //       strokeOpacity: 0.8,
-          //       strokeColor: '#fce392'
-          //     }
-          //   }}
-          // />
           <Polyline
             path={directions}
             geodesic={false}
             options={{
-              strokeColor: '#ff2e2b',
+              // strokeColor: '#ff2e2b',
+              strokeColor: '#FFC300',
               strokeOpacity: 0.8,
               strokeWeight: 4
             }}

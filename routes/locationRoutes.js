@@ -5,17 +5,43 @@ const mongoose = require('mongoose');
 const LocationGroups = mongoose.model('locationgroups');
 const Users = mongoose.model('users');
 
+const getMembersEmails = async members => {
+  const memberIds = [];
+  members.forEach(member => {
+    memberIds.push(member._user);
+  });
+
+  const userEmails = await Users.find(
+    { _id: { $in: memberIds } },
+    { emailAddress: 1 }
+  );
+
+  return userEmails;
+};
+
 export default app => {
   app.get('/api/get_locationgroups', requireLogin, async (req, res) => {
     try {
-      const { _id } = req.user;
+      const { _id, superUser } = req.user;
       const locationGroups = await LocationGroups.find().sort([['_id', -1]]);
 
       const usersGroups = [];
       for (let i = 0; i < locationGroups.length; i++) {
         if (locationGroups[i].createdById.toString() === _id.toString()) {
-          usersGroups.push(locationGroups[i]);
-          continue;
+          if (superUser) {
+            usersGroups.push(locationGroups[i]);
+            continue;
+          } else {
+            const memberEmails = await getMembersEmails(
+              locationGroups[i].members
+            );
+
+            usersGroups.push({
+              ...locationGroups[i]._doc,
+              members: memberEmails
+            });
+            continue;
+          }
         }
 
         for (let j = 0; j < locationGroups[i].members.length; j++) {
@@ -100,11 +126,22 @@ export default app => {
         { $unset: { members: '' }, $set: { name, icon, location } }
       );
 
-      if (superUser) {
-        const membersArray = [];
-        groupMembers.forEach(member => {
-          membersArray.push({ _user: member });
-        });
+      const membersArray = [];
+      if (groupMembers) {
+        if (superUser) {
+          groupMembers.forEach(member => {
+            membersArray.push({ _user: member });
+          });
+        } else {
+          const users = await Users.find(
+            { emailAddress: { $in: groupMembers } },
+            { _id: 1 }
+          );
+
+          users.forEach(member => {
+            if (member) membersArray.push({ _user: member['_id'] });
+          });
+        }
 
         await LocationGroups.updateOne(
           { _id },
@@ -112,8 +149,6 @@ export default app => {
             $push: { members: { $each: membersArray } }
           }
         );
-      } else {
-        console.log('Not a super User');
       }
 
       return res.send({

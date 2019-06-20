@@ -12,12 +12,12 @@ import SetLocationMap from './SetLocationMap';
 import UserList from './UserList';
 import UserListNonSuper from './UserListNonSuper';
 import Loader from '../components/loader';
+import ConfirmActionModal from '../modals/ConfirmActionModal';
 
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
@@ -49,7 +49,8 @@ class CreateUpateGroups extends Component {
     tempPosition: null,
     userList: null,
     showErrors: false,
-    deletingGroup: false
+    deletingGroup: false,
+    showModal: false
   };
 
   componentDidMount() {
@@ -60,6 +61,10 @@ class CreateUpateGroups extends Component {
       editGroup.members.forEach(member => {
         membersArray.push(member._user);
       });
+    } else if (editGroup) {
+      editGroup.members.forEach(member => {
+        membersArray.push(member.emailAddress);
+      });
     }
 
     if (editGroup) {
@@ -68,7 +73,7 @@ class CreateUpateGroups extends Component {
         groupName: editGroup.name,
         groupIcon: editGroup.icon,
         markerPosition: editGroup.location,
-        userList: auth.superUser ? [...membersArray] : null
+        userList: [...membersArray]
       });
     }
   }
@@ -139,7 +144,7 @@ class CreateUpateGroups extends Component {
   };
 
   deleteGroup = () => {
-    this.setState({ deletingGroup: true });
+    this.setState({ ...this.state, deletingGroup: true, showModal: false });
   };
 
   showMapSelected = () => {
@@ -162,7 +167,8 @@ class CreateUpateGroups extends Component {
       markerPosition,
       userList,
       showErrors,
-      deletingGroup
+      deletingGroup,
+      showModal
     } = this.state;
 
     const groupFirstLetter = groupName.charAt(0).toUpperCase();
@@ -199,7 +205,7 @@ class CreateUpateGroups extends Component {
               <Grid container direction="column" alignItems="center">
                 {editGroup ? (
                   <Button
-                    onClick={() => this.deleteGroup()}
+                    onClick={() => this.setState({ showModal: true })}
                     className={classes.deleteButton}
                   >
                     Delete
@@ -224,10 +230,9 @@ class CreateUpateGroups extends Component {
                     paddingBottom: '0px'
                   }}
                 >
-                  <ListItemText
-                    primary="Group Icon:"
-                    style={{ flex: 'none' }}
-                  />
+                  <Typography style={{ flex: 'none', paddingRight: '12px' }}>
+                    Group Icon:
+                  </Typography>
                   <UploadIcon
                     letter={
                       groupFirstLetter.length > 0 ? groupFirstLetter : 'G'
@@ -274,8 +279,16 @@ class CreateUpateGroups extends Component {
                   avatarColor={'#900C3F'}
                   setUserList={userList => this.setState({ userList })}
                   userList={userList}
+                  editGroup={editGroup}
                 />
               )}
+              <ConfirmActionModal
+                showModal={showModal}
+                title={'Warning!'}
+                message={'Are you sure you want to delete this group?'}
+                confirmClick={() => this.deleteGroup()}
+                cancelClick={() => this.setState({ showModal: false })}
+              />
             </div>
           </Loader>
         )}

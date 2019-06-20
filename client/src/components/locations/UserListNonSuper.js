@@ -24,13 +24,27 @@ class UserListNonSuper extends Component {
   state = {
     errorEmailAddress: false,
     emailAddress: '',
-    newGroupMembers: []
+    newGroupMembers: [],
+    userListUpdated: false
   };
 
   componentDidMount() {
     const { userList } = this.props;
 
     if (userList) this.setState({ newGroupMembers: userList });
+  }
+
+  componentDidUpdate() {
+    const { editGroup, userList } = this.props;
+    const { userListUpdated } = this.state;
+
+    if (editGroup && !userListUpdated) {
+      this.setState({
+        ...this.state,
+        newGroupMembers: userList,
+        userListUpdated: true
+      });
+    }
   }
 
   handleEmailChange = event => {

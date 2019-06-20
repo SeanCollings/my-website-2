@@ -6,15 +6,17 @@ import { urlBase64ToUint8Array } from '../../utils/utility';
 import Loader from 'react-loader-advanced';
 import MiniLoader from 'react-loader-spinner';
 
+import ConfirmActionModal from '../modals/ConfirmActionModal';
+
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
 
 import notificationImage from '../../images/fry.png';
 import notificationImageSmall from '../../images/fry_small.png';
 import notificationIcon from '../../images/icons/icon-96x96.png';
 import notificationBadge from '../../images/icons/bat.png';
 
-import InfoIcon from '@material-ui/icons/InfoOutlined';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -35,7 +37,8 @@ class SetupNotifications extends Component {
     showEnableNotifications: false,
     notificationsButtonText: 'Enable Notifications',
     notificationTypeObtained: false,
-    updating: false
+    updating: false,
+    showModal: false
   };
 
   componentDidMount() {
@@ -244,10 +247,8 @@ class SetupNotifications extends Component {
   };
 
   disableNotificationsClick = () => {
-    console.log(
-      this.props.auth.allowNotifications,
-      this.props.app.notificationState
-    );
+    this.setState({ showModal: false });
+
     if (!('serviceWorker' in navigator)) {
       return;
     }
@@ -309,7 +310,8 @@ class SetupNotifications extends Component {
     const {
       showEnableNotifications,
       notificationsButtonText,
-      updating
+      updating,
+      showModal
     } = this.state;
 
     if (!app.publicVapidKey) return null;
@@ -333,12 +335,19 @@ class SetupNotifications extends Component {
             onClick={() =>
               !auth.allowNotifications || app.notificationState === 'prompt'
                 ? this.enableNotificationsClick()
-                : this.disableNotificationsClick()
+                : this.setState({ showModal: true })
             }
             disabled={showEnableNotifications && !updating ? false : true}
           >
             {notificationsButtonText}
           </Button>
+          <ConfirmActionModal
+            showModal={showModal}
+            title={'Warning!'}
+            message={'Are you sure you want to disable notifications?'}
+            confirmClick={() => this.disableNotificationsClick()}
+            cancelClick={() => this.setState({ showModal: false })}
+          />
         </Loader>
         <InfoIcon
           className={classes.infoIcon}
