@@ -1,6 +1,6 @@
 import axios from '../utils/axios';
 
-import { GET_LOCATION_GROUPS, SHOW_MESSAGE } from './types';
+import { GET_LOCATION_GROUPS, SHOW_MESSAGE, GET_PUSHER_CREDS } from './types';
 
 export const getLocationGroups = () => async dispatch => {
   axios.get('/api/get_locationgroups').then(res => {
@@ -54,4 +54,10 @@ export const deleteGroup = (_id, name) => async dispatch => {
   });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const getPusherCreds = () => async dispatch => {
+  const res = await axios.get('/api/get_pushercreds');
+
+  dispatch({ type: GET_PUSHER_CREDS, payload: res.data });
 };

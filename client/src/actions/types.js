@@ -20,6 +20,7 @@ export const GET_NOTIFICATION_GROUPS = 'get_notification_groups';
 export const GET_GROUP_MEMBERS = 'get_group_members';
 export const GET_PUBLIC_VAPID_KEY = 'get_public_vapid_key';
 export const GET_LOCATION_GROUPS = 'get_locaton_groups';
+export const GET_PUSHER_CREDS = 'get_pusher_creds';
 
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';

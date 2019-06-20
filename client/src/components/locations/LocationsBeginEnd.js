@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+// import Pusher from 'pusher-js';
+// import axios from 'axios';
+import { getPusherCreds } from '../../actions/locationActions';
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -21,40 +24,79 @@ const styles = theme => ({
 });
 
 class LocationsBeginEnd extends Component {
-  state = { locationsStart: false, onlineUsers: 0, geoId: null };
+  state = {
+    locationsStart: false,
+    onlineUsers: 0,
+    geoId: null,
+    pusher: null,
+    presenceChannel: null,
+    random: null
+  };
+
+  componentDidMount() {
+    if (!this.props.locations.pusherCreds) this.props.getPusherCreds();
+  }
 
   componentWillUnmount() {
-    if ('geolocation' in navigator) {
-      navigator.geolocation.clearWatch(this.state.geoId);
-      this.props.setPosition(null);
-    }
+    // if ('geolocation' in navigator) {
+    //   navigator.geolocation.clearWatch(this.state.geoId);
+    //   this.props.setPosition(null);
+    // }
+    this.endConnection();
     this._isMounted = false;
   }
 
-  getLocation = () => {
+  endConnection = () => {
+    // const { geoId } = this.state;
+    // console.log('Are we ending?', geoId);
+    // console.log('pusher', this.state.pusher);
+    // if (this.state.pusher) {
+    //   const groupName = `presence-${this.props.groupId}`;
+    //   this.state.pusher.unsubscribe(groupName);
+    // }
+
     if ('geolocation' in navigator) {
+      // console.log('Clear this geoId:', geoId);
+      navigator.geolocation.clearWatch(1);
+      this.props.setPosition(null);
+    }
+  };
+
+  getLocation = (userId, username, groupId) => {
+    if ('geolocation' in navigator) {
+      const random = Math.random();
+      console.log('random', random);
+      this.setState({ random });
+
+      let geoId;
       if (!this.state.locationsStart) {
-        let geoId = navigator.geolocation.watchPosition(position => {
-          let location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          this.props.setPosition(location);
-          // this.setState((prevState, props) => {
-          // let newState = { ...prevState };
-          // newState.center = location;
-          // newState.locations[`${prevState.current_user}`] = location;
-          // return newState;
-          // });
-          // axios.post("http://localhost:3128/update-location", {
-          //   username: this.state.current_user,
-          //   location: location
-          // }).then(res => {
-          //   if (res.status === 200) {
-          //     console.log("new location updated successfully");
-          //   }
-          // });
-        });
+        const options = {
+          enableHighAccuracy: false,
+          timeout: 60000,
+          maximumAge: 5000
+        };
+
+        geoId = navigator.geolocation.watchPosition(
+          position => {
+            let location = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            console.log('New location:', location);
+            this.props.setPosition(location);
+            // axios.post('/api/update_location', {
+            //   groupId,
+            //   userId: random,
+            //   username,
+            //   location
+            // });
+          },
+          error => {
+            console.log(error);
+          },
+          options
+        );
 
         this.setState({ geoId });
       } else {
@@ -66,26 +108,78 @@ class LocationsBeginEnd extends Component {
 
   toggleLocations = () => {
     const {
-      otherPlayersLength
-      // groupId, auth
+      otherPlayersLength,
+      groupId,
+      auth
+      // , locations
     } = this.props;
+    const { locationsStart } = this.state;
 
     // Pusher goes here
+    // if (!locationsStart) {
+    //   const pusher = new Pusher(locations.pusherCreds.pusherKey, {
+    //     authEndpoint: '/api/pusher_auth',
+    //     cluster: locations.pusherCreds.cluster,
+    //     encrypted: true
+    //   });
+
+    //   const groupName = `presence-${groupId}`;
+    //   const presenceChannel = pusher.subscribe(groupName);
+    //   this.setState({ ...this.state, pusher, presenceChannel });
+
+    //   presenceChannel.bind('pusher:subscription_succeeded', members => {
+    //     // this.setState({
+    //     //   users_online: members.members,
+    //     //   current_user: members.myID
+    //     // });
+    //     console.log('members', members);
+    //   });
+
+    //   presenceChannel.bind('location-update', body => {
+    //     // this.setState((prevState, props) => {
+    //     //   const newState = { ...prevState }
+    //     //   newState.locations[`${body.username}`] = body.location;
+    //     //   return newState;
+    //     // });
+    //     console.log('body', body);
+    //   });
+
+    //   presenceChannel.bind('pusher:member_removed', member => {
+    //     // this.setState((prevState, props) => {
+    //     //   const newState = { ...prevState };
+    //     //   // remove member location once they go offline
+    //     //   delete newState.locations[`${member.id}`];
+    //     //   // delete member from the list of online users
+    //     //   delete newState.users_online[`${member.id}`];
+    //     //   return newState;
+    //     // })
+    //     console.log('Member left:', member);
+    //   });
+
+    //   presenceChannel.bind('pusher:member_added', member => {
+    //     console.log('New member joined:', member);
+    //   });
+
+    const username = `${auth.givenName} ${auth.familyName}`;
+    this.getLocation(auth._id, username, groupId);
+    // } else {
+    //   this.endConnection();
+    // }
 
     // console.log(otherPlayersLength);
     const onlineUsers = !this.state.locationsStart ? otherPlayersLength + 1 : 0;
 
     this.setState({
       ...this.state,
-      locationsStart: !this.state.locationsStart,
+      locationsStart: !locationsStart,
       onlineUsers
     });
 
-    this.getLocation();
+    this.props.locationStarted(true);
   };
 
   render() {
-    const { topHeight, classes } = this.props;
+    const { topHeight, classes, locations } = this.props;
     const { locationsStart, onlineUsers } = this.state;
 
     return (
@@ -106,9 +200,11 @@ class LocationsBeginEnd extends Component {
             color: 'white',
             // backgroundColor: locationsStart ? '#FF4136' : '#3D9970'
             backgroundColor: 'transparent',
-            border: '1px solid white'
+            border: '1px solid white',
+            opacity: locations.pusherCreds ? '1' : '0.5'
           }}
           onClick={() => this.toggleLocations()}
+          disabled={locations.pusherCreds ? false : true}
         >
           {locationsStart ? 'Stop' : 'Start'}
         </Button>
@@ -119,8 +215,11 @@ class LocationsBeginEnd extends Component {
   }
 }
 
-function mapStateToProps({ auth }) {
-  return { auth };
+function mapStateToProps({ auth, locations }) {
+  return { auth, locations };
 }
 
-export default connect(mapStateToProps)(withStyles(styles)(LocationsBeginEnd));
+export default connect(
+  mapStateToProps,
+  { getPusherCreds }
+)(withStyles(styles)(LocationsBeginEnd));
