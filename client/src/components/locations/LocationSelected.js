@@ -22,7 +22,7 @@ class LocationsSelected extends Component {
   }
 
   setPosition = position => {
-    console.log('Position:', position);
+    // console.log('Position:', position);
 
     this.setState({
       ...this.state,
@@ -46,6 +46,7 @@ class LocationsSelected extends Component {
           locationStarted={locationStarted =>
             this.setState({ locationStarted })
           }
+          currentPlayer={currentPlayer}
         />
         <LocationsMap
           currentPlayer={currentPlayer ? currentPlayer : null}

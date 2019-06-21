@@ -1,5 +1,6 @@
 /* global google */
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import {
   withScriptjs,
@@ -36,7 +37,7 @@ class LocationsMap extends Component {
   }
 
   componentDidUpdate() {
-    const { otherPlayers } = this.props;
+    const { otherPlayers, locations } = this.props;
     // console.log('MAP:', this.map);
     const bounds = new window.google.maps.LatLngBounds();
     let markers = 0;
@@ -110,14 +111,14 @@ class LocationsMap extends Component {
       // });
     }
 
-    if (otherPlayers) {
+    if (locations.onlineMembers) {
       const directionsArr = [];
-      otherPlayers.forEach(player => {
+      locations.onlineMembers.forEach(player => {
         const directionsService = new google.maps.DirectionsService();
 
         directionsService.route(
           {
-            origin: player,
+            origin: player.location,
             destination: destination,
             travelMode: google.maps.TravelMode.WALKING
           },
@@ -126,7 +127,7 @@ class LocationsMap extends Component {
               const overViewCoords = result.routes[0].overview_path;
               directionsArr.push(overViewCoords);
               // console.log('directionsArr', directionsArr);
-              // this.setState({ otherPlayerDirections: directionsArr });
+              this.setState({ otherPlayerDirections: directionsArr });
             }
           }
         );
@@ -147,7 +148,7 @@ class LocationsMap extends Component {
   };
 
   render() {
-    const { locationPOI, otherPlayers, currentPlayer } = this.props;
+    const { locationPOI, otherPlayers, currentPlayer, locations } = this.props;
     const { zoomLevel, directions, otherPlayerDirections } = this.state;
 
     const icon = { url: PlaceIcon, scaledSize: { width: 24, height: 24 } };
@@ -189,12 +190,12 @@ class LocationsMap extends Component {
             }}
           />
         )}
-        {otherPlayers
-          ? otherPlayers.map(marker => {
+        {locations.onlineMembers
+          ? locations.onlineMembers.map(marker => {
               return (
                 <Marker
-                  key={`${marker.lat}${marker.long}`}
-                  position={marker}
+                  key={`${marker.location.lat}${marker.location.lng}`}
+                  position={marker.location}
                   options={{
                     icon
                   }}
@@ -239,4 +240,10 @@ class LocationsMap extends Component {
   }
 }
 
-export default withScriptjs(withGoogleMap(LocationsMap));
+function mapStateToProps({ locations }) {
+  return { locations };
+}
+
+export default connect(mapStateToProps)(
+  withScriptjs(withGoogleMap(LocationsMap))
+);
