@@ -6,7 +6,11 @@ import {
   GET_PUSHER_CREDS,
   SET_PUSHER,
   SET_GEO_ID,
-  ONLINE_MEMBERS_LOCATIONS
+  ONLINE_MEMBERS_LOCATIONS,
+  TOTAL_ONLINE,
+  LOCATIONS_INITIALISED,
+  SET_RANDOM_USERNAME,
+  LAST_KNOWN_LOCATION
 } from './types';
 
 export const getLocationGroups = () => async dispatch => {
@@ -79,4 +83,20 @@ export const setGeoId = geoId => dispatch => {
 
 export const onlineMembersLocations = members => dispatch => {
   dispatch({ type: ONLINE_MEMBERS_LOCATIONS, payload: members });
+};
+
+export const totalOnline = total => dispatch => {
+  dispatch({ type: TOTAL_ONLINE, payload: total });
+};
+
+export const locationsInitialised = init => dispatch => {
+  dispatch({ type: LOCATIONS_INITIALISED, payload: init });
+};
+
+export const setRandomUserName = random => dispatch => {
+  dispatch({ type: SET_RANDOM_USERNAME, payload: random });
+};
+
+export const lastKnownLocation = location => dispatch => {
+  dispatch({ type: LAST_KNOWN_LOCATION, payload: location });
 };

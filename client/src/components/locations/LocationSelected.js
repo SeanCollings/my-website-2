@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import LocationsMap from './LocationsMap';
 import LocationsBeginEnd from './LocationsBeginEnd';
 
+import { GOOGLE_API_KEY } from '../../utils/constants';
+
 class LocationsSelected extends Component {
   state = {
     currentPlayer: null,
@@ -52,7 +54,7 @@ class LocationsSelected extends Component {
           currentPlayer={currentPlayer ? currentPlayer : null}
           locationPOI={locationPOI}
           otherPlayers={showOtherPlayers ? otherPlayers : null}
-          googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDD0nkesefYmPhscdaz0EO9XK_MwD5i9QE&amp;v=3.exp&amp;libraries=geometry,drawing,places,visualization"
+          googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&amp;v=3.exp&amp;libraries=geometry,drawing,places,visualization`}
           loadingElement={<div style={{ height: `100vh` }} />}
           containerElement={<div style={{ height: '100%' }} />}
           mapElement={

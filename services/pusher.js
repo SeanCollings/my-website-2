@@ -20,7 +20,7 @@ export default app => {
   });
 
   app.post('/api/pusher_auth', requireLogin, (req, res) => {
-    console.log('/api/pusher_auth');
+    console.log('/api/pusher_auth', req.query.random);
     let random_string = Math.random()
       .toString(36)
       .replace(/[^a-z]+/g, '')
@@ -32,9 +32,9 @@ export default app => {
       // user_id: req.user._id,
       // user_info: {
       //   username: '@' + username
-      user_id: random_string,
+      user_id: req.query.random,
       user_info: {
-        username: '@' + random_string
+        username: '@' + username
       }
     };
 

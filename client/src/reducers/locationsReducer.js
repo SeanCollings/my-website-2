@@ -3,7 +3,11 @@ import {
   GET_PUSHER_CREDS,
   SET_PUSHER,
   SET_GEO_ID,
-  ONLINE_MEMBERS_LOCATIONS
+  ONLINE_MEMBERS_LOCATIONS,
+  TOTAL_ONLINE,
+  LOCATIONS_INITIALISED,
+  SET_RANDOM_USERNAME,
+  LAST_KNOWN_LOCATION
 } from '../actions/types';
 
 const intialState = {
@@ -11,7 +15,11 @@ const intialState = {
   pusherCreds: null,
   geoId: null,
   pusher: null,
-  onlineMembers: null
+  onlineMembers: null,
+  totalOnline: 0,
+  initialised: false,
+  random: null,
+  lastKnownLocation: null
 };
 
 export default function(state = intialState, action) {
@@ -25,8 +33,15 @@ export default function(state = intialState, action) {
     case SET_GEO_ID:
       return { ...state, geoId: action.payload };
     case ONLINE_MEMBERS_LOCATIONS:
-      // console.log('Reducer:', action.payload);
       return { ...state, onlineMembers: action.payload };
+    case TOTAL_ONLINE:
+      return { ...state, totalOnline: action.payload };
+    case LOCATIONS_INITIALISED:
+      return { ...state, initialised: action.payload };
+    case SET_RANDOM_USERNAME:
+      return { ...state, random: action.payload };
+    case LAST_KNOWN_LOCATION:
+      return { ...state, lastKnownLocation: action.payload };
     default:
       return state;
   }

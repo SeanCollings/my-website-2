@@ -5,6 +5,7 @@ import {
   updateLocationGroups,
   deleteGroup
 } from '../../actions/locationActions';
+import { GOOGLE_API_KEY } from '../../utils/constants';
 
 import UploadIcon from '../components/UploadIcon';
 import SetGroupLocation from './SetGroupLocation';
@@ -177,7 +178,7 @@ class CreateUpateGroups extends Component {
       <div className={classes.page}>
         {hideMap ? (
           <SetLocationMap
-            googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDD0nkesefYmPhscdaz0EO9XK_MwD5i9QE&amp;v=3.exp&amp;libraries=geometry,drawing,places,visualization"
+            googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&amp;v=3.exp&amp;libraries=geometry,drawing,places,visualization`}
             loadingElement={<div style={{ height: `100vh` }} />}
             containerElement={<div style={{ height: '100%' }} />}
             mapElement={

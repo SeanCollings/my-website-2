@@ -21,3 +21,5 @@ export const MessageTypeEnum = {
   info: 'info',
   none: 'none'
 };
+
+export const GOOGLE_API_KEY = 'AIzaSyDD0nkesefYmPhscdaz0EO9XK_MwD5i9QE';
