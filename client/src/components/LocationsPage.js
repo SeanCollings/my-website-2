@@ -68,7 +68,7 @@ class LocationsPage extends Component {
     this.props.locationGroupSelected(selectedGroup.name);
   };
 
-  returnToGroups = selectedGroup => {
+  returnToGroups = () => {
     this.setState({ selectedGroup: false });
     this.props.locationGroupSelected(null);
   };

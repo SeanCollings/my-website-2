@@ -10,7 +10,8 @@ import {
   totalOnline,
   setRandomUserName,
   locationsInitialised,
-  lastKnownLocation
+  lastKnownLocation,
+  locationGroupSelected
 } from '../../actions/locationActions';
 
 import Grid from '@material-ui/core/Grid';
@@ -66,6 +67,7 @@ class LocationsBeginEnd extends Component {
     this.props.totalOnline(0);
     this.props.locationsInitialised(false);
     this.props.onlineMembersLocations(null);
+    this.props.locationGroupSelected(null);
   };
 
   getLocation = (userId, username, groupId, random) => {
@@ -84,7 +86,7 @@ class LocationsBeginEnd extends Component {
               lat: position.coords.latitude,
               lng: position.coords.longitude
             };
-            const { currentPlayer } = this.props;
+            const { currentPlayer, locations } = this.props;
             // console.log('watchPosition', location);
             if (
               !currentPlayer ||
@@ -94,12 +96,15 @@ class LocationsBeginEnd extends Component {
             ) {
               this.props.setPosition(location);
               this.props.lastKnownLocation(location);
-              axios.post('/api/update_location', {
-                groupId,
-                userId: random,
-                username,
-                location
-              });
+
+              if (locations.onlineMembers) {
+                axios.post('/api/update_location', {
+                  groupId,
+                  userId: random,
+                  username,
+                  location
+                });
+              }
             }
           },
           error => {
@@ -275,6 +280,7 @@ export default connect(
     totalOnline,
     setRandomUserName,
     locationsInitialised,
-    lastKnownLocation
+    lastKnownLocation,
+    locationGroupSelected
   }
 )(withStyles(styles)(LocationsBeginEnd));
