@@ -21,10 +21,6 @@ export default app => {
 
   app.post('/api/pusher_auth', requireLogin, (req, res) => {
     console.log('/api/pusher_auth', req.query.random);
-    let random_string = Math.random()
-      .toString(36)
-      .replace(/[^a-z]+/g, '')
-      .substr(0, 5);
     const username = `${req.user.givenName} ${req.user.familyName}`;
     const socketId = req.body.socket_id;
     const channel = req.body.channel_name;

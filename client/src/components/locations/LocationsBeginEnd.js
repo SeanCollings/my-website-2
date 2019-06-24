@@ -124,6 +124,7 @@ class LocationsBeginEnd extends Component {
     if (!locationsStart) {
       this.setState({ onlineUsers: 1 });
 
+      // TODO - remove once pusher dev finished
       const random = Math.random();
       console.log('random', random);
       this.setState({ random });
@@ -147,10 +148,10 @@ class LocationsBeginEnd extends Component {
 
       presenceChannel.bind('location-update', body => {
         const { onlineMembers, random } = this.props.locations;
-        const { userId, location } = body;
+        const { userId, username, location } = body;
 
         const membersArray = [];
-        const newMember = { userId, location };
+        const newMember = { userId, username, location };
 
         // Prevent current user being added to list of other online users
         if (userId.toString() !== random.toString())

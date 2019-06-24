@@ -208,7 +208,7 @@ class Header extends Component {
   }
 
   renderHeading(currentRoute) {
-    const { auth } = this.props;
+    const { auth, locations } = this.props;
 
     switch (currentRoute) {
       case '/home':
@@ -228,7 +228,7 @@ class Header extends Component {
       case '/notifications':
         return 'Notifications';
       case '/locations':
-        return 'Locations';
+        return locations.groupName ? locations.groupName : 'Locations';
       default:
         if (currentRoute.includes('profile') && auth) return `Profile`;
 
@@ -377,8 +377,8 @@ Header.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-function mapStateToProps({ auth, resizeScreen, settings }) {
-  return { auth, resizeScreen, settings };
+function mapStateToProps({ auth, resizeScreen, settings, locations }) {
+  return { auth, resizeScreen, settings, locations };
 }
 
 export default connect(mapStateToProps)(withRouter(withStyles(styles)(Header)));

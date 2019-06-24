@@ -10,7 +10,6 @@ class LocationsSelected extends Component {
   state = {
     currentPlayer: null,
     otherPlayers: [
-      // { lat: -33.941897, lng: 18.375396 },
       { lat: -33.943376, lng: 18.459384, name: 'Jarrod' },
       { lat: -33.930353, lng: 18.423266, name: 'Matthew' }
     ],
@@ -24,12 +23,9 @@ class LocationsSelected extends Component {
   }
 
   setPosition = position => {
-    // console.log('Position:', position);
-
     this.setState({
       ...this.state,
       currentPlayer: position ? { lat: position.lat, lng: position.lng } : null
-      // showOtherPlayers: position ? true : false
     });
   };
 

@@ -27,7 +27,8 @@ class LocationsMap extends Component {
     current_user: '',
     zoomLevel: 14,
     directions: null,
-    otherPlayerDirections: null
+    otherPlayerDirections: null,
+    showInfoBox: false
   };
 
   componentDidMount() {
@@ -80,7 +81,6 @@ class LocationsMap extends Component {
 
     if (origin && destination) {
       const directionsService = new google.maps.DirectionsService();
-      // const directionsDisplay = new google.maps.DirectionsRenderer();
 
       directionsService.route(
         {
@@ -134,7 +134,7 @@ class LocationsMap extends Component {
         );
       });
     } else if (!locations.onlineMembers && locations.initialised) {
-      // console.log('All other members have left the group');
+      // All members have left the group
       if (this.state.otherPlayerDirections)
         this.setState({ otherPlayerDirections: null });
     }
@@ -150,6 +150,12 @@ class LocationsMap extends Component {
     // console.log('ZOOM:', zoomLevel);
   };
 
+  markerClicked = marker => {
+    console.log('Username:', marker.username);
+
+    this.setState({ showInfoBox: true });
+  };
+
   render() {
     const { locationPOI, currentPlayer, locations } = this.props;
     const { zoomLevel, directions, otherPlayerDirections } = this.state;
@@ -159,8 +165,6 @@ class LocationsMap extends Component {
       url: MarkerIcon,
       scaledSize: { width: 42, height: 42 }
     };
-    // const position = { lat: -33.917825, lng: 18.42408 };
-    // console.log('LocationsMap:', this.props.locationPOI);
 
     return (
       <GoogleMap
@@ -176,6 +180,7 @@ class LocationsMap extends Component {
         defaultOptions={{ disableAutoPan: true }}
         options={MAP_OPTIONS}
         onZoomChanged={() => this.handleZoomChanged()}
+        onClick={() => this.setState({ showInfoBox: false })}
       >
         <Marker position={locationPOI} options={{ icon: iconMarker }} />
         {/* {currentPlayer && (<Marker
@@ -195,7 +200,6 @@ class LocationsMap extends Component {
         )}
         {locations.onlineMembers
           ? locations.onlineMembers.map(marker => {
-              // console.log('MARKER', marker);
               return (
                 <Marker
                   key={`${marker.location.lat}${marker.location.lng}`}
@@ -206,6 +210,7 @@ class LocationsMap extends Component {
                   style={{
                     transform: 'translate(-50%, -100%)'
                   }}
+                  onClick={() => this.markerClicked(marker)}
                 />
               );
             })

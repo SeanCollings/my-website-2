@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { locationGroupSelected } from '../actions/locationActions';
 
 import LocationSelected from './locations/LocationSelected';
 import LocationGroups from './locations/LocationGroups';
@@ -62,6 +63,16 @@ class LocationsPage extends Component {
     }
   };
 
+  groupSelected = selectedGroup => {
+    this.setState({ selectedGroup });
+    this.props.locationGroupSelected(selectedGroup.name);
+  };
+
+  returnToGroups = selectedGroup => {
+    this.setState({ selectedGroup: false });
+    this.props.locationGroupSelected(null);
+  };
+
   render() {
     const { app, resizeScreen } = this.props;
     const {
@@ -77,8 +88,6 @@ class LocationsPage extends Component {
 
     if (app.locationState !== 'granted')
       return <WhoopsieDoodle toEnable="Location" />;
-
-    // const locationPOI = { lat: -33.917825, lng: 18.42408 };
 
     return (
       <div>
@@ -135,7 +144,7 @@ class LocationsPage extends Component {
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <LocationGroups
                   selectedGroup={selectedGroup =>
-                    this.setState({ selectedGroup })
+                    this.groupSelected(selectedGroup)
                   }
                   editGroup={selectedGroup =>
                     this.setState({
@@ -153,7 +162,7 @@ class LocationsPage extends Component {
             topHeight={topHeight}
             heightFactor={heightFactor}
             locationPOI={selectedGroup.location}
-            returnToGroups={() => this.setState({ selectedGroup: false })}
+            returnToGroups={() => this.returnToGroups()}
             groupId={selectedGroup._id}
           />
         )}
@@ -166,4 +175,7 @@ function mapStateToProps({ app, resizeScreen }) {
   return { app, resizeScreen };
 }
 
-export default connect(mapStateToProps)(LocationsPage);
+export default connect(
+  mapStateToProps,
+  { locationGroupSelected }
+)(LocationsPage);

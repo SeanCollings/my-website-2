@@ -10,7 +10,8 @@ import {
   TOTAL_ONLINE,
   LOCATIONS_INITIALISED,
   SET_RANDOM_USERNAME,
-  LAST_KNOWN_LOCATION
+  LAST_KNOWN_LOCATION,
+  LOCATION_GROUP_SELECTED
 } from './types';
 
 export const getLocationGroups = () => async dispatch => {
@@ -99,4 +100,8 @@ export const setRandomUserName = random => dispatch => {
 
 export const lastKnownLocation = location => dispatch => {
   dispatch({ type: LAST_KNOWN_LOCATION, payload: location });
+};
+
+export const locationGroupSelected = group => dispatch => {
+  dispatch({ type: LOCATION_GROUP_SELECTED, payload: group });
 };
