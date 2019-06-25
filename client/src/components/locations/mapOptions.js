@@ -1,4 +1,5 @@
 export const MAP_OPTIONS = {
+  minZoom: 3,
   mapTypeControl: false,
   styles: [
     // {

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { returnToPreviousPage, updateHeading } from '../actions/appActions';
+import { getLocationGroups } from '../actions/locationActions';
 
 import LocationSelected from './locations/LocationSelected';
 import LocationGroups from './locations/LocationGroups';
@@ -20,6 +21,12 @@ class LocationsPage extends Component {
     savePosition: false,
     creatingUpdatingGroup: false
   };
+
+  componentDidMount() {
+    if (!this.props.locations.groups) {
+      this.props.getLocationGroups();
+    }
+  }
 
   componentDidUpdate() {
     if (this.props.app.returnToPreviousPage) {
@@ -180,11 +187,11 @@ class LocationsPage extends Component {
   }
 }
 
-function mapStateToProps({ app, resizeScreen }) {
-  return { app, resizeScreen };
+function mapStateToProps({ app, resizeScreen, locations }) {
+  return { app, resizeScreen, locations };
 }
 
 export default connect(
   mapStateToProps,
-  { returnToPreviousPage, updateHeading }
+  { returnToPreviousPage, updateHeading, getLocationGroups }
 )(LocationsPage);

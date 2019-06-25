@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getLocationGroups } from '../../actions/locationActions';
 
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
@@ -32,10 +31,6 @@ const styles = theme => ({
 });
 
 class LocationGroups extends Component {
-  componentDidMount() {
-    this.props.getLocationGroups();
-  }
-
   renderGroups = () => {
     const { locations, auth, classes } = this.props;
 
@@ -119,7 +114,4 @@ function mapStateToProps({ resizeScreen, locations, auth }) {
   return { resizeScreen, locations, auth };
 }
 
-export default connect(
-  mapStateToProps,
-  { getLocationGroups }
-)(withStyles(styles)(LocationGroups));
+export default connect(mapStateToProps)(withStyles(styles)(LocationGroups));

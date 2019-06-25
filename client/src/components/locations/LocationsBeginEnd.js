@@ -2,18 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Pusher from 'pusher-js';
 import axios from 'axios';
-import {
-  getPusherCreds,
-  setPusher,
-  setGeoId,
-  onlineMembersLocations,
-  totalOnline,
-  setRandomUserName,
-  locationsInitialised,
-  lastKnownLocation,
-  newMemberOnline,
-  memberGoneOffline
-} from '../../actions/locationActions';
+import * as locationActions from '../../actions/locationActions';
 import { updateHeading } from '../../actions/appActions';
 
 import Grid from '@material-ui/core/Grid';
@@ -72,6 +61,8 @@ class LocationsBeginEnd extends Component {
   };
 
   getLocation = (userId, username, groupId, random) => {
+    const { totalOnline, lastKnownLocation } = this.props.locations;
+
     if ('geolocation' in navigator) {
       if (!this.state.locationsStart) {
         const options = {
@@ -80,7 +71,10 @@ class LocationsBeginEnd extends Component {
           maximumAge: 10000
         };
 
-        // console.log('Trying to get watchPosition');
+        // In case user stopped and then started but currentPosition unchanged,
+        // set position as lastKnownLocation
+        if (lastKnownLocation) this.props.setPosition(lastKnownLocation);
+
         const geoId = navigator.geolocation.watchPosition(
           position => {
             // Set decimal place to 5 for 1.11m accuracy
@@ -88,7 +82,6 @@ class LocationsBeginEnd extends Component {
               lat: parseFloat(position.coords.latitude.toFixed(5)),
               lng: parseFloat(position.coords.longitude.toFixed(5))
             };
-            const { totalOnline, lastKnownLocation } = this.props.locations;
 
             if (
               !lastKnownLocation ||
@@ -194,7 +187,6 @@ class LocationsBeginEnd extends Component {
           });
         }
 
-        console.log('Updated membersArray:', membersArray);
         this.props.onlineMembersLocations(membersArray);
       });
 
@@ -291,17 +283,5 @@ function mapStateToProps({ auth, locations }) {
 
 export default connect(
   mapStateToProps,
-  {
-    getPusherCreds,
-    setPusher,
-    setGeoId,
-    onlineMembersLocations,
-    totalOnline,
-    setRandomUserName,
-    locationsInitialised,
-    lastKnownLocation,
-    updateHeading,
-    newMemberOnline,
-    memberGoneOffline
-  }
+  { ...locationActions, updateHeading }
 )(withStyles(styles)(LocationsBeginEnd));
