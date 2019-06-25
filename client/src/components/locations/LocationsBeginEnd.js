@@ -10,7 +10,9 @@ import {
   totalOnline,
   setRandomUserName,
   locationsInitialised,
-  lastKnownLocation
+  lastKnownLocation,
+  newMemberOnline,
+  memberGoneOffline
 } from '../../actions/locationActions';
 import { updateHeading } from '../../actions/appActions';
 
@@ -82,27 +84,28 @@ class LocationsBeginEnd extends Component {
         // console.log('Trying to get watchPosition');
         const geoId = navigator.geolocation.watchPosition(
           position => {
-            let location = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
+            // Set decimal place to 5 for 1.11m accuracy
+            let currentLocation = {
+              lat: parseFloat(position.coords.latitude.toFixed(5)),
+              lng: parseFloat(position.coords.longitude.toFixed(5))
             };
             const { currentPlayer, locations } = this.props;
-            // console.log('watchPosition', location);
+
             if (
               !currentPlayer ||
               (currentPlayer &&
-                location.lat !== currentPlayer.lat &&
-                location.lng !== currentPlayer.lng)
+                currentLocation.lat !== currentPlayer.lat &&
+                currentLocation.lng !== currentPlayer.lng)
             ) {
-              this.props.setPosition(location);
-              this.props.lastKnownLocation(location);
+              this.props.setPosition(currentLocation);
+              this.props.lastKnownLocation(currentLocation);
 
               if (locations.onlineMembers) {
                 axios.post('/api/update_location', {
                   groupId,
                   userId: random,
                   username,
-                  location
+                  location: currentLocation
                 });
               }
             }
@@ -130,6 +133,7 @@ class LocationsBeginEnd extends Component {
       this.setState({ onlineUsers: 1 });
 
       // TODO - remove once pusher dev finished
+      // Set random id's to test same user on multiple devices
       const random = Math.random();
       console.log('random', random);
       this.setState({ random });
@@ -179,9 +183,11 @@ class LocationsBeginEnd extends Component {
 
       presenceChannel.bind('pusher:member_removed', member => {
         const { totalOnline, onlineMembers } = this.props.locations;
-        const { id } = member;
+        const { id, info } = member;
 
         this.props.totalOnline(totalOnline - 1);
+        this.props.memberGoneOffline(info.username);
+
         console.log('Member left:', member);
         if (onlineMembers) {
           let membersArray = [];
@@ -210,6 +216,8 @@ class LocationsBeginEnd extends Component {
             location: lastKnownLocation
           });
         }
+
+        this.props.newMemberOnline(member.info.username);
 
         console.log('New member joined:', member);
       });
@@ -277,6 +285,8 @@ export default connect(
     setRandomUserName,
     locationsInitialised,
     lastKnownLocation,
-    updateHeading
+    updateHeading,
+    newMemberOnline,
+    memberGoneOffline
   }
 )(withStyles(styles)(LocationsBeginEnd));

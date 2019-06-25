@@ -14,10 +14,11 @@ import { locationsInitialised } from '../../actions/locationActions';
 // import Avatar from '@material-ui/core/Avatar';
 // import PlaceIcon from '@material-ui/icons/Place';
 // import PersonIcon from '@material-ui/icons/PersonPin';
-import PlaceIcon from '../../images/icons/icon-96x96.png';
+import PlaceIcon from '../../images/map/icon-96x96.png';
 // import PinIcon from '../../images/icons/pin-icon.png';
 // import PlaceIcon2 from '../../images/custom-icon.png';
-import MarkerIcon from '../../images/map-marker.png';
+import MarkerIcon from '../../images/map/custom-icon.png';
+import PersonIcon from '../../images/map/person-blue-purple.png';
 
 class LocationsMap extends Component {
   state = {
@@ -160,8 +161,15 @@ class LocationsMap extends Component {
     const { locationPOI, currentPlayer, locations } = this.props;
     const { zoomLevel, directions, otherPlayerDirections } = this.state;
 
-    const icon = { url: PlaceIcon, scaledSize: { width: 24, height: 24 } };
-    const iconMarker = {
+    const iconCurrentPlayer = {
+      url: PlaceIcon,
+      scaledSize: { width: 24, height: 24 }
+    };
+    const iconOtherMembers = {
+      url: PersonIcon,
+      scaledSize: { width: 26, height: 26 }
+    };
+    const iconPOI = {
       url: MarkerIcon,
       scaledSize: { width: 42, height: 42 }
     };
@@ -182,7 +190,7 @@ class LocationsMap extends Component {
         onZoomChanged={() => this.handleZoomChanged()}
         onClick={() => this.setState({ showInfoBox: false })}
       >
-        <Marker position={locationPOI} options={{ icon: iconMarker }} />
+        <Marker position={locationPOI} options={{ icon: iconPOI }} />
         {/* {currentPlayer && (<Marker
           // position={this.state.center}
           position={currentPlayer}
@@ -194,7 +202,7 @@ class LocationsMap extends Component {
           <Marker
             position={currentPlayer}
             options={{
-              icon
+              icon: iconCurrentPlayer
             }}
           />
         )}
@@ -205,7 +213,7 @@ class LocationsMap extends Component {
                   key={`${marker.location.lat}${marker.location.lng}`}
                   position={marker.location}
                   options={{
-                    icon
+                    icon: iconOtherMembers
                   }}
                   style={{
                     transform: 'translate(-50%, -100%)'

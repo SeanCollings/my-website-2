@@ -35,7 +35,7 @@ import loadingMessages from '../utils/loadingMessages';
 import { Typography, Toolbar } from '@material-ui/core';
 
 class App extends Component {
-  state = { pereritto: false, render: false, welcomeMessage: '' };
+  state = { pereritto: false, render: true, welcomeMessage: '' };
 
   componentDidMount() {
     const welcomeMessage =
@@ -297,21 +297,6 @@ class App extends Component {
       );
     }
 
-    //if (this.props.auth) {
-    //this.props.getUserSettings();
-    //console.log('loggedin ');
-    //}
-    //console.log('render?');
-    /*console.log(this.props.winners);
-    if (
-      this.props.auth &&
-      this.props.auth.pererittoUser &&
-      this.props.winners === null
-    ) {
-      this.props.getWinners();
-      console.log('getting winners ');
-    }
-*/
     this.notificationState();
 
     return (

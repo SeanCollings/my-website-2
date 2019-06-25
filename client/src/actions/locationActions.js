@@ -1,4 +1,5 @@
 import axios from '../utils/axios';
+import { MessageTypeEnum } from '../utils/constants';
 import { readAllData } from '../utils/utility';
 import {
   GET_LOCATION_GROUPS,
@@ -99,4 +100,18 @@ export const setRandomUserName = random => dispatch => {
 
 export const lastKnownLocation = location => dispatch => {
   dispatch({ type: LAST_KNOWN_LOCATION, payload: location });
+};
+
+export const newMemberOnline = username => dispatch => {
+  dispatch({
+    type: SHOW_MESSAGE,
+    payload: { type: MessageTypeEnum.info, message: `${username} is online` }
+  });
+};
+
+export const memberGoneOffline = username => dispatch => {
+  dispatch({
+    type: SHOW_MESSAGE,
+    payload: { type: MessageTypeEnum.info, message: `${username} has left` }
+  });
 };
