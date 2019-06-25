@@ -57,8 +57,7 @@ class LocationsBeginEnd extends Component {
     const { geoId, pusher } = this.props.locations;
 
     if (pusher) {
-      const groupName = `presence-${this.props.groupId}`;
-      pusher.unsubscribe(groupName);
+      pusher.disconnect();
     }
 
     if ('geolocation' in navigator) {
@@ -89,24 +88,24 @@ class LocationsBeginEnd extends Component {
               lat: parseFloat(position.coords.latitude.toFixed(5)),
               lng: parseFloat(position.coords.longitude.toFixed(5))
             };
-            const { currentPlayer, locations } = this.props;
+            const { totalOnline, lastKnownLocation } = this.props.locations;
 
             if (
-              !currentPlayer ||
-              (currentPlayer &&
-                currentLocation.lat !== currentPlayer.lat &&
-                currentLocation.lng !== currentPlayer.lng)
+              !lastKnownLocation ||
+              (lastKnownLocation &&
+                currentLocation.lat !== lastKnownLocation.lat &&
+                currentLocation.lng !== lastKnownLocation.lng)
             ) {
               this.props.setPosition(currentLocation);
               this.props.lastKnownLocation(currentLocation);
 
-              if (locations.onlineMembers) {
-                axios.post('/api/update_location', {
+              if (totalOnline > 1) {
+                this.postLocationToMembers(
                   groupId,
-                  userId: random,
+                  random,
                   username,
-                  location: currentLocation
-                });
+                  currentLocation
+                );
               }
             }
           },
@@ -122,6 +121,15 @@ class LocationsBeginEnd extends Component {
         this.props.setPosition(null);
       }
     }
+  };
+
+  postLocationToMembers = (groupId, userId, username, location) => {
+    axios.post('/api/update_location', {
+      groupId,
+      userId,
+      username,
+      location
+    });
   };
 
   toggleLocations = () => {
@@ -151,8 +159,17 @@ class LocationsBeginEnd extends Component {
       this.props.setPusher(pusher);
 
       presenceChannel.bind('pusher:subscription_succeeded', members => {
+        const { random, lastKnownLocation } = this.props.locations;
         this.props.totalOnline(members.count);
-        // console.log('members', members);
+
+        if (members.count > 1 && lastKnownLocation) {
+          this.postLocationToMembers(
+            groupId,
+            random,
+            username,
+            lastKnownLocation
+          );
+        }
       });
 
       presenceChannel.bind('location-update', body => {
@@ -188,7 +205,6 @@ class LocationsBeginEnd extends Component {
         this.props.totalOnline(totalOnline - 1);
         this.props.memberGoneOffline(info.username);
 
-        console.log('Member left:', member);
         if (onlineMembers) {
           let membersArray = [];
           onlineMembers.forEach(member => {
@@ -204,20 +220,19 @@ class LocationsBeginEnd extends Component {
       });
 
       presenceChannel.bind('pusher:member_added', member => {
-        const { totalOnline, lastKnownLocation } = this.props.locations;
+        const { random, totalOnline, lastKnownLocation } = this.props.locations;
 
         this.props.totalOnline(totalOnline + 1);
+        this.props.newMemberOnline(member.info.username);
 
         if (lastKnownLocation) {
-          axios.post('/api/update_location', {
+          this.postLocationToMembers(
             groupId,
-            userId: this.props.locations.random,
+            random,
             username,
-            location: lastKnownLocation
-          });
+            lastKnownLocation
+          );
         }
-
-        this.props.newMemberOnline(member.info.username);
 
         console.log('New member joined:', member);
       });
