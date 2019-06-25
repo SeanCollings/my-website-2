@@ -315,8 +315,8 @@ class Header extends Component {
               </Link>
             </Typography> */}
             {/* {this.props.resizeScreen ? ( */}
-            {this.props.resizeScreen ? '' : this.renderMenuItems()}
-            {this.props.resizeScreen ? '' : this.renderLoginLogout()}
+            {/* {this.props.resizeScreen ? '' : this.renderMenuItems()} */}
+            {/* {this.props.resizeScreen ? '' : this.renderLoginLogout()} */}
             <Button
               style={{
                 color: 'white',
