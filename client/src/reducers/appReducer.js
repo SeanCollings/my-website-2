@@ -6,7 +6,9 @@ import {
   REMOVE_DEFERRED_PROMPT,
   NOTIFICATION_STATE,
   LOCATION_STATE,
-  GET_PUBLIC_VAPID_KEY
+  GET_PUBLIC_VAPID_KEY,
+  RETURN_TO_PREVIOUS_PAGE,
+  UPDATE_HEADING
 } from '../actions/types';
 
 const initialState = {
@@ -16,7 +18,9 @@ const initialState = {
   deferredPrompt: null,
   notificationState: null,
   locationState: null,
-  publicVapidKey: null
+  publicVapidKey: null,
+  returnToPreviousPage: false,
+  headingName: null
 };
 
 export default function(state = initialState, action) {
@@ -37,6 +41,10 @@ export default function(state = initialState, action) {
       return { ...state, locationState: action.payload };
     case GET_PUBLIC_VAPID_KEY:
       return { ...state, publicVapidKey: action.payload };
+    case RETURN_TO_PREVIOUS_PAGE:
+      return { ...state, returnToPreviousPage: action.payload };
+    case UPDATE_HEADING:
+      return { ...state, headingName: action.payload };
     default:
       return state;
   }

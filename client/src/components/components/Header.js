@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Gravatar from 'react-gravatar';
+import { returnToPreviousPage } from '../../actions/appActions';
 
 import { MENU_LIST } from '../../utils/constants';
 import { clearAllData } from '../../utils/utility';
@@ -26,6 +27,7 @@ import Avatar from '@material-ui/core/Avatar';
 // import Drawer from '@material-ui/core/Drawer';
 // import IconButton from '@material-ui/core/IconButton';
 // import MenuIcon from '@material-ui/icons/Menu';
+import BackIcon from '@material-ui/icons/ArrowBack';
 
 let googlePic = '';
 
@@ -208,7 +210,7 @@ class Header extends Component {
   }
 
   renderHeading(currentRoute) {
-    const { auth, locations } = this.props;
+    const { auth, app } = this.props;
 
     switch (currentRoute) {
       case '/home':
@@ -228,7 +230,7 @@ class Header extends Component {
       case '/notifications':
         return 'Notifications';
       case '/locations':
-        return locations.groupName ? locations.groupName : 'Locations';
+        return app.headingName ? app.headingName : 'Locations';
       default:
         if (currentRoute.includes('profile') && auth) return `Profile`;
 
@@ -248,7 +250,7 @@ class Header extends Component {
   }
 
   render() {
-    const { classes, currentRoute, auth } = this.props;
+    const { classes, currentRoute, auth, app } = this.props;
     // const pointer = { cursor: 'pointer' };
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
@@ -271,14 +273,24 @@ class Header extends Component {
           }}
         >
           <Toolbar>
-            <IconButton
-              aria-label="More"
-              aria-haspopup="true"
-              onClick={() => this.toggleDrawer(true)}
-              style={{ color: '#DEDEDE' }}
-            >
-              <MenuIcon />
-            </IconButton>
+            {app.headingName ? (
+              <IconButton
+                aria-label="Back"
+                onClick={() => this.props.returnToPreviousPage(true)}
+                style={{ color: '#DEDEDE' }}
+              >
+                <BackIcon />
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label="More"
+                aria-haspopup="true"
+                onClick={() => this.toggleDrawer(true)}
+                style={{ color: '#DEDEDE' }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
             <Typography
               variant="h5"
               color="inherit"
@@ -329,15 +341,17 @@ class Header extends Component {
             >
               Login
             </Button>
-            <IconButton
-              aria-label="More"
-              aria-haspopup="true"
-              onClick={this.toggleMenu}
-              style={{ color: '#DEDEDE', display: auth ? '' : 'none' }}
-            >
-              {/* <VertIcon /> */}
-              {this.renderAvatar()}
-            </IconButton>
+            {app.headingName ? null : (
+              <IconButton
+                aria-label="More"
+                aria-haspopup="true"
+                onClick={this.toggleMenu}
+                style={{ color: '#DEDEDE', display: auth ? '' : 'none' }}
+              >
+                {/* <VertIcon /> */}
+                {this.renderAvatar()}
+              </IconButton>
+            )}
             <Menu
               id="user-menu"
               anchorEl={anchorEl}
@@ -356,9 +370,6 @@ class Header extends Component {
             >
               {this.renderDropDownMenu()}
             </Menu>
-            {/* ) : (
-              this.renderMenuItems()
-            )} */}
           </Toolbar>
         </AppBar>
         <TempDrawer
@@ -377,8 +388,11 @@ Header.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-function mapStateToProps({ auth, resizeScreen, settings, locations }) {
-  return { auth, resizeScreen, settings, locations };
+function mapStateToProps({ auth, resizeScreen, settings, app }) {
+  return { auth, resizeScreen, settings, app };
 }
 
-export default connect(mapStateToProps)(withRouter(withStyles(styles)(Header)));
+export default connect(
+  mapStateToProps,
+  { returnToPreviousPage }
+)(withRouter(withStyles(styles)(Header)));

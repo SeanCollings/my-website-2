@@ -18,6 +18,8 @@ export const NOTIFICATION_STATE = 'notification_state';
 export const LOCATION_STATE = 'location_state';
 export const GET_NOTIFICATION_GROUPS = 'get_notification_groups';
 export const SET_RANDOM_USERNAME = 'set_random_username';
+export const RETURN_TO_PREVIOUS_PAGE = 'return_to_previous_page';
+export const UPDATE_HEADING = 'update_heading';
 
 export const GET_GROUP_MEMBERS = 'get_group_members';
 export const GET_PUBLIC_VAPID_KEY = 'get_public_vapid_key';
@@ -29,7 +31,6 @@ export const ONLINE_MEMBERS_LOCATIONS = 'online_members_locations';
 export const TOTAL_ONLINE = 'total_online';
 export const LOCATIONS_INITIALISED = 'locations_initialised';
 export const LAST_KNOWN_LOCATION = 'last_known_location';
-export const LOCATION_GROUP_SELECTED = 'location_group_selected';
 
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';

@@ -1,5 +1,5 @@
 import axios from '../utils/axios';
-
+import { readAllData } from '../utils/utility';
 import {
   GET_LOCATION_GROUPS,
   SHOW_MESSAGE,
@@ -10,8 +10,7 @@ import {
   TOTAL_ONLINE,
   LOCATIONS_INITIALISED,
   SET_RANDOM_USERNAME,
-  LAST_KNOWN_LOCATION,
-  LOCATION_GROUP_SELECTED
+  LAST_KNOWN_LOCATION
 } from './types';
 
 export const getLocationGroups = () => async dispatch => {
@@ -19,11 +18,11 @@ export const getLocationGroups = () => async dispatch => {
     dispatch({ type: GET_LOCATION_GROUPS, payload: res.data });
   });
 
-  // if ('indexedDB' in window) {
-  //   readAllData('notification-groups').then(data => {
-  //     dispatch({ type: GET_LOCATION_GROUPS, payload: data });
-  //   });
-  // }
+  if ('indexedDB' in window) {
+    readAllData('location-groups').then(data => {
+      dispatch({ type: GET_LOCATION_GROUPS, payload: data });
+    });
+  }
 };
 
 export const createLocationGroups = (
@@ -100,8 +99,4 @@ export const setRandomUserName = random => dispatch => {
 
 export const lastKnownLocation = location => dispatch => {
   dispatch({ type: LAST_KNOWN_LOCATION, payload: location });
-};
-
-export const locationGroupSelected = group => dispatch => {
-  dispatch({ type: LOCATION_GROUP_SELECTED, payload: group });
 };

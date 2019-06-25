@@ -10,15 +10,14 @@ import {
   totalOnline,
   setRandomUserName,
   locationsInitialised,
-  lastKnownLocation,
-  locationGroupSelected
+  lastKnownLocation
 } from '../../actions/locationActions';
+import { updateHeading } from '../../actions/appActions';
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 // import DropDownIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
-import BackIcon from '@material-ui/icons/ArrowBack';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -47,11 +46,12 @@ class LocationsBeginEnd extends Component {
   }
 
   componentWillUnmount() {
-    this.endConnection();
-    this._isMounted = false;
+    this.props.updateHeading(null);
+    this.endConnection(true);
+    // this._isMounted = false;
   }
 
-  endConnection = () => {
+  endConnection = unmountComponent => {
     const { geoId, pusher } = this.props.locations;
 
     if (pusher) {
@@ -63,11 +63,11 @@ class LocationsBeginEnd extends Component {
       navigator.geolocation.clearWatch(geoId);
       this.props.setPosition(null);
     }
-
     this.props.totalOnline(0);
     this.props.locationsInitialised(false);
     this.props.onlineMembersLocations(null);
-    this.props.locationGroupSelected(null);
+
+    if (unmountComponent) this._isMounted = false;
   };
 
   getLocation = (userId, username, groupId, random) => {
@@ -217,7 +217,7 @@ class LocationsBeginEnd extends Component {
       const username = `${auth.givenName} ${auth.familyName}`;
       this.getLocation(auth._id, username, groupId, random);
     } else {
-      this.endConnection();
+      this.endConnection(false);
     }
 
     this.setState({
@@ -240,10 +240,6 @@ class LocationsBeginEnd extends Component {
         alignItems="center"
         style={{ height: topHeight }}
       >
-        <BackIcon
-          onClick={() => this.props.returnToGroups()}
-          style={{ paddingLeft: '24px', color: '#dedede' }}
-        />
         <Button
           className={classes.button}
           style={{
@@ -281,6 +277,6 @@ export default connect(
     setRandomUserName,
     locationsInitialised,
     lastKnownLocation,
-    locationGroupSelected
+    updateHeading
   }
 )(withStyles(styles)(LocationsBeginEnd));

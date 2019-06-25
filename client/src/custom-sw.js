@@ -55,6 +55,7 @@ self.addEventListener('fetch', event => {
   const urlGetUserSettings = '/api/get_usersettings';
   const urlAddNotificationGroups = '/api/add_notificationgroup';
   const urlGetNotificationGroups = '/api/get_notificationgroups';
+  const urlGetLocationGroups = '/api/get_locationgroups';
   const urlGetWinners = '/api/get_winners';
   const urlGetWinnerYears = '/api/get_winneryears';
   const urlGetPererittoPlayers = '/api/get_pereritto';
@@ -118,6 +119,27 @@ self.addEventListener('fetch', event => {
           .then(data => {
             for (let key in data) {
               writeData('notification-groups', {
+                ...data[key],
+                id: data[key]._id
+              });
+            }
+          });
+
+        return res;
+      })
+    );
+  } else if (event.request.url.indexOf(urlGetLocationGroups) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+
+        clearAllData('location-groups')
+          .then(() => {
+            return clonedRes.json();
+          })
+          .then(data => {
+            for (let key in data) {
+              writeData('location-groups', {
                 ...data[key],
                 id: data[key]._id
               });

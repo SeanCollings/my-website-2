@@ -7,7 +7,9 @@ import {
   REMOVE_DEFERRED_PROMPT,
   NOTIFICATION_STATE,
   LOCATION_STATE,
-  GET_PUBLIC_VAPID_KEY
+  GET_PUBLIC_VAPID_KEY,
+  RETURN_TO_PREVIOUS_PAGE,
+  UPDATE_HEADING
 } from './types';
 import { MessageTypeEnum } from '../utils/constants';
 
@@ -51,4 +53,12 @@ export const getPublicVapidKey = () => async dispatch => {
   const res = await axios.get('/api/get_publicvapidkey');
 
   dispatch({ type: GET_PUBLIC_VAPID_KEY, payload: res.data });
+};
+
+export const returnToPreviousPage = returnToPrevious => dispatch => {
+  dispatch({ type: RETURN_TO_PREVIOUS_PAGE, payload: returnToPrevious });
+};
+
+export const updateHeading = heading => dispatch => {
+  dispatch({ type: UPDATE_HEADING, payload: heading });
 };
