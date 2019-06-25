@@ -14,11 +14,12 @@ import { locationsInitialised } from '../../actions/locationActions';
 // import Avatar from '@material-ui/core/Avatar';
 // import PlaceIcon from '@material-ui/icons/Place';
 // import PersonIcon from '@material-ui/icons/PersonPin';
-import PlaceIcon from '../../images/map/icon-96x96.png';
+// import PlaceIcon from '../../images/map/icon-96x96.png';
 // import PinIcon from '../../images/icons/pin-icon.png';
 // import PlaceIcon2 from '../../images/custom-icon.png';
 import MarkerIcon from '../../images/map/custom-icon.png';
-import PersonIcon from '../../images/map/person-blue-purple.png';
+import PlayerIcon from '../../images/map/person-yellow-purple.png';
+import PersonIcon from '../../images/map/person-off-yellow.png';
 
 class LocationsMap extends Component {
   state = {
@@ -162,7 +163,7 @@ class LocationsMap extends Component {
     const { zoomLevel, directions, otherPlayerDirections } = this.state;
 
     const iconCurrentPlayer = {
-      url: PlaceIcon,
+      url: PlayerIcon,
       scaledSize: { width: 24, height: 24 }
     };
     const iconOtherMembers = {
