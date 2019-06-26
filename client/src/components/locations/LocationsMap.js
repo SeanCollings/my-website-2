@@ -6,17 +6,16 @@ import {
   withGoogleMap,
   GoogleMap,
   Marker,
-  Polyline
+  Polyline,
+  InfoWindow
 } from 'react-google-maps';
 import { MAP_OPTIONS } from './mapOptions';
-import { locationsInitialised } from '../../actions/locationActions';
+import {
+  locationsInitialised,
+  onlineMembersUpdated
+} from '../../actions/locationActions';
+import { locationsEqual } from '../../utils/utility';
 
-// import Avatar from '@material-ui/core/Avatar';
-// import PlaceIcon from '@material-ui/icons/Place';
-// import PersonIcon from '@material-ui/icons/PersonPin';
-// import PlaceIcon from '../../images/map/icon-96x96.png';
-// import PinIcon from '../../images/icons/pin-icon.png';
-// import PlaceIcon2 from '../../images/custom-icon.png';
 import MarkerIcon from '../../images/map/custom-icon.png';
 import PlayerIcon from '../../images/map/person-yellow-purple.png';
 import PersonIcon from '../../images/map/person-off-yellow.png';
@@ -24,13 +23,11 @@ import PersonIcon from '../../images/map/person-off-yellow.png';
 class LocationsMap extends Component {
   state = {
     center: { lat: -33.917825, lng: 18.42408 },
-    locations: {},
-    users_online: [],
-    current_user: '',
     zoomLevel: 14,
     directions: null,
     otherPlayerDirections: null,
-    showInfoBox: false
+    showInfoBox: null,
+    onlineMembers: null
   };
 
   componentDidMount() {
@@ -82,58 +79,57 @@ class LocationsMap extends Component {
     const origin = this.props.currentPlayer;
 
     if (origin && destination) {
-      const directionsService = new google.maps.DirectionsService();
-
-      directionsService.route(
-        {
-          origin: origin,
-          destination: destination,
-          // travelMode: google.maps.TravelMode.DRIVING
-          travelMode: google.maps.TravelMode.WALKING
-        },
-        (result, status) => {
-          if (status === google.maps.DirectionsStatus.OK) {
-            const overViewCoords = result.routes[0].overview_path;
-            this.setState({
-              directions: overViewCoords
-            });
-          }
-        }
-      );
-
-      // directionsDisplay.setMap(map);
-      // directionsDisplay.setOptions( { suppressMarkers: true } );
-      // const request = {
-      //   origin: origin,
-      //   destination: destination,
-      //   travelMode: google.maps.DirectionsTravelMode.DRIVING
-      // };
-      // directionsService.route(request, (response, status) => {
-      //   if (status === google.maps.DirectionsStatus.OK) {
-      //     directionsDisplay.setDirections(response);
-      //   }
-      // });
-    }
-
-    if (locations.onlineMembers) {
-      const directionsArr = [];
-      locations.onlineMembers.forEach(player => {
+      if (!locationsEqual(origin, locations.lastKnownLocation)) {
         const directionsService = new google.maps.DirectionsService();
 
         directionsService.route(
           {
-            origin: player.location,
+            origin: origin,
             destination: destination,
+            // travelMode: google.maps.TravelMode.DRIVING
             travelMode: google.maps.TravelMode.WALKING
           },
           (result, status) => {
             if (status === google.maps.DirectionsStatus.OK) {
               const overViewCoords = result.routes[0].overview_path;
-              directionsArr.push(overViewCoords);
-              this.setState({ otherPlayerDirections: directionsArr });
+              this.setState({
+                directions: overViewCoords
+              });
+            } else if (
+              status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT
+            ) {
+              console.log('MY STATUS', status);
             }
           }
         );
+      }
+    }
+
+    if (locations.onlineMembers) {
+      const directionsArr = [];
+      locations.onlineMembers.forEach(player => {
+        if (locations.onlineMembersUpdated) {
+          const directionsService = new google.maps.DirectionsService();
+          directionsService.route(
+            {
+              origin: player.location,
+              destination: destination,
+              travelMode: google.maps.TravelMode.WALKING
+            },
+            (result, status) => {
+              if (status === google.maps.DirectionsStatus.OK) {
+                const overViewCoords = result.routes[0].overview_path;
+                directionsArr.push(overViewCoords);
+                this.props.onlineMembersUpdated(false);
+                this.setState({ otherPlayerDirections: directionsArr });
+              } else if (
+                status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT
+              ) {
+                console.log('Query Limit Reached:', status);
+              }
+            }
+          );
+        }
       });
     } else if (!locations.onlineMembers && locations.initialised) {
       // All members have left the group
@@ -152,15 +148,9 @@ class LocationsMap extends Component {
     // console.log('ZOOM:', zoomLevel);
   };
 
-  markerClicked = marker => {
-    console.log('Username:', marker.username);
-
-    this.setState({ showInfoBox: true });
-  };
-
   render() {
     const { locationPOI, currentPlayer, locations } = this.props;
-    const { zoomLevel, directions, otherPlayerDirections } = this.state;
+    const { zoomLevel, directions, otherPlayerDirections, center } = this.state;
 
     const iconCurrentPlayer = {
       url: PlayerIcon,
@@ -182,23 +172,13 @@ class LocationsMap extends Component {
           this.map = ref;
         }}
         zoom={zoomLevel}
-        // zoom={15}
-        // defaultCenter={{ lat: -33.917825, lng: 18.42408 }}
-        center={this.state.center}
-        // center={this.props.position}
+        center={center}
         defaultOptions={{ disableAutoPan: true }}
         options={MAP_OPTIONS}
         onZoomChanged={() => this.handleZoomChanged()}
-        onClick={() => this.setState({ showInfoBox: false })}
+        onClick={() => this.setState({ showInfoBox: null })}
       >
         <Marker position={locationPOI} options={{ icon: iconPOI }} />
-        {/* {currentPlayer && (<Marker
-          // position={this.state.center}
-          position={currentPlayer}
-          options={{
-            icon
-          }}
-        />)} */}
         {currentPlayer && (
           <Marker
             position={currentPlayer}
@@ -208,10 +188,11 @@ class LocationsMap extends Component {
           />
         )}
         {locations.onlineMembers
-          ? locations.onlineMembers.map(marker => {
+          ? locations.onlineMembers.map((marker, index) => {
               return (
                 <Marker
-                  key={`${marker.location.lat}${marker.location.lng}`}
+                  // key={`${marker.location.lat}${marker.location.lng}`}
+                  key={index}
                   position={marker.location}
                   options={{
                     icon: iconOtherMembers
@@ -219,8 +200,16 @@ class LocationsMap extends Component {
                   style={{
                     transform: 'translate(-50%, -100%)'
                   }}
-                  onClick={() => this.markerClicked(marker)}
-                />
+                  onClick={() => this.setState({ showInfoBox: index })}
+                >
+                  {this.state.showInfoBox === index && (
+                    <InfoWindow
+                      onCloseClick={() => this.setState({ showInfoBox: null })}
+                    >
+                      <div>{marker.username}</div>
+                    </InfoWindow>
+                  )}
+                </Marker>
               );
             })
           : null}
@@ -264,5 +253,5 @@ function mapStateToProps({ locations }) {
 
 export default connect(
   mapStateToProps,
-  { locationsInitialised }
+  { locationsInitialised, onlineMembersUpdated }
 )(withScriptjs(withGoogleMap(LocationsMap)));

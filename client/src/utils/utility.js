@@ -90,3 +90,12 @@ export const urlBase64ToUint8Array = base64String => {
   }
   return outputArray;
 };
+
+export const locationsEqual = (firstLocation, secondLocation) => {
+  if (!firstLocation || !secondLocation) return false;
+
+  return (
+    firstLocation.lat === secondLocation.lat &&
+    firstLocation.lng === secondLocation.lng
+  );
+};

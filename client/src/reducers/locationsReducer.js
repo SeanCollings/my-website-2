@@ -7,7 +7,8 @@ import {
   TOTAL_ONLINE,
   LOCATIONS_INITIALISED,
   SET_RANDOM_USERNAME,
-  LAST_KNOWN_LOCATION
+  LAST_KNOWN_LOCATION,
+  ONLINE_MEMBERS_UPDATED
 } from '../actions/types';
 
 const intialState = {
@@ -19,7 +20,8 @@ const intialState = {
   totalOnline: 0,
   initialised: false,
   random: null,
-  lastKnownLocation: null
+  lastKnownLocation: null,
+  onlineMembersUpdated: false
 };
 
 export default function(state = intialState, action) {
@@ -42,6 +44,8 @@ export default function(state = intialState, action) {
       return { ...state, random: action.payload };
     case LAST_KNOWN_LOCATION:
       return { ...state, lastKnownLocation: action.payload };
+    case ONLINE_MEMBERS_UPDATED:
+      return { ...state, onlineMembersUpdated: action.payload };
     default:
       return state;
   }

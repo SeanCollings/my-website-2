@@ -11,7 +11,8 @@ import {
   TOTAL_ONLINE,
   LOCATIONS_INITIALISED,
   SET_RANDOM_USERNAME,
-  LAST_KNOWN_LOCATION
+  LAST_KNOWN_LOCATION,
+  ONLINE_MEMBERS_UPDATED
 } from './types';
 
 export const getLocationGroups = () => async dispatch => {
@@ -114,4 +115,8 @@ export const memberGoneOffline = username => dispatch => {
     type: SHOW_MESSAGE,
     payload: { type: MessageTypeEnum.info, message: `${username} has left` }
   });
+};
+
+export const onlineMembersUpdated = updated => dispatch => {
+  dispatch({ type: ONLINE_MEMBERS_UPDATED, payload: updated });
 };

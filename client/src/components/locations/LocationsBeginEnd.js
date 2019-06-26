@@ -168,14 +168,14 @@ class LocationsBeginEnd extends Component {
       presenceChannel.bind('location-update', body => {
         const { onlineMembers, random } = this.props.locations;
         const { userId, username, location } = body;
+        const newMember = { userId, username, location };
 
         const membersArray = [];
-        const newMember = { userId, username, location };
 
         // Prevent current user being added to list of other online users
         if (userId.toString() !== random.toString())
           membersArray.push(newMember);
-        // Update online users list
+
         if (onlineMembers) {
           onlineMembers.forEach(member => {
             if (
@@ -187,6 +187,7 @@ class LocationsBeginEnd extends Component {
           });
         }
 
+        this.props.onlineMembersUpdated(true);
         this.props.onlineMembersLocations(membersArray);
       });
 
@@ -225,8 +226,6 @@ class LocationsBeginEnd extends Component {
             lastKnownLocation
           );
         }
-
-        console.log('New member joined:', member);
       });
 
       const username = `${auth.givenName} ${auth.familyName}`;

@@ -2,26 +2,6 @@ export const MAP_OPTIONS = {
   minZoom: 3,
   mapTypeControl: false,
   styles: [
-    // {
-    //   elementType: 'labels',
-    //   featureType: 'poi.business',
-    //   stylers: [{ visibility: 'off' }]
-    // },
-    // {
-    //   elementType: 'labels',
-    //   featureType: 'poi.government',
-    //   stylers: [{ visibility: 'off' }]
-    // },
-    // {
-    //   elementType: 'labels',
-    //   featureType: 'poi.attraction',
-    //   stylers: [{ visibility: 'off' }]
-    // },
-    // {
-    //   elementType: 'labels',
-    //   featureType: 'poi.medical',
-    //   stylers: [{ visibility: 'off' }]
-    // },
     {
       elementType: 'geometry',
       // stylers: [{ color: '#581845' }]
