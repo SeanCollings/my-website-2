@@ -27,7 +27,8 @@ class LocationsMap extends Component {
     directions: null,
     otherPlayerDirections: null,
     showInfoBox: null,
-    onlineMembers: null
+    onlineMembers: null,
+    initialised: false
   };
 
   componentDidMount() {
@@ -79,7 +80,10 @@ class LocationsMap extends Component {
     const origin = this.props.currentPlayer;
 
     if (origin && destination) {
-      if (!locationsEqual(origin, locations.lastKnownLocation)) {
+      if (
+        !locationsEqual(origin, locations.lastKnownLocation) ||
+        !this.state.initialised
+      ) {
         const directionsService = new google.maps.DirectionsService();
 
         directionsService.route(
@@ -102,6 +106,7 @@ class LocationsMap extends Component {
             }
           }
         );
+        if (!this.state.initialised) this.setState({ initialised: true });
       }
     }
 

@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import {
   createLocationGroups,
   updateLocationGroups,
-  deleteGroup
+  deleteGroup,
+  getLocationGroups
 } from '../../actions/locationActions';
 import { GOOGLE_API_KEY } from '../../utils/constants';
 
@@ -131,6 +132,7 @@ class CreateUpateGroups extends Component {
     if (snackBar.open && (creatingUpdatingGroup || deletingGroup)) {
       this.setState({ deletingGroup: false });
       this.props.showAllGroups();
+      this.props.getLocationGroups();
     }
   }
 
@@ -307,5 +309,5 @@ function mapStateToProps({ auth, snackBar }) {
 
 export default connect(
   mapStateToProps,
-  { createLocationGroups, updateLocationGroups, deleteGroup }
+  { createLocationGroups, updateLocationGroups, deleteGroup, getLocationGroups }
 )(withStyles(styles)(CreateUpateGroups));
