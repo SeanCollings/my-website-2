@@ -14,8 +14,7 @@ class LocationsSelected extends Component {
       { lat: -33.930353, lng: 18.423266, name: 'Matthew' }
     ],
     showOtherPlayers: false,
-    pusher: null,
-    locationStarted: false
+    pusher: null
   };
 
   componentWillUnmount() {
@@ -41,9 +40,6 @@ class LocationsSelected extends Component {
           otherPlayersLength={otherPlayers ? otherPlayers.length : 0}
           returnToGroups={() => this.props.returnToGroups()}
           groupId={groupId}
-          locationStarted={locationStarted =>
-            this.setState({ locationStarted })
-          }
           currentPlayer={currentPlayer}
         />
         <LocationsMap

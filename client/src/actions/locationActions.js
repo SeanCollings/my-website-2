@@ -12,7 +12,8 @@ import {
   LOCATIONS_INITIALISED,
   SET_RANDOM_USERNAME,
   LAST_KNOWN_LOCATION,
-  ONLINE_MEMBERS_UPDATED
+  ONLINE_MEMBERS_UPDATED,
+  LOCATIONS_STARTED
 } from './types';
 
 export const getLocationGroups = () => async dispatch => {
@@ -95,7 +96,7 @@ export const locationsInitialised = init => dispatch => {
   dispatch({ type: LOCATIONS_INITIALISED, payload: init });
 };
 
-export const setRandomUserName = random => dispatch => {
+export const setRandomUsername = random => dispatch => {
   dispatch({ type: SET_RANDOM_USERNAME, payload: random });
 };
 
@@ -119,4 +120,8 @@ export const memberGoneOffline = username => dispatch => {
 
 export const onlineMembersUpdated = updated => dispatch => {
   dispatch({ type: ONLINE_MEMBERS_UPDATED, payload: updated });
+};
+
+export const locationsStarted = started => dispatch => {
+  dispatch({ type: LOCATIONS_STARTED, payload: started });
 };

@@ -1,5 +1,5 @@
 /* global google */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import {
   withScriptjs,
@@ -19,6 +19,7 @@ import { locationsEqual } from '../../utils/utility';
 import MarkerIcon from '../../images/map/custom-icon.png';
 import PlayerIcon from '../../images/map/person-yellow-purple.png';
 import PersonIcon from '../../images/map/person-off-yellow.png';
+import BlurredIcon from '../../images/map/person-blurred.png';
 
 class LocationsMap extends Component {
   state = {
@@ -28,7 +29,9 @@ class LocationsMap extends Component {
     otherPlayerDirections: null,
     showInfoBox: null,
     onlineMembers: null,
-    initialised: false
+    initialised: false,
+    distance: null,
+    duration: null
   };
 
   componentDidMount() {
@@ -90,14 +93,21 @@ class LocationsMap extends Component {
           {
             origin: origin,
             destination: destination,
-            // travelMode: google.maps.TravelMode.DRIVING
-            travelMode: google.maps.TravelMode.WALKING
+            travelMode: google.maps.TravelMode.DRIVING
+            // travelMode: google.maps.TravelMode.WALKING
           },
           (result, status) => {
             if (status === google.maps.DirectionsStatus.OK) {
+              // console.log('Distance:', result.routes[0].legs[0].distance.text);
+              // console.log('Duration:', result.routes[0].legs[0].duration.text);
               const overViewCoords = result.routes[0].overview_path;
+              const distance = result.routes[0].legs[0].distance.text;
+              const duration = result.routes[0].legs[0].duration.text;
               this.setState({
-                directions: overViewCoords
+                ...this.state,
+                directions: overViewCoords,
+                duration,
+                distance
               });
             } else if (
               status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT
@@ -155,7 +165,14 @@ class LocationsMap extends Component {
 
   render() {
     const { locationPOI, currentPlayer, locations } = this.props;
-    const { zoomLevel, directions, otherPlayerDirections, center } = this.state;
+    const {
+      zoomLevel,
+      directions,
+      otherPlayerDirections,
+      center,
+      distance,
+      duration
+    } = this.state;
 
     const iconCurrentPlayer = {
       url: PlayerIcon,
@@ -163,7 +180,11 @@ class LocationsMap extends Component {
     };
     const iconOtherMembers = {
       url: PersonIcon,
-      scaledSize: { width: 26, height: 26 }
+      scaledSize: { width: 25, height: 25 }
+    };
+    const iconBlurred = {
+      url: BlurredIcon,
+      scaledSize: { width: 25, height: 25 }
     };
     const iconPOI = {
       url: MarkerIcon,
@@ -190,17 +211,30 @@ class LocationsMap extends Component {
             options={{
               icon: iconCurrentPlayer
             }}
-          />
+            onClick={() => this.setState({ showInfoBox: 'player' })}
+          >
+            {this.state.showInfoBox === 'player' && (
+              <InfoWindow
+                onCloseClick={() => this.setState({ showInfoBox: null })}
+              >
+                <Fragment>
+                  <div style={{ textAlign: 'center' }}>You</div>
+                  <div style={{ display: distance && duration ? '' : 'none' }}>
+                    {distance} / {duration}
+                  </div>
+                </Fragment>
+              </InfoWindow>
+            )}
+          </Marker>
         )}
         {locations.onlineMembers
           ? locations.onlineMembers.map((marker, index) => {
               return (
                 <Marker
-                  // key={`${marker.location.lat}${marker.location.lng}`}
                   key={index}
                   position={marker.location}
                   options={{
-                    icon: iconOtherMembers
+                    icon: marker.blurred ? iconBlurred : iconOtherMembers
                   }}
                   style={{
                     transform: 'translate(-50%, -100%)'

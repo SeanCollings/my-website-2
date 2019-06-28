@@ -8,7 +8,8 @@ import {
   LOCATIONS_INITIALISED,
   SET_RANDOM_USERNAME,
   LAST_KNOWN_LOCATION,
-  ONLINE_MEMBERS_UPDATED
+  ONLINE_MEMBERS_UPDATED,
+  LOCATIONS_STARTED
 } from '../actions/types';
 
 const intialState = {
@@ -21,7 +22,8 @@ const intialState = {
   initialised: false,
   random: null,
   lastKnownLocation: null,
-  onlineMembersUpdated: false
+  onlineMembersUpdated: false,
+  locationsStarted: false
 };
 
 export default function(state = intialState, action) {
@@ -46,6 +48,8 @@ export default function(state = intialState, action) {
       return { ...state, lastKnownLocation: action.payload };
     case ONLINE_MEMBERS_UPDATED:
       return { ...state, onlineMembersUpdated: action.payload };
+    case LOCATIONS_STARTED:
+      return { ...state, locationsStarted: action.payload };
     default:
       return state;
   }

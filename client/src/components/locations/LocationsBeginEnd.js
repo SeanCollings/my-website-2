@@ -25,15 +25,42 @@ const styles = theme => ({
 
 class LocationsBeginEnd extends Component {
   state = {
-    locationsStart: false,
-    onlineUsers: 0,
     pusher: null,
-    presenceChannel: null,
-    random: null
+    random: null,
+    blurred: false
   };
 
   componentDidMount() {
     if (!this.props.locations.pusherCreds) this.props.getPusherCreds();
+
+    window.onblur = () => {
+      const { groupId, auth, locations } = this.props;
+      // const { blurred } = this.state;
+
+      const username = `${auth.givenName} ${auth.familyName}`;
+      console.log('Blurred?', this.state.blurred);
+      if (locations.locationsStarted && locations.onlineMembers) {
+        // if (!blurred) {
+        this.postLocationToMembers(
+          groupId,
+          locations.random,
+          username,
+          locations.lastKnownLocation,
+          true
+        );
+        // this.setState({ blurred: true });
+        // } else {
+        // this.postLocationToMembers(
+        //   groupId,
+        //   locations.random,
+        //   username,
+        //   locations.lastKnownLocation,
+        //   false
+        // );
+        // this.setState({ blurred: false });
+        // }
+      }
+    };
   }
 
   componentWillUnmount() {
@@ -56,6 +83,7 @@ class LocationsBeginEnd extends Component {
     this.props.totalOnline(0);
     this.props.locationsInitialised(false);
     this.props.onlineMembersLocations(null);
+    this.props.locationsStarted(false);
 
     if (unmountComponent) this._isMounted = false;
   };
@@ -64,82 +92,81 @@ class LocationsBeginEnd extends Component {
     const { totalOnline, lastKnownLocation } = this.props.locations;
 
     if ('geolocation' in navigator) {
-      if (!this.state.locationsStart) {
-        const options = {
-          enableHighAccuracy: false,
-          timeout: 60000,
-          maximumAge: 10000
-        };
+      const options = {
+        enableHighAccuracy: false,
+        timeout: 60000,
+        maximumAge: 10000
+      };
 
-        // In case user stopped and then started but currentPosition unchanged,
-        // set position as lastKnownLocation
-        if (lastKnownLocation) this.props.setPosition(lastKnownLocation);
+      // In case user stopped and then started but currentPosition unchanged,
+      // set position as lastKnownLocation
+      if (lastKnownLocation) this.props.setPosition(lastKnownLocation);
 
-        const geoId = navigator.geolocation.watchPosition(
-          position => {
-            // Set decimal place to 5 for 1.11m accuracy
-            let currentLocation = {
-              lat: parseFloat(position.coords.latitude.toFixed(5)),
-              lng: parseFloat(position.coords.longitude.toFixed(5))
-            };
+      const geoId = navigator.geolocation.watchPosition(
+        position => {
+          // Set decimal place to 5 for 1.11m accuracy
+          let currentLocation = {
+            lat: parseFloat(position.coords.latitude.toFixed(5)),
+            lng: parseFloat(position.coords.longitude.toFixed(5))
+          };
 
-            if (
-              !lastKnownLocation ||
-              (lastKnownLocation &&
-                currentLocation.lat !== lastKnownLocation.lat &&
-                currentLocation.lng !== lastKnownLocation.lng)
-            ) {
-              this.props.setPosition(currentLocation);
-              this.props.lastKnownLocation(currentLocation);
+          console.log('Position Watched');
 
-              if (totalOnline > 1) {
-                this.postLocationToMembers(
-                  groupId,
-                  random,
-                  username,
-                  currentLocation
-                );
-              }
+          if (
+            !lastKnownLocation ||
+            (lastKnownLocation &&
+              currentLocation.lat !== lastKnownLocation.lat &&
+              currentLocation.lng !== lastKnownLocation.lng)
+          ) {
+            this.props.setPosition(currentLocation);
+            this.props.lastKnownLocation(currentLocation);
+
+            if (totalOnline > 1) {
+              this.postLocationToMembers(
+                groupId,
+                random,
+                username,
+                currentLocation,
+                false
+              );
             }
-          },
-          error => {
-            console.log(error);
-          },
-          options
-        );
+          }
+        },
+        error => {
+          console.log(error);
+        },
+        options
+      );
 
-        this.props.setGeoId(geoId);
-      } else {
-        navigator.geolocation.clearWatch(this.props.locations.geoId);
-        this.props.setPosition(null);
-      }
+      this.props.setGeoId(geoId);
+    } else {
+      navigator.geolocation.clearWatch(this.props.locations.geoId);
+      this.props.setPosition(null);
     }
   };
 
-  postLocationToMembers = (groupId, userId, username, location) => {
+  postLocationToMembers = (groupId, userId, username, location, blurred) => {
     axios.post('/api/update_location', {
       groupId,
       userId,
       username,
-      location
+      location,
+      blurred
     });
   };
 
   toggleLocations = () => {
     const { groupId, auth, locations } = this.props;
-    const { locationsStart } = this.state;
 
     // Pusher goes here
-    if (!locationsStart) {
-      this.setState({ onlineUsers: 1 });
-
+    if (!locations.locationsStarted) {
       // TODO - remove once pusher dev finished
       // Set random id's to test same user on multiple devices
       const random = Math.random();
       console.log('random', random);
       this.setState({ random });
 
-      this.props.setRandomUserName(random);
+      this.props.setRandomUsername(random);
 
       const pusher = new Pusher(locations.pusherCreds.pusherKey, {
         authEndpoint: `/api/pusher_auth?random=${random}`,
@@ -160,26 +187,27 @@ class LocationsBeginEnd extends Component {
             groupId,
             random,
             username,
-            lastKnownLocation
+            lastKnownLocation,
+            false
           );
         }
       });
 
       presenceChannel.bind('location-update', body => {
         const { onlineMembers, random } = this.props.locations;
-        const { userId, username, location } = body;
-        const newMember = { userId, username, location };
+        const { userId, username, location, blurred } = body;
 
         const membersArray = [];
+        const udpatedMember = { userId, username, location, blurred };
 
         // Prevent current user being added to list of other online users
         if (userId.toString() !== random.toString())
-          membersArray.push(newMember);
+          membersArray.push(udpatedMember);
 
         if (onlineMembers) {
           onlineMembers.forEach(member => {
             if (
-              member.userId !== newMember.userId &&
+              member.userId !== udpatedMember.userId &&
               member.userId !== random
             ) {
               membersArray.push(member);
@@ -223,28 +251,22 @@ class LocationsBeginEnd extends Component {
             groupId,
             random,
             username,
-            lastKnownLocation
+            lastKnownLocation,
+            false
           );
         }
       });
 
       const username = `${auth.givenName} ${auth.familyName}`;
       this.getLocation(auth._id, username, groupId, random);
+      this.props.locationsStarted(true);
     } else {
       this.endConnection(false);
     }
-
-    this.setState({
-      ...this.state,
-      locationsStart: !locationsStart
-    });
-
-    this.props.locationStarted(true);
   };
 
   render() {
     const { topHeight, classes, locations } = this.props;
-    const { locationsStart } = this.state;
 
     return (
       <Grid
@@ -265,7 +287,7 @@ class LocationsBeginEnd extends Component {
           onClick={() => this.toggleLocations()}
           disabled={locations.pusherCreds ? false : true}
         >
-          {locationsStart ? 'Stop' : 'Start'}
+          {locations.locationsStarted ? 'Stop' : 'Start'}
         </Button>
         <Typography className={classes.text}>
           Online: {locations.totalOnline}

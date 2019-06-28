@@ -32,6 +32,7 @@ export const TOTAL_ONLINE = 'total_online';
 export const LOCATIONS_INITIALISED = 'locations_initialised';
 export const LAST_KNOWN_LOCATION = 'last_known_location';
 export const ONLINE_MEMBERS_UPDATED = 'online_members_updated';
+export const LOCATIONS_STARTED = 'locations_started';
 
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';

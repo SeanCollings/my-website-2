@@ -45,7 +45,8 @@ export default app => {
     pusher.trigger(groupName, 'location-update', {
       userId: req.body.userId,
       username: req.body.username,
-      location: req.body.location
+      location: req.body.location,
+      blurred: req.body.blurred
     });
     res.json({ status: 200 });
   });
