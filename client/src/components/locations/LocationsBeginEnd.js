@@ -46,7 +46,7 @@ class LocationsBeginEnd extends Component {
           locations.random,
           username,
           locations.lastKnownLocation,
-          true
+          false
         );
         // this.setState({ blurred: true });
         // } else {
@@ -110,7 +110,7 @@ class LocationsBeginEnd extends Component {
             lng: parseFloat(position.coords.longitude.toFixed(5))
           };
 
-          console.log('Position Watched');
+          // console.log('Position Watched');
 
           if (
             !lastKnownLocation ||
@@ -121,7 +121,7 @@ class LocationsBeginEnd extends Component {
             this.props.setPosition(currentLocation);
             this.props.lastKnownLocation(currentLocation);
 
-            if (totalOnline > 1) {
+            if (totalOnline > 0) {
               this.postLocationToMembers(
                 groupId,
                 random,
