@@ -130,7 +130,7 @@ class LocationsBeginEnd extends Component {
             this.props.setPosition(currentLocation);
             this.props.lastKnownLocation(currentLocation);
 
-            if (totalOnline > 0) {
+            if (totalOnline > 1) {
               this.postLocationToMembers(
                 groupId,
                 random,
