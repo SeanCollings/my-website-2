@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Pusher from 'pusher-js';
 import axios from 'axios';
+import NoSleep from 'nosleep.js';
 import * as locationActions from '../../actions/locationActions';
 import { updateHeading } from '../../actions/appActions';
 
@@ -22,6 +23,8 @@ const styles = theme => ({
     marginLeft: '12px'
   }
 });
+
+const noSleep = new NoSleep();
 
 class LocationsBeginEnd extends Component {
   state = {
@@ -84,6 +87,8 @@ class LocationsBeginEnd extends Component {
     this.props.locationsInitialised(false);
     this.props.onlineMembersLocations(null);
     this.props.locationsStarted(false);
+
+    noSleep.disable();
 
     if (unmountComponent) this._isMounted = false;
   };
@@ -260,6 +265,10 @@ class LocationsBeginEnd extends Component {
       const username = `${auth.givenName} ${auth.familyName}`;
       this.getLocation(auth._id, username, groupId, random);
       this.props.locationsStarted(true);
+
+      // Prevent screen from turning off when locations started
+      // to allow geolocation api to keep getting new locations
+      noSleep.enable();
     } else {
       this.endConnection(false);
     }
