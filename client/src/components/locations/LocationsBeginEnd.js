@@ -94,7 +94,7 @@ class LocationsBeginEnd extends Component {
   };
 
   getLocation = (userId, username, groupId, random) => {
-    const { totalOnline, lastKnownLocation } = this.props.locations;
+    const { locations } = this.props;
 
     if ('geolocation' in navigator) {
       const options = {
@@ -105,10 +105,14 @@ class LocationsBeginEnd extends Component {
 
       // In case user stopped and then started but currentPosition unchanged,
       // set position as lastKnownLocation
-      if (lastKnownLocation) this.props.setPosition(lastKnownLocation);
+      if (locations.lastKnownLocation)
+        this.props.setPosition(locations.lastKnownLocation);
 
       const geoId = navigator.geolocation.watchPosition(
         position => {
+          // Get updated locations
+          const { totalOnline, lastKnownLocation } = this.props.locations;
+
           // Set decimal place to 5 for 1.11m accuracy
           let currentLocation = {
             lat: parseFloat(position.coords.latitude.toFixed(5)),
@@ -241,6 +245,7 @@ class LocationsBeginEnd extends Component {
 
           if (membersArray.length === 0) membersArray = null;
 
+          this.props.onlineMembersUpdated(true);
           this.props.onlineMembersLocations(membersArray);
         }
       });
