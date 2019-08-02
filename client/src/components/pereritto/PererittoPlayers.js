@@ -236,7 +236,14 @@ class PererittoPlayers extends Component {
           display: 'table'
         }}
       >
-        <Grid item style={{ textAlign: 'center', paddingBottom: '10px' }}>
+        <Grid
+          item
+          style={{
+            textAlign: 'center',
+            paddingBottom: '8px',
+            marginTop: '8px'
+          }}
+        >
           <Select
             className={classes.cssUnderline}
             value={selectedYear ? this.state.selectedYear : ''}

@@ -86,9 +86,9 @@ class TemporaryDrawer extends React.Component {
   }
 
   renderMenu(item) {
-    if (item === 'Pereritto' && !this.props.pererittoUser) {
-      return null;
-    }
+    // if (item === 'Pereritto' && !this.props.pererittoUser) {
+    //   return null;
+    // }
 
     if (item === 'Maintenance') {
       return null;

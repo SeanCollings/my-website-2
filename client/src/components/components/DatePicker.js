@@ -12,7 +12,8 @@ class DatePicker extends Component {
     selectedDay: null,
     showMoreMonths: false,
     monthsToDisplay: 6,
-    data: null
+    data: null,
+    selectedRemoveDate: null
   };
 
   mobileScreen = this.props.resizeScreen || !this.props.preventSelection;
@@ -49,6 +50,8 @@ class DatePicker extends Component {
       }
     }
 
+    if (nextProps.hideDates !== this.props.hideDates) return true;
+
     return nextProps.showMoreMonths !== this.state.showMoreMonths;
   }
 
@@ -70,27 +73,65 @@ class DatePicker extends Component {
     if (props.data && this.state.data !== props.data) {
       this.setState({ data: props.data });
     }
+
+    if (props.hideDates !== this.props.hideDates) {
+      if (props.hideDates) {
+        this.setState({ selectedDay: null });
+      } else {
+        this.setState({ selectedRemoveDate: null });
+      }
+      this.props.selectedDate(null);
+    }
   }
 
   handleDayClick = (day, { selected }) => {
     let date = day.toString().substring(0, 15);
-    this.setState({
-      selectedDay: selected ? null : new Date(date)
-    });
 
-    this.props.selectedDate(selected ? null : date);
+    if (this.props.hideDates) {
+      this.setState({
+        selectedDay: selected ? null : new Date(date)
+      });
+      this.props.selectedDate(selected ? null : date);
+    } else {
+      const dateExists = this.checkIfDateExists(date);
+
+      this.setState({
+        ...this.state,
+        selectedRemoveDate:
+          selected || dateExists.length === 0 ? null : new Date(date),
+        selectedDay: null
+      });
+      this.props.selectedDate(
+        selected || dateExists.length === 0 ? null : date
+      );
+    }
   };
 
+  checkIfDateExists(date) {
+    const { winners } = this.props;
+
+    if (winners && winners.winners) {
+      return winners.winners.filter(winner => winner.date === date);
+    }
+  }
+
   renderDay = day => {
-    const { data } = this.props;
+    const { winners, hideDates } = this.props;
+
+    if (!winners || !winners.winners) return null;
+
     let dateToRender = day.toString().substring(0, 15);
 
     const date = day.getDate();
     const renderDates = () => {
-      if (data && data.length > 0) {
-        for (let i = 0; i < data.length; i++) {
-          if (data[i].date === dateToRender)
-            return <div>{data[i]._winner.name.charAt(0).toUpperCase()}</div>;
+      if (!hideDates && winners.winners && winners.winners.length > 0) {
+        for (let i = 0; i < winners.winners.length; i++) {
+          if (winners.winners[i].date === dateToRender)
+            return (
+              <div>
+                {winners.winners[i]._winner.name.charAt(0).toUpperCase()}
+              </div>
+            );
         }
       }
 
@@ -110,18 +151,43 @@ class DatePicker extends Component {
   };
 
   render() {
-    const { resizeScreen, preventSelection, showMoreMonths, data } = this.props;
+    const {
+      resizeScreen,
+      preventSelection,
+      showMoreMonths,
+      winners,
+      hideDates
+    } = this.props;
+    const { selectedRemoveDate } = this.state;
+
     let modifiers = {};
     let modifiersStyles = {};
 
-    if (data && data.length) {
-      data.forEach(date => {
+    if (
+      !hideDates &&
+      winners &&
+      winners.winners &&
+      winners.winners.length > 0
+    ) {
+      winners.winners.forEach(date => {
         if (date.date.length > 0) {
           modifiers[date._id] = new Date(date.date);
-          modifiersStyles[date._id] = {
-            color: 'white',
-            backgroundColor: date._winner.colour
-          };
+
+          if (
+            !selectedRemoveDate ||
+            (selectedRemoveDate &&
+              new Date(date.date).getTime() !== selectedRemoveDate.getTime())
+          ) {
+            modifiersStyles[date._id] = {
+              color: 'white',
+              backgroundColor: date._winner.colour
+            };
+          } else {
+            modifiersStyles[date._id] = {
+              color: 'white',
+              backgroundColor: '#232020'
+            };
+          }
         }
       });
     }

@@ -429,7 +429,7 @@ export default app => {
   //#endregion add_pereritto
 
   //#region get_pereritto
-  app.get('/api/get_pereritto', requireLogin, async (req, res) => {
+  app.get('/api/get_pereritto', async (req, res) => {
     const users = await PererittoUser.find().sort({ name: 1 });
     res.send(users);
   });

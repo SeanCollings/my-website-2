@@ -6,6 +6,7 @@ import * as actions from '../../actions';
 import { showMessage } from '../../actions/snackBarActions';
 
 import DatePicker from '../components/DatePicker';
+import ConfirmActionModal from '../modals/ConfirmActionModal';
 import { MessageTypeEnum } from '../../utils/constants';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -39,7 +40,8 @@ const styles = theme => ({
   },
   formControl: {
     margin: theme.spacing.unit,
-    minWidth: 120
+    minWidth: 120,
+    marginLeft: '40px'
   }
 });
 
@@ -48,7 +50,9 @@ class UpdatePererittoPlayer extends Component {
     playerName: '',
     selectedDate: null,
     errorName: false,
-    updatingPlayer: false
+    updatingPlayer: false,
+    hideDates: true,
+    showModal: false
   };
 
   componentDidMount() {
@@ -58,6 +62,7 @@ class UpdatePererittoPlayer extends Component {
   shouldComponentUpdate(nextProps) {
     if (nextProps.snackBar.open && this.state.updatingPlayer) {
       this.setState({ updatingPlayer: false });
+      this.props.getWinners();
     }
 
     return true;
@@ -72,9 +77,9 @@ class UpdatePererittoPlayer extends Component {
   };
 
   updatePlayerClick = () => {
-    const { playerName, selectedDate } = this.state;
+    const { playerName, selectedDate, hideDates } = this.state;
 
-    if (playerName === '') {
+    if (playerName === '' && hideDates) {
       this.setState({ errorName: true });
       return this.props.showMessage(MessageTypeEnum.error, 'Select a name!');
     }
@@ -83,8 +88,12 @@ class UpdatePererittoPlayer extends Component {
       return this.props.showMessage(MessageTypeEnum.error, 'Select a date!');
 
     this.setState({ updatingPlayer: true });
-    return this.props.updatePererittoUser(playerName, selectedDate);
-    // .then(() => this.props.getWinners());
+
+    if (!hideDates) {
+      this.setState({ showModal: true });
+    } else {
+      return this.props.updatePererittoUser(playerName, selectedDate);
+    }
   };
 
   renderPlayers = () => {
@@ -114,55 +123,51 @@ class UpdatePererittoPlayer extends Component {
     </span>
   );
 
-  toggleUpateType = () => {
-    console.log('toggleUpateType');
+  toggleUpdateType = () => {
+    this.setState({ hideDates: !this.state.hideDates });
   };
 
   render() {
     const { classes, resizeScreen } = this.props;
-    const { updatingPlayer } = this.state;
+    const { updatingPlayer, hideDates, showModal, selectedDate } = this.state;
 
     return (
       <div>
         <Grid className={classes.root}>
-          <Grid item style={{ display: 'inline-flex' }}>
-            <Grid item style={{ textAlign: 'center' }}>
-              <form onSubmit={this.onFormSubmit}>
-                <FormControl className={classes.formControl}>
-                  <Select
-                    value={this.state.playerName}
-                    onChange={this.handleChange}
-                    displayEmpty
-                    style={{
-                      opacity: this.state.playerName === '' ? '0.5' : '1'
-                    }}
-                  >
-                    <MenuItem value="" disabled>
-                      Select Player
-                    </MenuItem>
-                    {this.renderPlayers()}
-                  </Select>
-                </FormControl>
-              </form>
-            </Grid>
-            <Grid item>
-              <Avatar
-                onClick={() => this.toggleUpateType()}
-                style={{
-                  position: 'absolute',
-                  top: '4px',
-                  backgroundColor: 'transparent',
-                  color: '#ffa07a'
-                }}
-              >
-                <MoreIcon />
-              </Avatar>
-            </Grid>
+          <Grid container direction="row" justify="center">
+            <form onSubmit={this.onFormSubmit}>
+              <FormControl className={classes.formControl}>
+                <Select
+                  value={this.state.playerName}
+                  onChange={this.handleChange}
+                  displayEmpty
+                  style={{
+                    opacity: this.state.playerName === '' ? '0.5' : '1'
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Player
+                  </MenuItem>
+                  {this.renderPlayers()}
+                </Select>
+              </FormControl>
+            </form>
+            <Avatar
+              onClick={() => this.toggleUpdateType()}
+              style={{
+                top: '5px',
+                backgroundColor: 'transparent',
+                color: '#ffa07a'
+              }}
+            >
+              <MoreIcon />
+            </Avatar>
           </Grid>
           <Grid item style={{ textAlign: 'center' }}>
             <DatePicker
               preventSelection={false}
               selectedDate={date => this.setState({ selectedDate: date })}
+              hideDates={hideDates}
             />
           </Grid>
           <Grid item style={{ textAlign: 'center', marginTop: '12px' }}>
@@ -173,18 +178,38 @@ class UpdatePererittoPlayer extends Component {
             >
               <Button
                 size={resizeScreen ? 'small' : 'medium'}
+                disabled={!hideDates && !selectedDate ? true : false}
                 style={{
                   color: 'white',
                   backgroundColor: '#001f3f',
-                  opacity: updatingPlayer ? '0.4' : '1'
+                  opacity:
+                    updatingPlayer || (!hideDates && !selectedDate)
+                      ? '0.5'
+                      : '1'
                 }}
                 onClick={this.updatePlayerClick}
               >
-                Update Player
+                {this.state.hideDates ? 'Update Player' : 'Remove Date'}
               </Button>
             </Loader>
           </Grid>
         </Grid>
+        <ConfirmActionModal
+          showModal={showModal}
+          title={'Warning!'}
+          message={'Are you sure you want to delete this date?'}
+          confirmClick={() => {
+            this.setState({ showModal: false });
+            this.props.removeWinnerDate(selectedDate);
+          }}
+          cancelClick={() =>
+            this.setState({
+              ...this.state,
+              updatingPlayer: false,
+              showModal: false
+            })
+          }
+        />
       </div>
     );
   }

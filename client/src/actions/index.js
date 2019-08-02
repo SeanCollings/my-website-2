@@ -136,6 +136,14 @@ export const getWinnerYears = () => async dispatch => {
   }
 };
 
+export const removeWinnerDate = date => async dispatch => {
+  const res = await axios.delete('/api/delete_winner_date', {
+    data: { date }
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
 export const clearWinners = () => {
   return { type: CLEAR_WINNERS };
 };

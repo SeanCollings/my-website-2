@@ -10,9 +10,9 @@ const userSchema = new Schema({
   splashes: { type: Number, default: 5 },
   lastSplashed: { type: Date, default: new Date(0) },
   superUser: { type: Boolean, default: false },
-  pererittoUser: { type: Boolean, default: true },
+  pererittoUser: { type: Boolean, default: false },
   allowNotifications: { type: Boolean, default: false },
-  lastLogin: { type: Date, default: new Date(0) },
+  lastLogin: { type: Date, default: new Date() },
   _pereritto: { type: Schema.Types.ObjectId, ref: 'pererittos' }
 });
 

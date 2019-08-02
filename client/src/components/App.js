@@ -70,22 +70,22 @@ class App extends Component {
   }
 
   renderPereritto() {
-    if (this.props.pererittoUser) {
-      return (
-        <Route
-          path={PERERITTO_PATH}
-          render={props => (
-            <PererittoPage
-              {...props}
-              superUser={this.props.superUser}
-              pereritto={this.state.pereritto}
-            />
-          )}
-        />
-      );
-    }
+    // if (this.props.pererittoUser) {
+    return (
+      <Route
+        path={PERERITTO_PATH}
+        render={props => (
+          <PererittoPage
+            {...props}
+            superUser={this.props.superUser}
+            pereritto={this.state.pereritto}
+          />
+        )}
+      />
+    );
+    // }
 
-    return;
+    // return;
   }
 
   renderUserProfile() {

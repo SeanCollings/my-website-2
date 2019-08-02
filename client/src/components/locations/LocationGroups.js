@@ -77,8 +77,13 @@ class LocationGroups extends Component {
               secondary={`Members: ${members}`}
             />
             <ListItemSecondaryAction
-              onClick={() => this.props.editGroup(group)}
+              onClick={() =>
+                createdByUser
+                  ? this.props.editGroup(group)
+                  : this.props.selectedGroup(group)
+              }
               className={createdByUser ? classes.borderLeft : null}
+              style={{ cursor: 'pointer' }}
             >
               {createdByUser ? (
                 <Typography

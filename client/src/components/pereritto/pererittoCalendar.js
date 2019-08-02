@@ -10,7 +10,7 @@ class PererittoCalendar extends Component {
 
   render() {
     const { showMoreMonths } = this.state;
-    const { resizeScreen, winners, renderPage } = this.props;
+    const { resizeScreen, winners } = this.props;
     const selectedYearsArray = [];
 
     if (winners && winners.winners) {
@@ -21,13 +21,13 @@ class PererittoCalendar extends Component {
 
     return (
       <div>
-        <div style={{ paddingTop: resizeScreen ? '5px' : '24px' }} />
+        <div style={{ paddingTop: resizeScreen ? '8px' : '24px' }} />
         <Grid item style={{ textAlign: 'center' }}>
           <Button
             style={{
               display: resizeScreen ? '' : 'none',
               color: '#FFC300',
-              marginBottom: '5px',
+              marginBottom: '8px',
               border: '1px solid'
             }}
             size="small"
@@ -40,7 +40,6 @@ class PererittoCalendar extends Component {
           data={selectedYearsArray}
           preventSelection={true}
           showMoreMonths={showMoreMonths}
-          renderPage={renderPage}
         />
       </div>
     );

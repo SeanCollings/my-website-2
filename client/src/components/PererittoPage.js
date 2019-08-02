@@ -23,7 +23,7 @@ import 'slick-carousel/slick/slick-theme.css';
 
 const styles = theme => ({
   pageFill: {
-    paddingBottom: '2.5rem',
+    // paddingBottom: '2.5rem',
     maxWidth: '100%'
     // backgroundColor: '#FF4136'
   },
@@ -40,6 +40,7 @@ const styles = theme => ({
   tabBar: {
     flexGrow: 1
   },
+  tab: { zIndex: 5 },
   centered: {
     display: 'flex',
     justifyContent: 'center'
@@ -69,7 +70,7 @@ class ProjectsPage extends Component {
   };
 
   render() {
-    const { classes, superUser, resizeScreen } = this.props;
+    const { classes, superUser, resizeScreen, auth } = this.props;
     const { value } = this.state;
 
     if (!this.props.pererittoUsers || this.props.pererittoUsers.length === 0) {
@@ -118,11 +119,14 @@ class ProjectsPage extends Component {
             style={{ backgroundColor: '' }}
             classes={{ indicator: classes.indicator }}
           >
-            <Tab label="Players" />
-            <Tab label="Calendar" />
-            <Tab label="Awards" />
+            <Tab label="Players" className={classes.tab} />
+            <Tab label="Calendar" className={classes.tab} />
+            {auth && auth.pererittoUser && (
+              <Tab label="Awards" className={classes.tab} />
+            )}
             <Tab
               label="Update"
+              className={classes.tab}
               style={{ display: superUser ? '' : 'none' }}
               disabled={!superUser}
             />
@@ -154,7 +158,7 @@ class ProjectsPage extends Component {
             >
               <PererittoPlayers />
               <TabContainer children={<PererittoCalendar />} />
-              <PererittoAwards />
+              {auth && <PererittoAwards />}
               {superUser && (
                 <TabContainer children={<UpdatePererittoPlayer />} />
               )}
@@ -169,6 +173,7 @@ class ProjectsPage extends Component {
 function mapStateToProps({ auth, pererittoUsers, resizeScreen, winners }) {
   return {
     pererittoUsers,
+    auth,
     superUser: auth ? auth.superUser : false,
     resizeScreen,
     winners

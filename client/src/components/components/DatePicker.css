@@ -78,7 +78,8 @@
 .Custom-Day.selected {
   position: relative;
 
-  background-color: #ff4136;
+  /* background-color: #ff4136; */
+  background-color: #ad1209;
   color: #f0f8ff;
 }
 
