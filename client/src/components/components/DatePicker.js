@@ -118,8 +118,6 @@ class DatePicker extends Component {
   renderDay = day => {
     const { winners, hideDates } = this.props;
 
-    if (!winners || !winners.winners) return null;
-
     let dateToRender = day.toString().substring(0, 15);
 
     const date = day.getDate();

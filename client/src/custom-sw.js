@@ -68,14 +68,16 @@ self.addEventListener('fetch', event => {
 
         clearAllData('current-user')
           .then(() => {
-            return clonedRes.json();
+            const jsonRes = clonedRes.json();
+            return jsonRes;
           })
           .then(data => {
             writeData('current-user', {
               ...data,
               id: new Date()
             });
-          });
+          })
+          .catch(err => console.log(err));
 
         return res;
       })
@@ -94,18 +96,21 @@ self.addEventListener('fetch', event => {
               ...data,
               id: new Date()
             });
-          });
+          })
+          .catch(err => console.log(err));
 
         return res;
       })
     );
   } else if (event.request.url.indexOf(urlAddNotificationGroups) > -1) {
     event.respondWith(
-      fetch(event.request).then(res => {
-        var clonedRes = res.clone();
-        console.log('ClonedRes:', clonedRes);
-        return res;
-      })
+      fetch(event.request)
+        .then(res => {
+          var clonedRes = res.clone();
+          console.log('ClonedRes:', clonedRes);
+          return res;
+        })
+        .catch(err => console.log(err))
     );
   } else if (event.request.url.indexOf(urlGetNotificationGroups) > -1) {
     event.respondWith(
@@ -123,7 +128,8 @@ self.addEventListener('fetch', event => {
                 id: data[key]._id
               });
             }
-          });
+          })
+          .catch(err => console.log(err));
 
         return res;
       })
@@ -144,7 +150,8 @@ self.addEventListener('fetch', event => {
                 id: data[key]._id
               });
             }
-          });
+          })
+          .catch(err => console.log(err));
 
         return res;
       })
@@ -165,7 +172,8 @@ self.addEventListener('fetch', event => {
                 id: data[key]._id
               });
             }
-          });
+          })
+          .catch(err => console.log(err));
         return res;
       })
     );
@@ -183,7 +191,8 @@ self.addEventListener('fetch', event => {
               data,
               id: new Date()
             });
-          });
+          })
+          .catch(err => console.log(err));
         return res;
       })
     );
@@ -203,14 +212,19 @@ self.addEventListener('fetch', event => {
                 id: data[key]._id
               });
             }
-          });
+          })
+          .catch(err => console.log(err));
         return res;
       })
     );
   } else if (isInCache(event.request.url, STATIC_FILES)) {
     event.respondWith(caches.match(event.request));
   } else {
-    event.respondWith(fetch(event.request));
+    try {
+      event.respondWith(fetch(event.request));
+    } catch (err) {
+      console.log(err);
+    }
   }
 });
 
