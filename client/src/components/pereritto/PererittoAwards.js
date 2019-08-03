@@ -75,6 +75,8 @@ class PererittoAwards extends Component {
             const fallFloor = Math.random() < 0.005;
             const direction = Math.random() < 0.7 ? '' : '-';
             const pixelsTofall = 50 + 102 * (numberOfShelves - i - 1);
+            const randomRandy =
+              allAwards[j].title === 'Random Randy' ? true : false;
             let distance = null;
 
             if (allAwards[j]._award.canFall) {
@@ -97,7 +99,9 @@ class PererittoAwards extends Component {
                       ? 'sepia(5%) grayscale(50%)'
                       : ''
                 }}
-                className={`${classes.award} transform-scale`}
+                className={`${classes.award} transform-scale ${
+                  randomRandy ? 'change-hue' : ''
+                }`}
                 alt={allAwards[j].title}
                 src={allAwards[j]._award.image}
                 onClick={() =>

@@ -1,6 +1,7 @@
 import requireLogin from '../middlewares/requireLogin';
 import requireSuperAccess from '../middlewares/requireSuperAccess';
 import { MessageTypeEnum } from '../client/src/utils/constants';
+import { updateAwards } from '../core/updateAwards';
 
 const mongoose = require('mongoose');
 const WinnerDates = mongoose.model('winnerDates');
@@ -108,6 +109,9 @@ export default app => {
 
         if (winnerDate) {
           await WinnerDates.deleteOne({ _id: winnerDate._id });
+
+          updateAwards();
+
           return res.status(200).send({
             type: MessageTypeEnum.success,
             message: 'Date successfully deleted!'

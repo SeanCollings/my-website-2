@@ -7,6 +7,7 @@
   left: 0;
   border: 10px solid #69342b;
   box-sizing: border-box;
+  margin-bottom: 35px;
 }
 .cabinet .cabinet-top {
   width: 300px;
@@ -92,16 +93,23 @@
   transition: transform 0.1s ease-in;
 }
 
-/* @keyframes rotate {
+.change-hue:hover {
+  animation: random 1s linear infinite;
+}
+
+@keyframes random {
   0%,
   100%,
   50% {
-    transform: rotate(0deg);
+    transform: rotate(0deg) scale(1.2);
+    filter: hue-rotate(0deg);
   }
   25% {
-    transform: rotate(1deg);
+    transform: rotate(8deg) scale(1.05);
+    filter: hue-rotate(400deg);
   }
   75% {
-    transform: rotate(-1deg);
+    transform: rotate(-4deg) scale(1.05);
+    filter: hue-rotate(400deg);
   }
-} */
+}
