@@ -9,7 +9,9 @@ import {
   LOCATION_STATE,
   GET_PUBLIC_VAPID_KEY,
   RETURN_TO_PREVIOUS_PAGE,
-  UPDATE_HEADING
+  UPDATE_HEADING,
+  SHOW_TOOLTIP,
+  HIDE_TOOLTIP
 } from './types';
 import { MessageTypeEnum } from '../utils/constants';
 
@@ -61,4 +63,30 @@ export const returnToPreviousPage = returnToPrevious => dispatch => {
 
 export const updateHeading = heading => dispatch => {
   dispatch({ type: UPDATE_HEADING, payload: heading });
+};
+
+export const showTooltip = (
+  show,
+  content,
+  positionX,
+  positionY,
+  colour
+) => dispatch => {
+  const tooltip = {
+    show,
+    content,
+    positionX,
+    positionY,
+    colour
+  };
+
+  dispatch({ type: SHOW_TOOLTIP, payload: tooltip });
+};
+
+export const hideTooltip = () => dispatch => {
+  const tooltip = {
+    show: false
+  };
+
+  dispatch({ type: HIDE_TOOLTIP, payload: tooltip });
 };

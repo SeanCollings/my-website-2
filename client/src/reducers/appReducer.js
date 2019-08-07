@@ -8,7 +8,9 @@ import {
   LOCATION_STATE,
   GET_PUBLIC_VAPID_KEY,
   RETURN_TO_PREVIOUS_PAGE,
-  UPDATE_HEADING
+  UPDATE_HEADING,
+  SHOW_TOOLTIP,
+  HIDE_TOOLTIP
 } from '../actions/types';
 
 const initialState = {
@@ -20,7 +22,8 @@ const initialState = {
   locationState: null,
   publicVapidKey: null,
   returnToPreviousPage: false,
-  headingName: null
+  headingName: null,
+  tooltip: null
 };
 
 export default function(state = initialState, action) {
@@ -45,6 +48,10 @@ export default function(state = initialState, action) {
       return { ...state, returnToPreviousPage: action.payload };
     case UPDATE_HEADING:
       return { ...state, headingName: action.payload };
+    case SHOW_TOOLTIP:
+      return { ...state, tooltip: action.payload };
+    case HIDE_TOOLTIP:
+      return { ...state, tooltip: null };
     default:
       return state;
   }

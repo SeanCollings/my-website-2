@@ -13,7 +13,8 @@ class DatePicker extends Component {
     showMoreMonths: false,
     monthsToDisplay: 6,
     data: null,
-    selectedRemoveDate: null
+    selectedRemoveDate: null,
+    pererittoId: 'pereritto_id'
   };
 
   mobileScreen = this.props.resizeScreen || !this.props.preventSelection;
@@ -84,26 +85,38 @@ class DatePicker extends Component {
     }
   }
 
-  handleDayClick = (day, { selected }) => {
-    let date = day.toString().substring(0, 15);
+  handleDayClick = (day, modifiers, e) => {
+    const { preventSelection } = this.props;
 
-    if (this.props.hideDates) {
-      this.setState({
-        selectedDay: selected ? null : new Date(date)
-      });
-      this.props.selectedDate(selected ? null : date);
-    } else {
-      const dateExists = this.checkIfDateExists(date);
+    // if (Object.keys(modifiers)[0] && Object.keys(modifiers)[0].includes(pererittoId)) {
+    //   const keySplit = Object.keys(modifiers)[0].split('|');
+    //   const bounds = this.datePicker.getBoundingClientRect();
+    //   this.props.showTooltip(true,keySplit[2],e.clientX,e.clientY - bounds.top,'#b17e26');
+    // }
 
-      this.setState({
-        ...this.state,
-        selectedRemoveDate:
-          selected || dateExists.length === 0 ? null : new Date(date),
-        selectedDay: null
-      });
-      this.props.selectedDate(
-        selected || dateExists.length === 0 ? null : date
-      );
+    if (!preventSelection) {
+      let date = day.toString().substring(0, 15);
+
+      if (this.props.hideDates) {
+        this.setState({
+          selectedDay: modifiers.selected ? null : new Date(date)
+        });
+        this.props.selectedDate(modifiers.selected ? null : date);
+      } else {
+        const dateExists = this.checkIfDateExists(date);
+
+        this.setState({
+          ...this.state,
+          selectedRemoveDate:
+            modifiers.selected || dateExists.length === 0
+              ? null
+              : new Date(date),
+          selectedDay: null
+        });
+        this.props.selectedDate(
+          modifiers.selected || dateExists.length === 0 ? null : date
+        );
+      }
     }
   };
 
@@ -156,7 +169,7 @@ class DatePicker extends Component {
       winners,
       hideDates
     } = this.props;
-    const { selectedRemoveDate } = this.state;
+    const { selectedRemoveDate, pererittoId } = this.state;
 
     let modifiers = {};
     let modifiersStyles = {};
@@ -169,19 +182,20 @@ class DatePicker extends Component {
     ) {
       winners.winners.forEach(date => {
         if (date.date.length > 0) {
-          modifiers[date._id] = new Date(date.date);
+          const name = date._winner.name;
+          modifiers[`${pererittoId}|${date._id}|${name}`] = new Date(date.date);
 
           if (
             !selectedRemoveDate ||
             (selectedRemoveDate &&
               new Date(date.date).getTime() !== selectedRemoveDate.getTime())
           ) {
-            modifiersStyles[date._id] = {
+            modifiersStyles[`${pererittoId}|${date._id}|${name}`] = {
               color: 'white',
               backgroundColor: date._winner.colour
             };
           } else {
-            modifiersStyles[date._id] = {
+            modifiersStyles[`${pererittoId}|${date._id}|${name}`] = {
               color: 'white',
               backgroundColor: '#232020'
             };
@@ -203,11 +217,16 @@ class DatePicker extends Component {
     };
 
     return (
-      <div style={showMoreMonths ? styleShowMoreMonths : styleShowOneMonth}>
+      <div
+        ref={ref => {
+          this.datePicker = ref;
+        }}
+        style={showMoreMonths ? styleShowMoreMonths : styleShowOneMonth}
+      >
         <ReactDayPicker
           todayButton="Today"
           selectedDays={this.state.selectedDay}
-          onDayClick={preventSelection ? null : this.handleDayClick}
+          onDayClick={this.handleDayClick}
           modifiers={modifiers}
           modifiersStyles={modifiersStyles}
           classNames={this.dayPickerClassNames}

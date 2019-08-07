@@ -1,0 +1,25 @@
+.tooltip {
+  /* position: absolute; */
+  position: relative;
+  z-index: 100;
+  border-radius: 5px;
+  height: 20px;
+  width: 64px;
+  text-align: center;
+  overflow: hidden;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+.tooltip .tooltip-text {
+  color: white;
+  font-size: small;
+}
+
+.arrow {
+  /* position: absolute; */
+  position: relative;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  z-index: 1100;
+}
