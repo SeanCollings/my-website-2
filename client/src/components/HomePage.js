@@ -75,13 +75,14 @@ class HomePage extends Component {
         {/* <Loader loaded={this.state.loaded} /> */}
         <Paper
           // title={this.renderName()}
-          content="Please, have a look around"
+          // content="Please, have a look around"
+          content={this.renderName()}
         />
         <div
           style={{
             alignItems: 'center',
             justifyContent: 'center',
-            display: 'flex',
+            display: 'none',
             paddingTop: '10px'
           }}
         >
@@ -115,17 +116,23 @@ class HomePage extends Component {
         </div>
         <div className={classes.content}>
           <Typography paragraph className={classes.textColor}>
-            This app started out as an online profile/ skill showcase, but went
-            the adjacent angle-way. Now, all the juicy dev is hidden behind a
-            login screen - only Google OAuth for now.
+            The fun all begins with Pereritto.
           </Typography>
           <Typography paragraph className={classes.textColor}>
-            I will, sometime in the future, return to all the pages visible but
-            I'm having a lot more fun designing the app to fit some of my
-            tailored needs.
+            No need to login to view the weekly winners of the infamous Habanero
+            Roulette. Head straight to the Pereritto page to see who the lucky
+            loser is.
           </Typography>
           <Typography paragraph className={classes.textColor}>
-            But enjoy what you can see :)
+            If you do feel like signing in, there are a few other fun
+            tiddly-bits on display. [Notifications] allows users to notifiy
+            other users, strangely enough, and [Locations] allows users to see
+            the real-time location of other users in the same group (unless they
+            have a Nokia 8).
+          </Typography>
+          <Typography paragraph className={classes.textColor}>
+            Only Google OAuth works at the moment to log in. The other 'enter
+            your credentials' area is just for good looking.
           </Typography>
           <Typography paragraph className={classes.textColor}>
             PS: This app is designed mobile-first, so some of the desktop views

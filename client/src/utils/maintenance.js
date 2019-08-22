@@ -6,5 +6,9 @@ export const MAINTENANCE_MENU = {
   PERERITTO_USERS: {
     type: 'pereritto_users',
     options: ['Playing', 'Not Playing']
+  },
+  APP_SETTINGS: {
+    type: 'app_settings',
+    options: ['All']
   }
 };

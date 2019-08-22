@@ -10,7 +10,8 @@ import {
   RETURN_TO_PREVIOUS_PAGE,
   UPDATE_HEADING,
   SHOW_TOOLTIP,
-  HIDE_TOOLTIP
+  HIDE_TOOLTIP,
+  SET_PAGES
 } from '../actions/types';
 
 const initialState = {
@@ -23,7 +24,8 @@ const initialState = {
   publicVapidKey: null,
   returnToPreviousPage: false,
   headingName: null,
-  tooltip: null
+  tooltip: null,
+  settings: { pages: [{ page: 'Home', show: true }] }
 };
 
 export default function(state = initialState, action) {
@@ -52,6 +54,11 @@ export default function(state = initialState, action) {
       return { ...state, tooltip: action.payload };
     case HIDE_TOOLTIP:
       return { ...state, tooltip: null };
+    case SET_PAGES:
+      let pages = [];
+      if (action.payload.pages) pages = action.payload.pages;
+
+      return { ...state, settings: { pages } };
     default:
       return state;
   }

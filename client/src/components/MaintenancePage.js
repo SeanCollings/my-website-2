@@ -6,6 +6,7 @@ import * as actions from '../actions';
 import TabContainer from './components/tabContainer';
 import UpdatePererittos from './maintenance/UpdatePererittos';
 import UpdateUsers from './maintenance/UpdateUsers';
+import UpdateApp from './maintenance/UpdateApp';
 
 import { withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
@@ -45,15 +46,21 @@ class ContactsPage extends Component {
           style={{ backgroundColor: '' }}
           classes={{ indicator: classes.indicator }}
         >
+          <Tab label="App" style={{ minWidth: '100px' }} />
           <Tab label="Users" style={{ minWidth: '100px' }} />
           <Tab label="Pereritto" style={{ minWidth: '100px' }} />
         </Tabs>
         {value === 0 && (
           <TabContainer style={{ width: '100%', maxWidth: '900px' }}>
-            <UpdateUsers />
+            <UpdateApp />
           </TabContainer>
         )}
         {value === 1 && (
+          <TabContainer style={{ width: '100%', maxWidth: '900px' }}>
+            <UpdateUsers />
+          </TabContainer>
+        )}
+        {value === 2 && (
           <TabContainer style={{ width: '100%', maxWidth: '900px' }}>
             <UpdatePererittos />
           </TabContainer>

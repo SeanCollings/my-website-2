@@ -11,7 +11,8 @@ import {
   RETURN_TO_PREVIOUS_PAGE,
   UPDATE_HEADING,
   SHOW_TOOLTIP,
-  HIDE_TOOLTIP
+  HIDE_TOOLTIP,
+  SET_PAGES
 } from './types';
 import { MessageTypeEnum } from '../utils/constants';
 
@@ -89,4 +90,16 @@ export const hideTooltip = () => dispatch => {
   };
 
   dispatch({ type: HIDE_TOOLTIP, payload: tooltip });
+};
+
+export const getAppSettings = () => async dispatch => {
+  const res = await axios.get('/api/get_settings');
+
+  dispatch({ type: SET_PAGES, payload: res.data });
+};
+
+export const updatePages = pages => async dispatch => {
+  await axios.put('/api/update_pages', { pages });
+
+  return { type: HIDE_LOADER, payload: { message: '', open: false } };
 };

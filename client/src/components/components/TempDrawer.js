@@ -85,66 +85,68 @@ class TemporaryDrawer extends React.Component {
     }
   }
 
-  renderMenu(item) {
+  renderMenu(pages) {
+    const { page, show } = pages;
     // if (item === 'Pereritto' && !this.props.pererittoUser) {
     //   return null;
     // }
+    if (!show) return null;
 
-    if (item === 'Maintenance') {
+    if (page === 'Maintenance') {
       return null;
     }
 
-    if (item === 'Notifications' && !this.props.auth) {
+    if (page === 'Notifications' && !this.props.auth) {
       return null;
     }
 
-    if (item === 'Locations' && !this.props.auth) {
+    if (page === 'Locations' && !this.props.auth) {
       return null;
     }
 
     return (
       <NavLink
-        key={item}
-        to={`/${item.toLowerCase().replace(/\s/g, '')}`}
+        key={page}
+        to={`/${page.toLowerCase().replace(/\s/g, '')}`}
         style={{ textDecoration: 'none' }}
       >
         <ListItem button>
-          {item === 'Home' && (
+          {page === 'Home' && (
             <ListItemIcon>
               <HomeIcon />
             </ListItemIcon>
           )}
-          {item === 'About Me' && (
+          {page === 'About Me' && (
             <ListItemIcon>
               <ProfileIcon />
             </ListItemIcon>
           )}
-          {item === 'Projects' && (
+          {page === 'Projects' && (
             <ListItemIcon>
               <ProjectsIcon />
             </ListItemIcon>
           )}
-          {item === 'Contact' && (
+          {page === 'Contact' && (
             <ListItemIcon>
               <ContactIcon />
             </ListItemIcon>
           )}
-          {item === 'Pereritto' && (
+          {page === 'Pereritto' && (
             <ListItemIcon>
               <PererittoIcon />
             </ListItemIcon>
           )}
-          {item === 'Notifications' && (
+          {page === 'Notifications' && (
             <ListItemIcon>
               <VibrationIcon />
             </ListItemIcon>
           )}
-          {item === 'Locations' && (
+          {page === 'Locations' && (
             <ListItemIcon>
               <LocationIcon />
             </ListItemIcon>
           )}
-          <ListItemText primary={item} />
+          <ListItemText primary={page} />
         </ListItem>
       </NavLink>
     );
@@ -259,12 +261,14 @@ class TemporaryDrawer extends React.Component {
   }
 
   render() {
-    const { classes, version, menuList, superUser, openDrawer } = this.props;
+    const { classes, version, superUser, openDrawer, app } = this.props;
 
     const sideList = (
       <div className={classes.list}>
         {this.renderTopMenu()}
-        <List>{menuList.map((text, index) => this.renderMenu(text))}</List>
+        <List>
+          {app.settings.pages.map((pages, index) => this.renderMenu(pages))}
+        </List>
         {superUser && <Divider />}
         {this.renderMaintenance()}
         <Divider />
@@ -349,7 +353,8 @@ function mapStateToProps({ auth, settings, app }) {
     auth,
     superUser: auth !== null ? auth.superUser : null,
     settings,
-    version: app.version
+    version: app.version,
+    app
   };
 }
 

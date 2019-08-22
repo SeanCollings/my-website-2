@@ -10,7 +10,8 @@ import {
   hideLoader,
   getReleaseCreation,
   notificationState,
-  locationState
+  locationState,
+  getAppSettings
 } from '../actions/appActions';
 
 import HomePage from './HomePage';
@@ -41,6 +42,7 @@ class App extends Component {
     const welcomeMessage =
       loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
 
+    this.props.getAppSettings();
     this.props.showLoader(welcomeMessage);
     this.setState({ welcomeMessage });
     this.props.fetchUser();
@@ -361,7 +363,8 @@ export default withRouter(
       hideLoader,
       getReleaseCreation,
       notificationState,
-      locationState
+      locationState,
+      getAppSettings
     }
   )(App)
 );

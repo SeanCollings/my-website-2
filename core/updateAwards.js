@@ -194,9 +194,13 @@ const determineDateCounts = async (
           playersGodlikeMap[playerId] += 1;
         }
 
-        if (playersDemiGodlikeMap[playerId] === 8)
+        if (playersDemiGodlikeMap[playerId] === 8) {
           playersDemiGodlike.push(playerId);
-        if (playersGodlikeMap[playerId] === 10) playersGodlike.push(playerId);
+        }
+        if (playersGodlikeMap[playerId] === 10) {
+          playersGodlike.push(playerId);
+          playersDemiGodlike.splice(playersDemiGodlike.indexOf(playerId), 1);
+        }
       }
     }
   }
