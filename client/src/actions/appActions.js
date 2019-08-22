@@ -99,7 +99,7 @@ export const getAppSettings = () => async dispatch => {
 };
 
 export const updatePages = pages => async dispatch => {
-  await axios.put('/api/update_pages', { pages });
+  const res = await axios.put('/api/update_pages', { pages });
 
-  return { type: HIDE_LOADER, payload: { message: '', open: false } };
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };

@@ -68,6 +68,7 @@ export default app => {
     try {
       const settings = await AppSettings.find();
 
+      /* TODO: remove after done once on prod */
       if (settings.length === 0) {
         const pages = await new AppSettings({
           pages: [
@@ -96,7 +97,10 @@ export default app => {
       const { pages } = req.body;
       await AppSettings.updateMany({}, { $set: { pages } });
 
-      return res.sendStatus(200);
+      return res.send({
+        type: MessageTypeEnum.success,
+        message: `Pages updated successfully!`
+      });
     } catch (err) {
       console.log(err);
     }

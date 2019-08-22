@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
-import { updatePages } from '../../actions/appActions';
+import { updatePages, getAppSettings } from '../../actions/appActions';
 import MaterialTable from 'material-table';
 import Loader from 'react-loader-advanced';
 
@@ -44,9 +44,7 @@ class UpdateApp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      updateEnabled: false,
       anchorEl: null,
-      screenType: MAINTENANCE_MENU.APP_SETTINGS.type,
       options: MAINTENANCE_MENU.APP_SETTINGS.options,
       selectedOption: MAINTENANCE_MENU.APP_SETTINGS.options[0],
       modifiedPages: [],
@@ -58,13 +56,18 @@ class UpdateApp extends Component {
     this.updatePages();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(props) {
     this.updatePages();
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     const { pages } = nextProps.settings;
     const { modifiedPages } = nextState;
+
+    if (nextProps.snackBar.open !== this.props.snackBar.open) {
+      if (nextProps.snackBar.open) this.props.getAppSettings();
+      return true;
+    }
 
     if (pages.length === modifiedPages.length) {
       return false;
@@ -330,11 +333,11 @@ class UpdateApp extends Component {
   }
 }
 
-function mapStateToProps({ maintenance, resizeScreen, app }) {
-  return { users: maintenance.users, resizeScreen, settings: app.settings };
+function mapStateToProps({ resizeScreen, app, snackBar }) {
+  return { resizeScreen, settings: app.settings, snackBar };
 }
 
 export default connect(
   mapStateToProps,
-  { ...actions, updatePages }
+  { ...actions, updatePages, getAppSettings }
 )(withStyles(styles)(UpdateApp));
