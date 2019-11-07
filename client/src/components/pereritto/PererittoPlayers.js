@@ -43,7 +43,12 @@ const styles = theme => ({
 });
 
 class PererittoPlayers extends Component {
-  state = { playedYears: null, selectedYear: null, loadedYears: [] };
+  state = {
+    playedYears: null,
+    selectedYear: null,
+    loadedYears: [],
+    offPlayers: []
+  };
 
   componentDidMount() {
     const { winners } = this.props;
@@ -59,6 +64,16 @@ class PererittoPlayers extends Component {
     if (winners && winners.winnerYears && playedYears === null) {
       this.setupWinnerYears(winners.winnerYears, false);
     }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    // if (nextProps.snackBar.open && this.state.updatingPlayer) {
+    //   this.setState({ updatingPlayer: false });
+    //   this.props.getWinners();
+    // }
+    // console.log('nextProps', nextProps);
+
+    return true;
   }
 
   setupWinnerYears = (winnerYears, multipleYears) => {
@@ -83,38 +98,59 @@ class PererittoPlayers extends Component {
     const { classes } = this.props;
 
     return playerTally.map(player => {
+      let retiredPlayer = false;
+      if (player.retired) {
+        const offPlayers = [...this.state.offPlayers];
+        offPlayers.push(player);
+        retiredPlayer =
+          new Date(player.retiredDate).getFullYear() ===
+          player.lastWinDate.getFullYear();
+      }
+
       const firstLetter = player.name.charAt(0).toUpperCase();
 
       return (
         <ListItem
           key={player._id}
           style={{
-            backgroundColor:
-              player.lastWinDate === lastWinDate &&
-              player.lastWinDate.toString() !== new Date(0).toString()
-                ? 'rgb(210, 105, 3, 0.5)'
-                : '',
+            backgroundColor: retiredPlayer
+              ? 'rgba(123, 98, 74, 0.3)'
+              : player.lastWinDate === lastWinDate &&
+                player.lastWinDate.toString() !== new Date(0).toString()
+              ? 'rgb(210, 105, 3, 0.5)'
+              : '',
             borderRadius: '50px'
           }}
         >
           <ListItemAvatar>
             <Avatar
               style={{
-                backgroundColor: player.colour
+                backgroundColor: player.colour,
+                opacity: retiredPlayer ? '0.5' : '1'
               }}
             >
               {firstLetter}
             </Avatar>
           </ListItemAvatar>
           <ListItemText
-            primary={player.name}
-            style={{ paddingRight: '120px' }}
+            primary={`${player.name}${
+              retiredPlayer ? ' - retired (hurt)' : ''
+            }`}
+            style={{
+              paddingRight: '120px',
+              opacity: retiredPlayer ? '0.5' : '1',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden'
+            }}
           />
           <ListItemAvatar style={{ display: player.winner ? '' : 'none' }}>
             <Avatar className={classes.trophy} alt="winner" src={trophy} />
           </ListItemAvatar>
           <ListItemSecondaryAction>
-            <ListItemText primary={player.count} />
+            <ListItemText
+              primary={player.count}
+              style={{ opacity: retiredPlayer ? '0.5' : '1' }}
+            />
           </ListItemSecondaryAction>
         </ListItem>
       );
@@ -155,7 +191,7 @@ class PererittoPlayers extends Component {
     const { pererittoUsers, winners } = this.props;
     const { selectedYear } = this.state;
     const playerTally = {};
-    let OverallWinDate = new Date(0);
+    let overallWinDate = new Date(0);
 
     if (pererittoUsers === null) {
       return null;
@@ -167,7 +203,9 @@ class PererittoPlayers extends Component {
         name: user.name,
         count: 0,
         colour: user.colour,
-        lastWinDate: OverallWinDate
+        lastWinDate: overallWinDate,
+        retired: user.retired,
+        retiredDate: user.retiredDate
       });
     });
 
@@ -175,7 +213,7 @@ class PererittoPlayers extends Component {
       winners.winners.map(winner => {
         if (winner.year === selectedYear) {
           let playerWinDate = new Date(winner.date);
-          if (playerWinDate > OverallWinDate) OverallWinDate = playerWinDate;
+          if (playerWinDate > overallWinDate) overallWinDate = playerWinDate;
 
           if (playerTally[winner._winner._id]) {
             if (playerTally[winner._winner._id].lastWinDate < playerWinDate) {
@@ -195,7 +233,19 @@ class PererittoPlayers extends Component {
       concatPlayerList = concatPlayerList.concat(playerTally[key]);
     });
 
-    return this.renderPlayerList(concatPlayerList, OverallWinDate);
+    return this.renderPlayerList(concatPlayerList, overallWinDate);
+  };
+
+  renderOffPlayers = () => {
+    const { classes } = this.props;
+    return (
+      <List
+        className={classes.root}
+        style={{ maxWidth: this.props.resizeScreen ? '280px' : '600px' }}
+      >
+        <ListItemText primary={`Retired - Hurt`} />
+      </List>
+    );
   };
 
   handleChange = event => {
@@ -227,7 +277,7 @@ class PererittoPlayers extends Component {
 
   render() {
     const { resizeScreen, classes } = this.props;
-    const { selectedYear } = this.state;
+    const { selectedYear, offPlayers } = this.state;
 
     return (
       <div
@@ -272,6 +322,8 @@ class PererittoPlayers extends Component {
           {/* <RefreshIcon /> */}
         </Grid>
         {this.buildPlayerTally()}
+        <br />
+        {offPlayers.length > 0 && this.renderOffPlayers()}
       </div>
     );
   }

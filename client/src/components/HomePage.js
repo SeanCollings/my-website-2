@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
-
+import { NavLink } from 'react-router-dom';
 // import SetupNotifications from './settings/SetupNotifications';
 
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 // import Header from './components/Header';
 // import Loader from './loaderCircular';
@@ -60,14 +61,76 @@ class HomePage extends Component {
   renderName() {
     const { auth } = this.props;
     if (auth) {
-      return `Welcome, ${auth.givenName}`;
+      return `Welcome back, ${auth.givenName}`;
     }
 
     return 'Welcome';
   }
 
+  renderButtons() {
+    const { pereryvUser } = this.props;
+    return (
+      <Grid
+        container
+        direction="column"
+        alignItems="center"
+        justify="center"
+        style={{ marginTop: '20px' }}
+      >
+        <NavLink to="/pereritto" style={{ textDecoration: 'none' }}>
+          <Button
+            style={{
+              background: '#c70039',
+              color: '#dedede'
+            }}
+          >
+            Pereritto
+          </Button>
+        </NavLink>
+        <div style={{ marginBottom: '30px' }} />
+        <NavLink to="/notifications" style={{ textDecoration: 'none' }}>
+          <Button
+            style={{
+              background: 'transaparent',
+              border: '1px solid #ffc300',
+              color: '#ffc300'
+            }}
+          >
+            Notifications
+          </Button>
+        </NavLink>
+        <div style={{ marginBottom: '30px' }} />
+        <NavLink to="/locations" style={{ textDecoration: 'none' }}>
+          <Button
+            style={{
+              background: 'transaparent',
+              border: '1px solid #ffc300',
+              color: '#ffc300'
+            }}
+          >
+            Locations
+          </Button>
+        </NavLink>
+        <div style={{ marginBottom: '30px' }} />
+        {pereryvUser && (
+          <NavLink to="/pervytrev" style={{ textDecoration: 'none' }}>
+            <Button
+              style={{
+                background: 'transaparent',
+                border: '1px solid #ffc300',
+                color: '#ffc300'
+              }}
+            >
+              Peryvtrev
+            </Button>
+          </NavLink>
+        )}
+      </Grid>
+    );
+  }
+
   render() {
-    const { classes } = this.props;
+    const { classes, auth } = this.props;
 
     return (
       <div className={classes.pageFill}>
@@ -78,6 +141,7 @@ class HomePage extends Component {
           // content="Please, have a look around"
           content={this.renderName()}
         />
+        <Paper content={auth ? 'Where to today?' : ''} />
         <div
           style={{
             alignItems: 'center',
@@ -114,31 +178,34 @@ class HomePage extends Component {
             Remove
           </Button>
         </div>
-        <div className={classes.content}>
-          <Typography paragraph className={classes.textColor}>
-            The fun all begins with Pereritto.
-          </Typography>
-          <Typography paragraph className={classes.textColor}>
-            No need to login to view the weekly winners of the infamous Habanero
-            Roulette. Head straight to the Pereritto page to see who the lucky
-            loser is.
-          </Typography>
-          <Typography paragraph className={classes.textColor}>
-            If you do feel like signing in, there are a few other fun
-            tiddly-bits on display. [Notifications] allows users to notifiy
-            other users, strangely enough, and [Locations] allows users to see
-            the real-time location of other users in the same group (unless they
-            have a Nokia 8).
-          </Typography>
-          <Typography paragraph className={classes.textColor}>
-            Only Google OAuth works at the moment to log in. The other 'enter
-            your credentials' area is just for good looking.
-          </Typography>
-          <Typography paragraph className={classes.textColor}>
-            PS: This app is designed mobile-first, so some of the desktop views
-            may not be styled correctly just yet...
-          </Typography>
-        </div>
+        {!auth && (
+          <div className={classes.content}>
+            <Typography paragraph className={classes.textColor}>
+              The fun all begins with Pereritto.
+            </Typography>
+            <Typography paragraph className={classes.textColor}>
+              No need to login to view the weekly winners of the infamous
+              Habanero Roulette. Head straight to the Pereritto page to see who
+              the lucky loser is.
+            </Typography>
+            <Typography paragraph className={classes.textColor}>
+              If you do feel like signing in, there are a few other fun
+              tiddly-bits on display. [Notifications] allows users to notifiy
+              other users, strangely enough, and [Locations] allows users to see
+              the real-time location of other users in the same group (unless
+              they have a Nokia 8).
+            </Typography>
+            <Typography paragraph className={classes.textColor}>
+              Only Google OAuth works at the moment to log in. The other 'enter
+              your credentials' area is just for good looking.
+            </Typography>
+            <Typography paragraph className={classes.textColor}>
+              PS: This app is designed mobile-first, so some of the desktop
+              views may not be styled correctly just yet...
+            </Typography>
+          </div>
+        )}
+        {auth && this.renderButtons()}
         {this.displayCards()}
         {/* <SetupNotifications /> */}
         <div
@@ -151,7 +218,7 @@ class HomePage extends Component {
 }
 
 function mapStateToProps({ auth }) {
-  return { auth };
+  return { auth, pereryvUser: auth ? auth.pereryvUser : null };
 }
 
 export default connect(

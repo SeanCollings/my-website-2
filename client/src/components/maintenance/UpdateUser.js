@@ -65,6 +65,7 @@ class UpdateUser extends Component {
     this.splashInput = React.createRef();
     this.superUserInput = React.createRef();
     this.pererittoInput = React.createRef();
+    this.pereryvInput = React.createRef();
   }
 
   updateClick = () => {
@@ -93,7 +94,8 @@ class UpdateUser extends Component {
         emailAddress: this.emailInput.current.value,
         splashes: this.splashInput.current.value,
         superUser: this.superUserInput.current.checked,
-        pererittoUser: this.pererittoInput.current.checked
+        pererittoUser: this.pererittoInput.current.checked,
+        pereryvUser: this.pereryvInput.current.checked
       }
     };
 
@@ -272,6 +274,24 @@ class UpdateUser extends Component {
               style={{ paddingLeft: 'inherit' }}
             >
               {this.editCheckBox(this.pererittoInput, data.pererittoUser)}
+            </TableCell>
+          </TableRow>
+          <TableRow className={classes.tableRow}>
+            <TableCell
+              component="th"
+              scope="row"
+              align="right"
+              className={classes.tableCellLeft}
+              classes={{ root: classes.table }}
+            >
+              Pereryv User:
+            </TableCell>
+            <TableCell
+              className={classes.tableCellRight}
+              classes={{ root: classes.table }}
+              style={{ paddingLeft: 'inherit' }}
+            >
+              {this.editCheckBox(this.pereryvInput, data.pereryvUser)}
             </TableCell>
           </TableRow>
         </TableBody>

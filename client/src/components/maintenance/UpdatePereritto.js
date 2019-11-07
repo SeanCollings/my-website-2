@@ -111,6 +111,22 @@ class UpdateUser extends Component {
     }
   };
 
+  retirePlayerClick = () => {
+    const { screenType, options } = this.state;
+    const {
+      data: {
+        retired: { isRetired },
+        _id,
+        _pereritto
+      }
+    } = this.props;
+
+    if (isRetired) this.props.returnPlayer(_id, _pereritto);
+    else this.props.retirePlayer(_id, _pereritto);
+
+    this.props.fetchAllUsers([screenType, options[0]]);
+  };
+
   renderMessage() {
     return (
       <Typography
@@ -157,6 +173,10 @@ class UpdateUser extends Component {
 
   render() {
     const { playerColour } = this.state;
+    const {
+      selectedOption,
+      data: { retired }
+    } = this.props;
 
     return (
       <Grid>
@@ -176,10 +196,7 @@ class UpdateUser extends Component {
               backgroundColor: playerColour === '' ? '#001f3f' : playerColour,
               marginRight: '10px',
               minWidth: '100px',
-              display:
-                this.props.selectedOption === this.state.options[0]
-                  ? 'none'
-                  : ''
+              display: selectedOption === this.state.options[0] ? 'none' : ''
             }}
             onClick={this.addPlayerClick}
           >
@@ -192,14 +209,24 @@ class UpdateUser extends Component {
               color: 'white',
               backgroundColor: '#FF4136',
               minWidth: '100px',
-              display:
-                this.props.selectedOption === this.state.options[1]
-                  ? 'none'
-                  : ''
+              display: selectedOption === this.state.options[1] ? 'none' : ''
             }}
             onClick={this.deletePlayerClick}
           >
             Remove Player
+          </Button>
+          <Button
+            size="small"
+            style={{
+              marginLeft: '10px',
+              color: 'white',
+              backgroundColor: '#FF4136',
+              minWidth: '100px',
+              display: selectedOption === this.state.options[1] ? 'none' : ''
+            }}
+            onClick={this.retirePlayerClick}
+          >
+            {retired && retired.isRetired ? 'Return Player' : 'Retire Player'}
           </Button>
         </Grid>
       </Grid>

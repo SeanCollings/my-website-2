@@ -91,9 +91,9 @@ export const addPererittoUser = (
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
-export const updatePererittoUser = (name, date) => async dispatch => {
+export const updatePererittoUser = (id, date) => async dispatch => {
   const res = await axios.post('/api/update_pereritto', {
-    name,
+    id,
     date
   });
 
@@ -103,6 +103,24 @@ export const updatePererittoUser = (name, date) => async dispatch => {
 export const deletePererittoUser = (_id, _pereritto) => async dispatch => {
   const res = await axios.delete('/api/delete_pereritto', {
     data: { _id, _pereritto }
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const retirePlayer = (_id, _pereritto) => async dispatch => {
+  const res = await axios.post('/api/retire_pereritto', {
+    _id,
+    _pereritto
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const returnPlayer = (_id, _pereritto) => async dispatch => {
+  const res = await axios.post('/api/return_pereritto', {
+    _id,
+    _pereritto
   });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
@@ -139,6 +157,15 @@ export const getWinnerYears = () => async dispatch => {
 export const removeWinnerDate = date => async dispatch => {
   const res = await axios.delete('/api/delete_winner_date', {
     data: { date }
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const markPlayerAbsent = (id, date) => async dispatch => {
+  const res = await axios.post('/api/mark_player_absent', {
+    id,
+    date
   });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });

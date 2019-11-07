@@ -28,6 +28,7 @@ import HomeIcon from '@material-ui/icons/HomeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 import VibrationIcon from '@material-ui/icons/Vibration';
 import LocationIcon from '@material-ui/icons/ExploreOutlined';
+import LocalCafe from '@material-ui/icons/LocalCafeOutlined';
 
 let googlePic = '';
 
@@ -104,6 +105,10 @@ class TemporaryDrawer extends React.Component {
       return null;
     }
 
+    if (page === 'Pervytrev' && !this.props.pereryvUser) {
+      return null;
+    }
+
     return (
       <NavLink
         key={page}
@@ -144,6 +149,11 @@ class TemporaryDrawer extends React.Component {
           {page === 'Locations' && (
             <ListItemIcon>
               <LocationIcon />
+            </ListItemIcon>
+          )}
+          {page === 'Pervytrev' && (
+            <ListItemIcon>
+              <LocalCafe />
             </ListItemIcon>
           )}
           <ListItemText primary={page} />
@@ -352,6 +362,7 @@ function mapStateToProps({ auth, settings, app }) {
   return {
     auth,
     superUser: auth !== null ? auth.superUser : null,
+    pereryvUser: auth ? auth.pereryvUser : null,
     settings,
     version: app.version,
     app

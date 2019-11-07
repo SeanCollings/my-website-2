@@ -200,6 +200,7 @@ class UpdateUsers extends Component {
                     splashes: user.splashes,
                     superUser: user.superUser,
                     pererittoUser: user.pererittoUser,
+                    pereryvUser: user.pereryvUser,
                     lastLogin: user.lastLogin
                   }))
                 : []

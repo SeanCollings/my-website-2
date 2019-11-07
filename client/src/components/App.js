@@ -25,6 +25,7 @@ import UserProfilePage from './UserProfilePage';
 import SettingsPage from './SettingsPage';
 import NotificationsPage from './NotificationsPage';
 import LocationsPage from './LocationsPage';
+import PereryvPage from './PereryvPage';
 
 import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import Header from './components/Header';
@@ -159,6 +160,15 @@ class App extends Component {
       );
     }
 
+    return;
+  }
+
+  renderPereryv() {
+    if (this.props.auth && this.props.pereryvUser) {
+      return (
+        <Route path="/pervytrev" render={props => <PereryvPage {...props} />} />
+      );
+    }
     return;
   }
 
@@ -332,6 +342,7 @@ class App extends Component {
           {this.renderMessaging()}
           {this.renderUserProfile()}
           {this.renderLocations()}
+          {this.renderPereryv()}
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}
         </Switch>
@@ -348,6 +359,7 @@ function mapStateToProps({ auth, winners, app, settings }) {
     auth,
     pererittoUser: auth ? auth.pererittoUser : null,
     superUser: auth ? auth.superUser : null,
+    pereryvUser: auth ? auth.pereryvUser : null,
     winners,
     app,
     settings

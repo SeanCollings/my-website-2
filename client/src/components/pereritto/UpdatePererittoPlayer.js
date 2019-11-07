@@ -45,14 +45,18 @@ const styles = theme => ({
   }
 });
 
+const updateStates = ['Update Player', 'Remove Player', 'Mark Absent'];
+
 class UpdatePererittoPlayer extends Component {
   state = {
-    playerName: '',
+    playerId: '',
     selectedDate: null,
     errorName: false,
     updatingPlayer: false,
     hideDates: true,
-    showModal: false
+    showModal: false,
+    updateState: updateStates[0],
+    updateInt: 0
   };
 
   componentDidMount() {
@@ -73,13 +77,16 @@ class UpdatePererittoPlayer extends Component {
   };
 
   handleChange = event => {
-    this.setState({ playerName: event.target.value });
+    this.setState({ playerId: event.target.value });
   };
 
   updatePlayerClick = () => {
-    const { playerName, selectedDate, hideDates } = this.state;
+    const { playerId, selectedDate, updateState } = this.state;
 
-    if (playerName === '' && hideDates) {
+    if (
+      playerId === '' &&
+      (updateState === updateStates[0] || updateState === updateStates[2])
+    ) {
       this.setState({ errorName: true });
       return this.props.showMessage(MessageTypeEnum.error, 'Select a name!');
     }
@@ -87,12 +94,19 @@ class UpdatePererittoPlayer extends Component {
     if (selectedDate === null || selectedDate === '')
       return this.props.showMessage(MessageTypeEnum.error, 'Select a date!');
 
-    this.setState({ updatingPlayer: true });
-
-    if (!hideDates) {
-      this.setState({ showModal: true });
-    } else {
-      return this.props.updatePererittoUser(playerName, selectedDate);
+    switch (updateState) {
+      case updateStates[0]:
+        this.setState({ updatingPlayer: true });
+        this.props.updatePererittoUser(playerId, selectedDate);
+        break;
+      case updateStates[1]:
+        this.setState({ ...this.state, updatingPlayer: true, showModal: true });
+        break;
+      case updateStates[2]:
+        this.setState({ ...this.state, updatingPlayer: true, showModal: true });
+        break;
+      default:
+        break;
     }
   };
 
@@ -100,8 +114,9 @@ class UpdatePererittoPlayer extends Component {
     const { pererittoUsers } = this.props;
     if (pererittoUsers.length > 0) {
       return pererittoUsers.map(user => {
+        if (user.retired) return null;
         return (
-          <MenuItem key={user.name} value={user.name}>
+          <MenuItem key={user._id} value={user._id}>
             {user.name}
           </MenuItem>
         );
@@ -113,7 +128,7 @@ class UpdatePererittoPlayer extends Component {
 
   spinner = (
     <span>
-      <MiniLoader type="TailSpin" color="#FFC300" height={45} width={45} />
+      <MiniLoader type="TailSpin" color="#FFC300" height={36} width={36} />
     </span>
   );
 
@@ -124,12 +139,28 @@ class UpdatePererittoPlayer extends Component {
   );
 
   toggleUpdateType = () => {
-    this.setState({ hideDates: !this.state.hideDates });
+    const { updateInt } = this.state;
+
+    let newUpdateInt = updateInt;
+    if (updateInt !== 2) newUpdateInt++;
+    else newUpdateInt = 0;
+
+    this.setState({
+      ...this.state,
+      updateInt: newUpdateInt,
+      updateState: updateStates[newUpdateInt]
+    });
   };
 
   render() {
-    const { classes, resizeScreen } = this.props;
-    const { updatingPlayer, hideDates, showModal, selectedDate } = this.state;
+    const { classes } = this.props;
+    const {
+      updatingPlayer,
+      updateState,
+      showModal,
+      selectedDate,
+      playerId
+    } = this.state;
 
     return (
       <div>
@@ -138,11 +169,11 @@ class UpdatePererittoPlayer extends Component {
             <form onSubmit={this.onFormSubmit}>
               <FormControl className={classes.formControl}>
                 <Select
-                  value={this.state.playerName}
+                  value={playerId}
                   onChange={this.handleChange}
                   displayEmpty
                   style={{
-                    opacity: this.state.playerName === '' ? '0.5' : '1'
+                    opacity: playerId === '' ? '0.5' : '1'
                   }}
                 >
                   <MenuItem value="" disabled>
@@ -167,29 +198,38 @@ class UpdatePererittoPlayer extends Component {
             <DatePicker
               preventSelection={false}
               selectedDate={date => this.setState({ selectedDate: date })}
-              hideDates={hideDates}
+              hideDates={
+                updateState === updateStates[0] ||
+                updateState === updateStates[2]
+              }
             />
           </Grid>
           <Grid item style={{ textAlign: 'center', marginTop: '12px' }}>
             <Loader
               show={updatingPlayer ? true : false}
-              message={resizeScreen ? this.spinnerSmall : this.spinner}
+              message={this.spinner}
               backgroundStyle={{ backgroundColor: '' }}
             >
               <Button
-                size={resizeScreen ? 'small' : 'medium'}
-                disabled={!hideDates && !selectedDate ? true : false}
+                size={'medium'}
+                disabled={
+                  updateState === updateStates[1] && !selectedDate
+                    ? true
+                    : false
+                }
                 style={{
                   color: 'white',
-                  backgroundColor: '#001f3f',
+                  backgroundColor:
+                    updateState === updateStates[2] ? '#c70039' : '#154360',
                   opacity:
-                    updatingPlayer || (!hideDates && !selectedDate)
+                    updatingPlayer ||
+                    (updateState === updateStates[1] && !selectedDate)
                       ? '0.5'
                       : '1'
                 }}
                 onClick={this.updatePlayerClick}
               >
-                {this.state.hideDates ? 'Update Player' : 'Remove Date'}
+                {updateState}
               </Button>
             </Loader>
           </Grid>
@@ -197,10 +237,17 @@ class UpdatePererittoPlayer extends Component {
         <ConfirmActionModal
           showModal={showModal}
           title={'Warning!'}
-          message={'Are you sure you want to delete this date?'}
+          message={`Are you sure you want to ${
+            updateState === updateStates[1]
+              ? 'delete this date?'
+              : 'mark this player as absent?'
+          }`}
           confirmClick={() => {
             this.setState({ showModal: false });
-            this.props.removeWinnerDate(selectedDate);
+            updateState === updateStates[1] &&
+              this.props.removeWinnerDate(selectedDate);
+            updateState === updateStates[2] &&
+              this.props.markPlayerAbsent(playerId, selectedDate);
           }}
           cancelClick={() =>
             this.setState({

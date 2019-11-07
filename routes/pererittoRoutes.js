@@ -76,7 +76,7 @@ export default app => {
     requireLogin,
     requireSuperAccess,
     async (req, res) => {
-      const user = await PererittoUser.findOne({ name: req.body.name });
+      const user = await PererittoUser.findOne({ _id: req.body.id });
 
       if (user === null) {
         res.send({
@@ -169,4 +169,123 @@ export default app => {
     }
   );
   //#endregion delete_pereritto
+
+  //#region retire_pereritto
+  app.post(
+    '/api/retire_pereritto',
+    requireLogin,
+    requireSuperAccess,
+    async (req, res) => {
+      try {
+        const { _pereritto } = req.body;
+        const pererittoPlayer = await PererittoUser.findOne({
+          _id: _pereritto
+        });
+
+        if (pererittoPlayer) {
+          await PererittoUser.updateOne(
+            { _id: _pereritto },
+            { $set: { retired: true, retiredDate: new Date() } }
+          );
+
+          return res.status(200).send({
+            type: MessageTypeEnum.success,
+            message: 'Player successfully retired!'
+          });
+        } else {
+          return res.send({
+            type: MessageTypeEnum.error,
+            message: 'That pereritto player does not exist!'
+          });
+        }
+      } catch (err) {
+        console.log(err);
+        res.send({
+          type: MessageTypeEnum.error,
+          message: 'An error occured on retire_pereritto'
+        });
+      }
+    }
+  );
+  //#endregion retire_pereritto
+
+  //#region return_pereritto
+  app.post(
+    '/api/return_pereritto',
+    requireLogin,
+    requireSuperAccess,
+    async (req, res) => {
+      try {
+        const { _pereritto } = req.body;
+        const pererittoPlayer = await PererittoUser.findOne({
+          _id: _pereritto
+        });
+
+        if (pererittoPlayer) {
+          await PererittoUser.updateOne(
+            { _id: _pereritto },
+            { $set: { retired: false } }
+          );
+          return res.status(200).send({
+            type: MessageTypeEnum.success,
+            message: 'Player successfully returned!'
+          });
+        } else {
+          return res.send({
+            type: MessageTypeEnum.error,
+            message: 'That pereritto player does not exist!'
+          });
+        }
+      } catch (err) {
+        console.log(err);
+        res.send({
+          type: MessageTypeEnum.error,
+          message: 'An error occured on retire_pereritto'
+        });
+      }
+    }
+  );
+  //#endregion return_pereritto
+
+  //#region mark_player_absent
+  app.post(
+    '/api/mark_player_absent',
+    requireLogin,
+    requireSuperAccess,
+    async (req, res) => {
+      try {
+        const { date, id } = req.body;
+        const pererittoPlayer = await PererittoUser.findOne({
+          _id: id
+        });
+
+        if (pererittoPlayer.absentDates.includes(date)) {
+          res.send({
+            type: MessageTypeEnum.error,
+            message: 'That date already marked absent!'
+          });
+        } else {
+          const newAbsentDates = [...pererittoPlayer.absentDates];
+          newAbsentDates.push(date);
+
+          await PererittoUser.updateOne(
+            { _id: id },
+            { $set: { absentDates: newAbsentDates } }
+          );
+
+          return res.status(200).send({
+            type: MessageTypeEnum.success,
+            message: 'Player marked absent!'
+          });
+        }
+      } catch (err) {
+        console.log(err);
+        res.send({
+          type: MessageTypeEnum.error,
+          message: 'An error occured on mark_player_absent'
+        });
+      }
+    }
+  );
+  //#endregion mark_player_absent
 };

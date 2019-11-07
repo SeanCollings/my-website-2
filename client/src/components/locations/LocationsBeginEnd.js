@@ -100,7 +100,7 @@ class LocationsBeginEnd extends Component {
       const options = {
         enableHighAccuracy: false,
         timeout: 60000,
-        maximumAge: 10000
+        maximumAge: 5000
       };
 
       // In case user stopped and then started but currentPosition unchanged,
@@ -113,10 +113,13 @@ class LocationsBeginEnd extends Component {
           // Get updated locations
           const { totalOnline, lastKnownLocation } = this.props.locations;
 
+          // Set decimal place to 4 for 11m accuracy
           // Set decimal place to 5 for 1.11m accuracy
+          // Set decimal place to 6 for 0.11m accuracy
+          // Set decimal place to 7 for 11mm accuracy
           let currentLocation = {
-            lat: parseFloat(position.coords.latitude.toFixed(5)),
-            lng: parseFloat(position.coords.longitude.toFixed(5))
+            lat: parseFloat(position.coords.latitude.toFixed(6)),
+            lng: parseFloat(position.coords.longitude.toFixed(6))
           };
 
           // console.log('Position Watched');

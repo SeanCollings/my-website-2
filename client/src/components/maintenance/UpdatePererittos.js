@@ -127,7 +127,8 @@ class UpdatePererittos extends Component {
                   name: user.givenName,
                   surname: user.familyName,
                   pererittoUser: user.pererittoUser,
-                  _pereritto: user._pereritto
+                  _pereritto: user._pereritto,
+                  retired: user.retired
                 }))
               : []
           }

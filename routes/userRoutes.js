@@ -21,7 +21,10 @@ export default app => {
             users = await Users.find().sort({ givenName: 1, familyName: 1 });
             break;
           case MAINTENANCE_MENU.PERERITTO_USERS.type:
-            users = await Users.find({ pererittoUser: true }).sort({
+            users = await Users.find(
+              { pererittoUser: true },
+              { pererittoUser: 1, _pereritto: 1, givenName: 1, familyName: 1 }
+            ).sort({
               givenName: 1
             });
 
@@ -31,17 +34,25 @@ export default app => {
               switch (req.query.param2) {
                 case MAINTENANCE_MENU.PERERITTO_USERS.options[0]:
                   for (let i = 0; i < users.length; i++) {
-                    const isPererittoPlayer = await PererittoUser.find(
+                    const pererittoPlayer = await PererittoUser.find(
                       {
                         _id: users[i]._pereritto
                       },
-                      { _id: 1 }
+                      { _id: 1, retired: 1, retiredDate: 1 }
                     ).limit(1);
 
-                    if (isPererittoPlayer.length > 0)
-                      transformedUsers.push(users[i]);
-                  }
+                    if (pererittoPlayer.length > 0) {
+                      const updatedUser = {
+                        ...users[i]._doc,
+                        retired: {
+                          isRetired: pererittoPlayer[0].retired,
+                          retiredDate: pererittoPlayer[0].retiredDate
+                        }
+                      };
 
+                      transformedUsers.push(updatedUser);
+                    }
+                  }
                   return res.send(transformedUsers);
                 case MAINTENANCE_MENU.PERERITTO_USERS.options[1]:
                   for (let i = 0; i < users.length; i++) {
