@@ -14,7 +14,7 @@ if (self.__precacheManifest) {
 }
 
 // your own code
-const CACHE_STATIC = 'static-v0';
+const CACHE_STATIC = 'static-v1';
 // const CACHE_DYNAMIC = 'dynamic-v1';
 
 const STATIC_FILES = [
@@ -40,8 +40,20 @@ self.addEventListener('install', event => {
   // self.skipWaiting();
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', event => {
   console.log('[Service Worker] Activating Service Worker ...', event);
+  event.waitUntil(
+    caches.keys().then(keyList => {
+      return Promise.all(
+        keyList.map(function(key) {
+          if (key !== CACHE_STATIC) {
+            console.log('[Service Worker] Removing old cache.', key);
+            return caches.delete(key);
+          }
+        })
+      );
+    })
+  );
   return self.clients.claim();
 });
 
