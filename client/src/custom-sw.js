@@ -14,7 +14,7 @@ if (self.__precacheManifest) {
 }
 
 // your own code
-const CACHE_STATIC = 'static-v1';
+const CACHE_STATIC = 'static-v0';
 // const CACHE_DYNAMIC = 'dynamic-v1';
 
 const STATIC_FILES = [
@@ -22,8 +22,8 @@ const STATIC_FILES = [
   '/css/Roboto.css',
   '/css/MaterialIcons.css',
   '/icons/icon-144x144.png',
-  '/icons/icon-96x96.png'
-  // '/manifest.json'
+  '/icons/icon-96x96.png',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', event => {
