@@ -1,5 +1,7 @@
 import requireLogin from '../middlewares/requireLogin';
 import { MessageTypeEnum } from '../client/src/utils/constants';
+import { manifest } from '../config/manifest';
+import loadingMessages from '../client/src/utils/loadingMessages';
 
 const mongoose = require('mongoose');
 const Users = mongoose.model('users');
@@ -64,28 +66,17 @@ export default app => {
     }
   });
 
+  app.get('/api/get_manifest', (req, res) => {
+    const message =
+      loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ||
+      'Pure Seanography';
+
+    res.send(manifest(message));
+  });
+
   app.get('/api/get_settings', async (req, res) => {
     try {
       const settings = await AppSettings.find();
-
-      /* TODO: remove after done once on prod */
-      if (settings.length === 0) {
-        const pages = await new AppSettings({
-          pages: [
-            { page: 'Home', show: true },
-            { page: 'About Me', show: false },
-            { page: 'Projects', show: false },
-            { page: 'Contact', show: false },
-            { page: 'Pereritto', show: true },
-            { page: 'Maintenance', show: true },
-            { page: 'Notifications', show: true },
-            { page: 'Locations', show: true }
-          ]
-        }).save();
-
-        return res.send(pages);
-      }
-
       return res.send(settings[0]);
     } catch (err) {
       throw err;

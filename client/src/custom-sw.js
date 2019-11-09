@@ -22,8 +22,8 @@ const STATIC_FILES = [
   '/css/Roboto.css',
   '/css/MaterialIcons.css',
   '/icons/icon-144x144.png',
-  '/icons/icon-96x96.png',
-  '/manifest.json'
+  '/icons/icon-96x96.png'
+  // '/manifest.json'
 ];
 
 self.addEventListener('install', event => {
