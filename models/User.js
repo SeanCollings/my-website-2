@@ -14,7 +14,8 @@ const userSchema = new Schema({
   pereryvUser: { type: Boolean, default: false },
   allowNotifications: { type: Boolean, default: false },
   lastLogin: { type: Date, default: new Date() },
-  _pereritto: { type: Schema.Types.ObjectId, ref: 'pererittos' }
+  _pereritto: { type: Schema.Types.ObjectId, ref: 'pererittos' },
+  _pereryv: { type: Schema.Types.ObjectId, ref: 'pereryvs' }
 });
 
 mongoose.model('users', userSchema);

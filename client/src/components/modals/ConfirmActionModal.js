@@ -56,7 +56,8 @@ class ConfirmActionModal extends Component {
             className={classes.button}
             style={{
               width: '45%',
-              marginRight: '10%'
+              marginRight: '10%',
+              backgroundColor: 'transparent'
             }}
             onClick={() => this.props.cancelClick()}
           >

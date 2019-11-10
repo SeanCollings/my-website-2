@@ -71,6 +71,8 @@ self.addEventListener('fetch', event => {
   const urlGetWinners = '/api/get_winners';
   const urlGetWinnerYears = '/api/get_winneryears';
   const urlGetPererittoPlayers = '/api/get_pereritto';
+  const urlGetSlates = '/api/get_slates';
+  const urlCompletedSlates = '/api/get_completed_slates';
 
   // If request url is the same as 'url'
   if (event.request.url.indexOf(urlGetCurrentUser) > -1) {
@@ -224,6 +226,46 @@ self.addEventListener('fetch', event => {
                 id: data[key]._id
               });
             }
+          })
+          .catch(err => console.log(err));
+        return res;
+      })
+    );
+  } else if (event.request.url.indexOf(urlGetSlates) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+
+        clearAllData('slates')
+          .then(() => {
+            return clonedRes.json();
+          })
+          .then(data => {
+            for (let key in data) {
+              writeData('slates', {
+                ...data[key],
+                id: data[key]._id
+              });
+            }
+          })
+          .catch(err => console.log(err));
+        return res;
+      })
+    );
+  } else if (event.request.url.indexOf(urlCompletedSlates) > -1) {
+    event.respondWith(
+      fetch(event.request).then(res => {
+        var clonedRes = res.clone();
+
+        clearAllData('completed-slates')
+          .then(() => {
+            return clonedRes.json();
+          })
+          .then(data => {
+            writeData('completed-slates', {
+              data,
+              id: new Date()
+            });
           })
           .catch(err => console.log(err));
         return res;

@@ -20,6 +20,8 @@ import './models/Subscriptions';
 import './models/NotificationGroup';
 import './models/LocationGroup';
 import './models/AppSettings';
+import './models/PereryvUser';
+import './models/Slate';
 
 import keys from './config/keys';
 import authRoutes from './routes/authRoutes';
@@ -33,6 +35,7 @@ import subscriptionRoutes from './routes/subscriptionRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import pusher from './services/pusher';
 import locationRoutes from './routes/locationRoutes';
+import pereryvRoutes from './routes/pereryvRoutes';
 
 mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 
@@ -74,6 +77,7 @@ subscriptionRoutes(app);
 notificationRoutes(app);
 pusher(app);
 locationRoutes(app);
+pereryvRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));

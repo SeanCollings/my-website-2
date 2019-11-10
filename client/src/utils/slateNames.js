@@ -89,7 +89,15 @@ export const adjectives = [
   'Dead Salmon',
   'Mown Grass',
   'Mossy',
-  'Slimey'
+  'Slimey',
+  'Naughty',
+  'Psychotic',
+  'Fluffy',
+  'Sparkly',
+  'Enlightened',
+  'Heavy',
+  'Greasy',
+  'Token'
 ];
 
 export const nouns = [
@@ -135,6 +143,7 @@ export const nouns = [
   'Memories',
   'Symbol',
   'Word',
+  'Llama',
   'Idea',
   'Person',
   'Generalisation',
@@ -185,5 +194,18 @@ export const nouns = [
   'Naartjie',
   'Vetkoek',
   'Koeksuster',
-  'Cookie'
+  'Cookie',
+  'Messiah',
+  'Psycho',
+  'Candle',
+  'Squirrel',
+  'Mushrooms',
+  'Present',
+  'Wine Cooler',
+  'Crossfitter',
+  'Dumbbell',
+  'Millenial',
+  'Boomer',
+  'Hipster',
+  'Feminist'
 ];

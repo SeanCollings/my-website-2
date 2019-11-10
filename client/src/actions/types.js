@@ -37,6 +37,10 @@ export const LAST_KNOWN_LOCATION = 'last_known_location';
 export const ONLINE_MEMBERS_UPDATED = 'online_members_updated';
 export const LOCATIONS_STARTED = 'locations_started';
 
+export const GET_PERERYV_USERS = 'get_pereryv_users';
+export const GET_SLATES = 'get_slates';
+export const GET_COMPLETED_SLATES = 'get_complete_slates';
+
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';
 

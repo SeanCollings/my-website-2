@@ -11,6 +11,7 @@ import awardReducer from './awardReducer';
 import subscriptionsReducer from './subscriptionsReducer';
 import notificationsReducer from './notificationsReducer';
 import locationReducer from './locationsReducer';
+import pereryvReducecer from './pereryvReducer';
 
 export default combineReducers({
   auth: authreducer,
@@ -24,5 +25,6 @@ export default combineReducers({
   awards: awardReducer,
   subscriptions: subscriptionsReducer,
   notifications: notificationsReducer,
-  locations: locationReducer
+  locations: locationReducer,
+  pereryv: pereryvReducecer
 });

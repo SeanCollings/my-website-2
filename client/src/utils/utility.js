@@ -10,10 +10,12 @@ export const DB_TABLES = [
   'pereritto-players',
   'awards',
   'group-members',
-  'location-groups'
+  'location-groups',
+  'slates',
+  'completed-slates'
 ];
 
-const seanDB = idb.openDB('sean-db', 2, {
+const seanDB = idb.openDB('sean-db', 3, {
   upgrade(db) {
     DB_TABLES.forEach(table => {
       if (!db.objectStoreNames.contains(table)) {
