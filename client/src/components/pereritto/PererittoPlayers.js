@@ -187,7 +187,7 @@ class PererittoPlayers extends Component {
     return null;
   };
 
-  mapPlayerTally = (users, overallWinDate) => {
+  mapPlayerTally = users => {
     const playerTally = {};
 
     users.forEach(user => {
@@ -200,7 +200,7 @@ class PererittoPlayers extends Component {
         name: user.name,
         count: 0,
         colour: user.colour,
-        lastWinDate: overallWinDate,
+        lastWinDate: new Date(0),
         retired: user.retired,
         retiredDate: user.retiredDate,
         createdYear
@@ -210,8 +210,9 @@ class PererittoPlayers extends Component {
     return playerTally;
   };
 
-  countWinners = (winners, players, overallWinDate) => {
+  countWinners = (winners, players) => {
     const { selectedYear } = this.state;
+    let overallWinDate = new Date(0);
 
     if (winners.winners) {
       winners.winners.map(winner => {
@@ -227,20 +228,19 @@ class PererittoPlayers extends Component {
             players[winner._winner._id].count += 1;
           }
         }
-
         return null;
       });
+      return overallWinDate;
     }
   };
 
   buildPlayerTally = () => {
     const { pererittoUsers, winners } = this.props;
-    let overallWinDate = new Date(0);
 
     if (pererittoUsers === null) return null;
 
-    const playerTally = this.mapPlayerTally(pererittoUsers, overallWinDate);
-    this.countWinners(winners, playerTally, overallWinDate);
+    const playerTally = this.mapPlayerTally(pererittoUsers);
+    const overallWinDate = this.countWinners(winners, playerTally);
     const activePlayers = Object.values(playerTally).filter(el => {
       const retiredYear = new Date(el.retiredDate).getFullYear();
       return !el.retired || this.state.selectedYear !== retiredYear;
