@@ -17,6 +17,7 @@ import PererittoPlayers from './pereritto/PererittoPlayers';
 import UpdatePererittoPlayer from './pereritto/UpdatePererittoPlayer';
 import PererittoCalendar from './pereritto/pererittoCalendar';
 import PererittoAwards from './pereritto/PererittoAwards';
+import ToggleDiceButton from './dice/ToggleDiceButton';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -109,74 +110,77 @@ class ProjectsPage extends Component {
     };
 
     return (
-      <div className={classes.pageFill}>
-        {/* <Paper title="Pereritto Winners" content="Habanero Roulette" /> */}
-        <div className={classes.tabBar}>
-          <Tabs
-            value={value}
-            onChange={this.handleChange}
-            centered
-            style={{ backgroundColor: '' }}
-            classes={{ indicator: classes.indicator }}
-          >
-            <Tab label="Players" className={classes.tab} />
-            <Tab label="Calendar" className={classes.tab} />
-            {auth && auth.pererittoUser && (
-              <Tab label="Awards" className={classes.tab} />
-            )}
-            <Tab
-              label="Update"
-              className={classes.tab}
-              style={{ display: superUser ? '' : 'none' }}
-              disabled={!superUser}
-            />
-          </Tabs>
-          {!resizeScreen ? (
-            <div
-              className={classes.centered}
-              style={{ display: resizeScreen ? 'none' : '' }}
-            >
-              {value === 0 && <PererittoPlayers />}
-              {value === 1 && <TabContainer children={<PererittoCalendar />} />}
-              {value === 2 && <PererittoAwards />}
-              {value === 3 && (
-                <TabContainer children={<UpdatePererittoPlayer />} />
-              )}
-            </div>
-          ) : null}
+      <div className={`${classes.pageFill} ${classes.tabBar}`}>
+        <Tabs
+          value={value}
+          onChange={this.handleChange}
+          centered
+          style={{ backgroundColor: '' }}
+          classes={{ indicator: classes.indicator }}
+        >
+          <Tab label="Players" className={classes.tab} />
+          <Tab label="Calendar" className={classes.tab} />
+          {auth && auth.pererittoUser && (
+            <Tab label="Awards" className={classes.tab} />
+          )}
+          <Tab
+            label="Update"
+            className={classes.tab}
+            style={{ display: superUser ? '' : 'none' }}
+            disabled={!superUser}
+          />
+        </Tabs>
+        {!resizeScreen ? (
           <div
-            style={{
-              textAlign: '-webkit-center',
-              display: resizeScreen ? '' : 'none'
-            }}
+            className={classes.centered}
+            style={{ display: resizeScreen ? 'none' : '' }}
           >
-            <Slider
-              ref={c => (this.slider = c)}
-              {...settings}
-              // beforeChange={(current, next) => this.setState({ value: next })}
-              afterChange={current => this.setState({ value: current })}
-            >
-              <PererittoPlayers />
-              <TabContainer children={<PererittoCalendar />} />
-              {auth && <PererittoAwards />}
-              {superUser && (
-                <TabContainer children={<UpdatePererittoPlayer />} />
-              )}
-            </Slider>
+            {value === 0 && <PererittoPlayers />}
+            {value === 1 && <TabContainer children={<PererittoCalendar />} />}
+            {value === 2 && <PererittoAwards />}
+            {value === 3 && (
+              <TabContainer children={<UpdatePererittoPlayer />} />
+            )}
           </div>
+        ) : null}
+        <div
+          style={{
+            textAlign: '-webkit-center',
+            display: resizeScreen ? '' : 'none'
+          }}
+        >
+          <Slider
+            ref={c => (this.slider = c)}
+            {...settings}
+            // beforeChange={(current, next) => this.setState({ value: next })}
+            afterChange={current => this.setState({ value: current })}
+          >
+            <PererittoPlayers />
+            <TabContainer children={<PererittoCalendar />} />
+            {auth && <PererittoAwards />}
+            {superUser && <TabContainer children={<UpdatePererittoPlayer />} />}
+          </Slider>
         </div>
+        <ToggleDiceButton showButton={value === 0} />
       </div>
     );
   }
 }
 
-function mapStateToProps({ auth, pererittoUsers, resizeScreen, winners }) {
+function mapStateToProps({
+  auth,
+  pererittoUsers,
+  resizeScreen,
+  winners,
+  dice
+}) {
   return {
     pererittoUsers,
     auth,
     superUser: auth ? auth.superUser : false,
     resizeScreen,
-    winners
+    winners,
+    dice
   };
 }
 

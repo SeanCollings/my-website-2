@@ -23,6 +23,7 @@ export const SET_RANDOM_USERNAME = 'set_random_username';
 export const RETURN_TO_PREVIOUS_PAGE = 'return_to_previous_page';
 export const UPDATE_HEADING = 'update_heading';
 export const SET_PAGES = 'set_pages';
+export const TOGGLE_DICE = 'toggle_dice';
 
 export const GET_GROUP_MEMBERS = 'get_group_members';
 export const GET_PUBLIC_VAPID_KEY = 'get_public_vapid_key';

@@ -26,6 +26,7 @@ import SettingsPage from './SettingsPage';
 import NotificationsPage from './NotificationsPage';
 import LocationsPage from './LocationsPage';
 import PereryvPage from './PereryvPage';
+import DicePage from './dice/DicePage';
 
 import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
 import Header from './components/Header';
@@ -343,6 +344,7 @@ class App extends Component {
           {this.renderUserProfile()}
           {this.renderLocations()}
           {this.renderPereryv()}
+          <Route path="/dice" render={props => <DicePage {...props} />} />
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}
         </Switch>

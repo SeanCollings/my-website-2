@@ -12,6 +12,7 @@ import subscriptionsReducer from './subscriptionsReducer';
 import notificationsReducer from './notificationsReducer';
 import locationReducer from './locationsReducer';
 import pereryvReducecer from './pereryvReducer';
+import diceReducer from './diceReducer';
 
 export default combineReducers({
   auth: authreducer,
@@ -26,5 +27,6 @@ export default combineReducers({
   subscriptions: subscriptionsReducer,
   notifications: notificationsReducer,
   locations: locationReducer,
-  pereryv: pereryvReducecer
+  pereryv: pereryvReducecer,
+  dice: diceReducer
 });

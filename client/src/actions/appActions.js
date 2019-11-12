@@ -12,7 +12,8 @@ import {
   UPDATE_HEADING,
   SHOW_TOOLTIP,
   HIDE_TOOLTIP,
-  SET_PAGES
+  SET_PAGES,
+  TOGGLE_DICE
 } from './types';
 import { MessageTypeEnum } from '../utils/constants';
 
@@ -102,4 +103,8 @@ export const updatePages = pages => async dispatch => {
   const res = await axios.put('/api/update_pages', { pages });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const toggleDice = () => dispatch => {
+  dispatch({ type: TOGGLE_DICE });
 };

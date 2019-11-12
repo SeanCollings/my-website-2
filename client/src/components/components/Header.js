@@ -233,6 +233,8 @@ class Header extends Component {
         return app.headingName ? app.headingName : 'Locations';
       case '/pervytrev':
         return 'Pervytrev';
+      case '/dice':
+        return 'Dice';
       default:
         if (currentRoute.includes('profile') && auth) return `Profile`;
 
