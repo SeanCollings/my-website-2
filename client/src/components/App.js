@@ -28,7 +28,11 @@ import LocationsPage from './LocationsPage';
 import PereryvPage from './PereryvPage';
 import DicePage from './dice/DicePage';
 
-import { PERERITTO_PATH, MAINTENANCE_PATH } from '../utils/constants';
+import {
+  PERERITTO_PATH,
+  MAINTENANCE_PATH,
+  DICE_PATH
+} from '../utils/constants';
 import Header from './components/Header';
 import Footer from './components/footer';
 import SnackBar from './components/SnackBar';
@@ -214,6 +218,13 @@ class App extends Component {
       };
     }
 
+    if (this.props.location.pathname === DICE_PATH) {
+      return {
+        minHeight: '100vh',
+        backgroundColor: '#900c3f'
+      };
+    }
+
     return {
       minHeight: '100vh',
       backgroundColor: '#900C3F',
@@ -369,16 +380,13 @@ function mapStateToProps({ auth, winners, app, settings }) {
 }
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    {
-      ...actions,
-      showLoader,
-      hideLoader,
-      getReleaseCreation,
-      notificationState,
-      locationState,
-      getAppSettings
-    }
-  )(App)
+  connect(mapStateToProps, {
+    ...actions,
+    showLoader,
+    hideLoader,
+    getReleaseCreation,
+    notificationState,
+    locationState,
+    getAppSettings
+  })(App)
 );

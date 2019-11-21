@@ -234,7 +234,7 @@ class Header extends Component {
       case '/pervytrev':
         return 'Pervytrev';
       case '/dice':
-        return 'Dice';
+        return 'Dice Roll';
       default:
         if (currentRoute.includes('profile') && auth) return `Profile`;
 
@@ -396,7 +396,6 @@ function mapStateToProps({ auth, resizeScreen, settings, app }) {
   return { auth, resizeScreen, settings, app };
 }
 
-export default connect(
-  mapStateToProps,
-  { returnToPreviousPage }
-)(withRouter(withStyles(styles)(Header)));
+export default connect(mapStateToProps, { returnToPreviousPage })(
+  withRouter(withStyles(styles)(Header))
+);
