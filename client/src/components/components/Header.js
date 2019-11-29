@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Gravatar from 'react-gravatar';
-import { returnToPreviousPage } from '../../actions/appActions';
+import { returnToPreviousPage, updateHeading } from '../../actions/appActions';
 
 import { MENU_LIST } from '../../utils/constants';
 import { clearAllData } from '../../utils/utility';
@@ -230,11 +230,11 @@ class Header extends Component {
       case '/notifications':
         return 'Notifications';
       case '/locations':
-        return app.headingName ? app.headingName : 'Locations';
+        return app.headingName ? app.headingName.heading : 'Locations';
       case '/pervytrev':
         return 'Pervytrev';
       case '/dice':
-        return 'Dice Roll';
+        return app.headingName ? app.headingName.heading : 'Dice Roll';
       default:
         if (currentRoute.includes('profile') && auth) return `Profile`;
 
@@ -278,13 +278,21 @@ class Header extends Component {
         >
           <Toolbar>
             {app.headingName ? (
-              <IconButton
-                aria-label="Back"
-                onClick={() => this.props.returnToPreviousPage(true)}
-                style={{ color: '#DEDEDE' }}
+              <NavLink
+                to={app.headingName ? app.headingName.previousPage : '/'}
+                style={{ textDecoration: 'none' }}
               >
-                <BackIcon />
-              </IconButton>
+                <IconButton
+                  aria-label="Back"
+                  onClick={() => {
+                    this.props.returnToPreviousPage(true);
+                    this.props.updateHeading(null);
+                  }}
+                  style={{ color: '#DEDEDE' }}
+                >
+                  <BackIcon />
+                </IconButton>
+              </NavLink>
             ) : (
               <IconButton
                 aria-label="More"
@@ -396,6 +404,7 @@ function mapStateToProps({ auth, resizeScreen, settings, app }) {
   return { auth, resizeScreen, settings, app };
 }
 
-export default connect(mapStateToProps, { returnToPreviousPage })(
-  withRouter(withStyles(styles)(Header))
-);
+export default connect(mapStateToProps, {
+  returnToPreviousPage,
+  updateHeading
+})(withRouter(withStyles(styles)(Header)));

@@ -1,14 +1,18 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { NavLink } from 'react-router-dom';
 
 import { toggleDice } from '../../actions/appActions';
-// import Dice from './Dice';
 import Dice2 from './Dice2';
+import AddPlayerModal from '../modals/AddPlayersModal';
+import RulesModal from '../modals/RulesModal';
+import ConfirmActionModal from '../modals/ConfirmActionModal';
+import ConfirmUndoRollModal from '../modals/ConfirmActionModal';
+import { testOutOfBounds } from './diceUtils';
 
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import HelpIcon from '@material-ui/icons/HelpOutline';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -30,6 +34,122 @@ const randomScale = () => Math.floor(Math.random() * 3);
 const randomSpins = () => Math.floor(Math.random() * (2 - 1 + 1)) + 1;
 const getNumFromPixel = pixels => Number(pixels.split('px')[0]);
 
+const clearObjectValues = object => {
+  const newObject = { ...object };
+  Object.keys(newObject).forEach(key => {
+    newObject[key] = null;
+  });
+  return newObject;
+};
+
+const someValuesNull = object =>
+  Object.values(object).some(value => value === null);
+
+const getHighestScore = playersScoreMap => {
+  let highScore = 0;
+
+  Object.values(playersScoreMap).forEach(value => {
+    let realValue = value;
+    if (value === 3) realValue = 6;
+    if (value === 5) realValue = 10;
+
+    if (realValue > highScore) highScore = realValue;
+  });
+
+  if (highScore === 10) return 5;
+  else return highScore;
+};
+
+const ShowCurrentRoll = playersScoreMap => {
+  if (!Object.keys(playersScoreMap).length) return null;
+
+  const color = '#457ba2';
+  const nextRollColor = '#a51e1e';
+  // const highScoreColor = '#027b17';
+  let playerHighlighted = false;
+  let highScore = 0;
+
+  if (!someValuesNull(playersScoreMap))
+    highScore = getHighestScore(playersScoreMap);
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        userSelect: 'none',
+        left: 0,
+        bottom: 0,
+        paddingLeft: '4px'
+      }}
+    >
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(min-content, max-content) 40px'
+        }}
+      >
+        {Object.keys(playersScoreMap).map((key, i) => {
+          const highlight = !playerHighlighted && !playersScoreMap[key];
+          const roll3 = playersScoreMap[key] === 3 ? ' [6]' : '';
+          const roll5 = playersScoreMap[key] === 5 ? ' [10]' : '';
+          const roll = `${playersScoreMap[key]}${roll3}${roll5}`;
+
+          const isHighScore =
+            playersScoreMap[key] === highScore ||
+            (playersScoreMap[key] === 3 && highScore === 6);
+
+          const style = {
+            color: highlight ? nextRollColor : color,
+            fontWeight: isHighScore ? 'bold' : 'lighter'
+          };
+
+          const buttonStyle = {
+            ...style,
+            padding: '0px 0px 0px 4px',
+            justifyContent: 'left',
+            textTransform: 'capitalize'
+          };
+
+          if (!playersScoreMap[key]) playerHighlighted = true;
+
+          return (
+            <Fragment key={key}>
+              {/* <Typography style={style} onTouchStart={() => console.log(key)}>
+                {key}
+              </Typography> */}
+              <Button style={buttonStyle} onTouchStart={() => console.log(key)}>
+                {key}
+              </Button>
+              <Typography style={style}>
+                {playersScoreMap[key] ? `${roll}` : `-`}
+              </Typography>
+            </Fragment>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/*const ShowTotalScore = (playersScoreMap, totalPlayersScore) => {
+  if (!Object.keys(playersScoreMap).length) return null;
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        padding: '4px',
+        userSelect: 'none',
+        right: 0,
+        bottom: 0,
+        marginRight: '4px'
+      }}
+    >
+      <Typography style={{ fontWeight: 'bold' }}>Leader: name</Typography>
+    </div>
+  );
+};*/
+
 class DicePage extends Component {
   state = {
     position: [MAX_TOP, MAX_LEFT],
@@ -37,10 +157,20 @@ class DicePage extends Component {
     randomFace: randomFace(),
     randomRotate: randomRotate(),
     randomScale: 1,
-    animate: false,
     randomSpins: 2,
     updateScore: false,
-    firstRoll: false
+    currentRoundRoll: 0,
+    firstRoll: false,
+    fadeDice: false,
+    newGame: false,
+    showRules: false,
+    showModal: false,
+    showConfirmationModal: false,
+    showUndoModal: false,
+    playerAdded: false,
+    players: [],
+    playersScoreMap: {},
+    totalPlayersScore: {}
   };
 
   componentDidMount() {
@@ -48,14 +178,28 @@ class DicePage extends Component {
     const position = [this.randomTop(), this.randomLeft()];
     this.setState({ ...this.state, diceBounds, position });
 
-    const dice = document.querySelector('.cube');
-    dice.addEventListener('transitionend', () => {
-      const bounds = this.testOutOfBounds();
+    window.oncontextmenu = () => false;
+
+    const cube = document.querySelector('.cube');
+    cube.addEventListener('transitionend', () => {
+      const bounds = testOutOfBounds();
       if (Object.values(bounds).some(bound => bound)) {
         this.quickPositionDice(bounds);
       }
 
-      this.setState({ updateScore: true });
+      const playersScoreMap = { ...this.state.playersScoreMap };
+
+      if (this.state.playerAdded) {
+        playersScoreMap[
+          this.state.players[this.state.currentRoundRoll - 1]
+        ] = this.state.randomFace;
+      }
+
+      this.setState({
+        ...this.state,
+        updateScore: true,
+        playersScoreMap
+      });
     });
   }
 
@@ -82,17 +226,8 @@ class DicePage extends Component {
     return `${newPosition}px`;
   };
 
-  evenRoll = () => {};
-  oddRoll = () => {};
-
-  animateDie = () => {
-    // const evenRoll = this.evenRoll();
-    // const oddRoll = this.oddRoll();
-    return null;
-  };
-
   rollDice = () => {
-    const { firstRoll } = this.state;
+    const { firstRoll, currentRoundRoll, players, playerAdded } = this.state;
     const newPositon = [this.randomTop(), this.randomLeft()];
 
     const dice = document.querySelector('.cube');
@@ -106,11 +241,12 @@ class DicePage extends Component {
       dice.classList.remove('odd-roll');
     }
 
-    // dice.dataset.roll = `show-${randomFace()}`;
-    // console.log(dice.classList);
-    // const animate = this.animateDie();
-    // console.log('animate', animate);
-    // this.setState({ ...this.state });
+    let currentRoll = currentRoundRoll;
+    if (playerAdded) {
+      if (currentRoll === players.length) currentRoll = 1;
+      else currentRoll++;
+    }
+
     this.setState({
       ...this.state,
       position: newPositon,
@@ -120,92 +256,9 @@ class DicePage extends Component {
       randomScale: randomScale(),
       randomSpins: randomSpins(),
       updateScore: false,
-      firstRoll: true
+      firstRoll: true,
+      currentRoundRoll: currentRoll
     });
-  };
-
-  testOutOfBounds = () => {
-    const outOfBounds = { left: null, top: null, right: null, bottom: null };
-    const dice = document.getElementById('dice');
-    const cube1 = document.getElementById('cube-1');
-
-    if (!dice || !cube1) return null;
-
-    const front = document.getElementById('front');
-    const back = document.getElementById('back');
-    const right = document.getElementById('right');
-    const left = document.getElementById('left');
-    const top = document.getElementById('top');
-    const bottom = document.getElementById('bottom');
-
-    const diceBounds = dice.getBoundingClientRect();
-    const frontBounds = front.getBoundingClientRect();
-    const backBounds = back.getBoundingClientRect();
-    const rightBounds = right.getBoundingClientRect();
-    const leftBounds = left.getBoundingClientRect();
-    const topBounds = top.getBoundingClientRect();
-    const bottomBounds = bottom.getBoundingClientRect();
-
-    outOfBounds.left = this.testLessThanBounds(
-      diceBounds.left,
-      frontBounds.left,
-      backBounds.left,
-      rightBounds.left,
-      leftBounds.left,
-      topBounds.left,
-      bottomBounds.left
-    );
-    outOfBounds.top = this.testLessThanBounds(
-      diceBounds.top,
-      frontBounds.top,
-      backBounds.top,
-      rightBounds.top,
-      leftBounds.top,
-      topBounds.top,
-      bottomBounds.top
-    );
-    outOfBounds.right = this.testMoreThanBounds(
-      diceBounds.right,
-      frontBounds.right,
-      backBounds.right,
-      rightBounds.right,
-      leftBounds.right,
-      topBounds.right,
-      bottomBounds.right
-    );
-    outOfBounds.bottom = this.testMoreThanBounds(
-      diceBounds.bottom,
-      frontBounds.bottom,
-      backBounds.bottom,
-      rightBounds.bottom,
-      leftBounds.bottom,
-      topBounds.bottom,
-      bottomBounds.bottom
-    );
-
-    return outOfBounds;
-  };
-
-  testLessThanBounds = (dice, front, back, right, left, top, bottom) => {
-    return (
-      front <= dice ||
-      back <= dice ||
-      right <= dice ||
-      left <= dice ||
-      top <= dice ||
-      bottom <= dice
-    );
-  };
-
-  testMoreThanBounds = (dice, front, back, right, left, top, bottom) => {
-    return (
-      front >= dice ||
-      back >= dice ||
-      right >= dice ||
-      left >= dice ||
-      top >= dice ||
-      bottom >= dice
-    );
   };
 
   quickPositionDice = (bounds, firstMount) => {
@@ -235,11 +288,58 @@ class DicePage extends Component {
   diceMounted = () => {
     const position = [this.randomTop(), this.randomLeft()];
     console.log('position', position);
-    // this.setState({ ...this.state, position });
-    const bounds = this.testOutOfBounds();
+    const bounds = testOutOfBounds();
     if (Object.values(bounds).some(bound => bound)) {
       this.quickPositionDice(bounds, position);
     }
+  };
+
+  startNewRoundClick = () => {
+    const clearedRoundScores = { ...this.state.playersScoreMap };
+
+    this.setState({
+      ...this.state,
+      currentRoundRoll: 0,
+      playersScoreMap: clearObjectValues(clearedRoundScores)
+    });
+  };
+
+  restartGameClick = () => {
+    const { playerAdded } = this.state;
+
+    if (playerAdded) {
+      this.setState({ showConfirmationModal: true });
+    }
+  };
+
+  newGameClicked = () => {
+    setTimeout(() => {
+      const textField = document.getElementById('add-player');
+
+      if (textField) {
+        document.getElementById('add-player').focus();
+        document.getElementById('add-player').select();
+      }
+    }, 50);
+
+    this.setState({ ...this.state, newGame: true, showModal: true });
+  };
+
+  addPlayerClicked = playerName => {
+    const { players } = this.state;
+
+    const newPlayers = [...players];
+    const playersScoreMap = {};
+
+    newPlayers.push(playerName);
+    newPlayers.forEach(player => (playersScoreMap[player] = null));
+
+    this.setState({
+      ...this.state,
+      playerAdded: true,
+      players: newPlayers,
+      playersScoreMap
+    });
   };
 
   render() {
@@ -249,14 +349,25 @@ class DicePage extends Component {
       oldRandomFace,
       randomFace,
       randomRotate,
-      animate,
       randomSpins,
-      updateScore
+      updateScore,
+      fadeDice,
+      newGame,
+      playerAdded,
+      players,
+      playersScoreMap,
+      showModal,
+      showRules,
+      currentRoundRoll,
+      showConfirmationModal,
+      showUndoModal
     } = this.state;
 
     const totalHeight = `calc(100vh + (-50px - ${
       resizeScreen ? '56px' : '64px'
     }))`;
+
+    const startNewRound = playerAdded && currentRoundRoll === players.length;
 
     return (
       <div
@@ -284,27 +395,59 @@ class DicePage extends Component {
               alignItems="center"
               style={{ height: '100%' }}
             >
-              <NavLink
-                to="/pereritto"
+              <div
                 style={{
-                  textDecoration: 'none',
                   left: '0',
-                  position: 'absolute'
+                  position: 'absolute',
+                  marginLeft: '8px'
                 }}
               >
-                <Button
-                  onClick={this.props.toggleDice}
-                  style={{ color: '#dedede', width: '100%' }}
+                <Grid
+                  container
+                  direction="row"
+                  justify="flex-start"
+                  alignItems="center"
                 >
-                  Return
-                </Button>
-              </NavLink>
+                  <Button
+                    onClick={() => this.setState({ showRules: true })}
+                    style={{
+                      color: '#dedede',
+                      marginLeft: '-8px'
+                    }}
+                  >
+                    <HelpIcon
+                      style={{
+                        color: '#dedede',
+                        fontSize: 'large',
+                        paddingBottom: '2px',
+                        marginRight: '4px'
+                      }}
+                    />
+                    Rules
+                  </Button>
+                </Grid>
+              </div>
+              <Button
+                onClick={
+                  playerAdded ? this.restartGameClick : this.newGameClicked
+                }
+                style={{
+                  color: '#dedede',
+                  background: '#c70039'
+                  // position: 'absolute'
+                }}
+              >
+                {/* {playerAdded ? 'Start' : 'New Game'} */}
+                New Game
+              </Button>
               <Typography
                 style={{
                   right: '0',
                   position: 'absolute',
                   marginRight: '12px',
-                  color: '#dedede'
+                  color: '#dedede',
+                  fontSize: 'large',
+                  display: playerAdded ? 'none' : ''
                 }}
               >
                 Score: {updateScore ? randomFace : oldRandomFace}
@@ -314,29 +457,40 @@ class DicePage extends Component {
           <div
             id="dice"
             className="dice"
+            onTouchStart={() => newGame && this.setState({ fadeDice: true })}
+            onTouchEnd={() => this.setState({ fadeDice: false })}
             style={{
               width: '100%',
               // background: 'red',
               margin: '5px',
               height: `calc(${totalHeight} - (2 * ${BORDER_HEIGHT} + 10px))`,
               border: '1px dotted #baddfd80'
+              // opacity: fadeDice ? '0.2' : '1'
             }}
           >
-            <Dice2
-              cube={'1'}
-              position={position}
-              randomFace={randomFace}
-              randomRotate={randomRotate}
-              diceMounted={this.diceMounted}
-              animate={animate}
-              randomSpins={randomSpins}
-            />
+            {playerAdded && ShowCurrentRoll(playersScoreMap)}
+            {/* {ShowTotalScore(playersScoreMap, totalPlayersScore)} */}
+            <div
+              style={{
+                position: 'absolute',
+                opacity: fadeDice ? '0.2' : '1'
+              }}
+            >
+              <Dice2
+                cube={'1'}
+                position={position}
+                randomFace={randomFace}
+                randomRotate={randomRotate}
+                diceMounted={this.diceMounted}
+                randomSpins={randomSpins}
+              />
+            </div>
           </div>
           <div
             style={{
               height: BORDER_HEIGHT,
               background: '#c70039',
-              width: '100%',
+              width: playerAdded ? 'calc(80% - 8px)' : '100%',
               border: '2px solid aliceblue'
             }}
           >
@@ -349,13 +503,101 @@ class DicePage extends Component {
             >
               <Button
                 onClick={this.rollDice}
-                style={{ color: '#dedede', width: '100%' }}
+                disabled={playerAdded && startNewRound}
+                style={{
+                  color: '#dedede',
+                  width: '100%',
+                  opacity: !startNewRound ? '1' : '0.4'
+                }}
               >
                 Roll
               </Button>
             </Grid>
           </div>
+          <div
+            style={{
+              height: BORDER_HEIGHT,
+              background: '#154360',
+              width: '20%',
+              border: '2px solid aliceblue',
+              display: playerAdded ? '' : 'none'
+            }}
+          >
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              style={{ height: '100%' }}
+            >
+              <Button
+                onClick={this.startNewRoundClick}
+                disabled={!startNewRound}
+                style={{
+                  color: '#dedede',
+                  width: '100%',
+                  opacity: startNewRound ? '1' : '0.4'
+                }}
+              >
+                Round
+              </Button>
+            </Grid>
+          </div>
         </Grid>
+        <AddPlayerModal
+          title="Start a New Game?"
+          message={`Add players to the board to keep score. Total players: ${players.length}/8`}
+          showModal={showModal}
+          playerAdded={playerAdded}
+          addClick={playerName => this.addPlayerClicked(playerName)}
+          cancelClick={() =>
+            this.setState({
+              showModal: false,
+              newGame: playerAdded ? true : false
+            })
+          }
+        />
+        <RulesModal
+          showModal={showRules}
+          doneClick={() => this.setState({ showRules: false })}
+        />
+        <ConfirmActionModal
+          showModal={playerAdded && showConfirmationModal}
+          title={'Start a new game'}
+          message={`Are you sure you want to abandon the current game and start again?`}
+          confirmClick={() =>
+            this.setState({
+              ...this.state,
+              showConfirmationModal: false,
+              showModal: true,
+              players: [],
+              playersScoreMap: {},
+              playerAdded: false
+            })
+          }
+          cancelClick={() =>
+            this.setState({
+              ...this.state,
+              showConfirmationModal: false
+            })
+          }
+        />
+        <ConfirmUndoRollModal
+          showModal={showUndoModal}
+          title={'Undo Roll'}
+          message={`Are you sure you want to undo the current round's rolls up to and including this player?`}
+          confirmClick={() =>
+            this.setState({
+              showUndoModal: false
+            })
+          }
+          cancelClick={() =>
+            this.setState({
+              ...this.state,
+              showUndoModal: false
+            })
+          }
+        />
       </div>
     );
   }

@@ -11,7 +11,8 @@ import {
   getReleaseCreation,
   notificationState,
   locationState,
-  getAppSettings
+  getAppSettings,
+  updateHeading
 } from '../actions/appActions';
 
 import HomePage from './HomePage';
@@ -175,6 +176,18 @@ class App extends Component {
       );
     }
     return;
+  }
+
+  renderDice() {
+    const { app, updateHeading, location } = this.props;
+
+    if (location.pathname === '/dice' && !app.headingName) {
+      updateHeading({
+        heading: 'Roll Dice',
+        previousPage: '/pereritto'
+      });
+    }
+    return <Route path="/dice" render={props => <DicePage {...props} />} />;
   }
 
   checkRedirect() {
@@ -355,7 +368,7 @@ class App extends Component {
           {this.renderUserProfile()}
           {this.renderLocations()}
           {this.renderPereryv()}
-          <Route path="/dice" render={props => <DicePage {...props} />} />
+          {this.renderDice()}
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}
         </Switch>
@@ -387,6 +400,7 @@ export default withRouter(
     getReleaseCreation,
     notificationState,
     locationState,
-    getAppSettings
+    getAppSettings,
+    updateHeading
   })(App)
 );

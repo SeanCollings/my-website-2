@@ -40,7 +40,7 @@ class ConfirmActionModal extends Component {
         <div className={`${classes.modalStyles} ${classes.paper}`}>
           <Typography
             id="modal-title"
-            style={{ textAlign: 'center' }}
+            style={{ textAlign: 'center', fontWeight: 'bold' }}
             paragraph
           >
             {title}

@@ -1,3 +1,14 @@
+.dice {
+  /* align-items: center;
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  grid-template-rows: auto;
+  justify-items: center; */
+  /* padding: 20px; */
+  perspective: 800px;
+}
+
 .cube {
   font-size: 30px;
   width: 60px;

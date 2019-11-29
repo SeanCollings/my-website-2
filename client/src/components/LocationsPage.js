@@ -80,13 +80,16 @@ class LocationsPage extends Component {
 
   groupSelected = selectedGroup => {
     this.setState({ selectedGroup });
-    this.props.updateHeading(selectedGroup.name);
+    this.props.updateHeading({
+      heading: selectedGroup.name,
+      previousPage: '/locations'
+    });
     this.props.returnToPreviousPage(false);
   };
 
   returnToGroups = () => {
-    this.setState({ selectedGroup: false });
-    this.props.updateHeading(null);
+    // this.setState({ selectedGroup: false });
+    // this.props.updateHeading(null);
   };
 
   render() {
@@ -191,7 +194,8 @@ function mapStateToProps({ app, resizeScreen, locations }) {
   return { app, resizeScreen, locations };
 }
 
-export default connect(
-  mapStateToProps,
-  { returnToPreviousPage, updateHeading, getLocationGroups }
-)(LocationsPage);
+export default connect(mapStateToProps, {
+  returnToPreviousPage,
+  updateHeading,
+  getLocationGroups
+})(LocationsPage);

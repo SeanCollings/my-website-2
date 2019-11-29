@@ -49,7 +49,10 @@ export default function(state = initialState, action) {
     case RETURN_TO_PREVIOUS_PAGE:
       return { ...state, returnToPreviousPage: action.payload };
     case UPDATE_HEADING:
-      return { ...state, headingName: action.payload };
+      return {
+        ...state,
+        headingName: action.payload
+      };
     case SHOW_TOOLTIP:
       return { ...state, tooltip: action.payload };
     case HIDE_TOOLTIP:

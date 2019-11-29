@@ -44,7 +44,6 @@ const ToggleDiceButton = props => {
   );
 };
 
-export default connect(
-  null,
-  { toggleDice }
-)(withStyles(styles)(ToggleDiceButton));
+export default connect(null, { toggleDice })(
+  withStyles(styles)(ToggleDiceButton)
+);
