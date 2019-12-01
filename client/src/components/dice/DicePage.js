@@ -69,8 +69,8 @@ const ShowCurrentRoll = playersScoreMap => {
   let playerHighlighted = false;
   let highScore = 0;
 
-  if (!someValuesNull(playersScoreMap))
-    highScore = getHighestScore(playersScoreMap);
+  const allPlayersRolled = !someValuesNull(playersScoreMap);
+  if (allPlayersRolled) highScore = getHighestScore(playersScoreMap);
 
   return (
     <div
@@ -85,7 +85,8 @@ const ShowCurrentRoll = playersScoreMap => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'minmax(min-content, max-content) 40px'
+          gridTemplateColumns: 'minmax(min-content, max-content) 40px',
+          gridColumnGap: '8px'
         }}
       >
         {Object.keys(playersScoreMap).map((key, i) => {
@@ -100,7 +101,7 @@ const ShowCurrentRoll = playersScoreMap => {
 
           const style = {
             color: highlight ? nextRollColor : color,
-            fontWeight: isHighScore ? 'bold' : 'lighter'
+            fontWeight: isHighScore || highlight ? 'bold' : 'normal'
           };
 
           const buttonStyle = {
@@ -117,12 +118,23 @@ const ShowCurrentRoll = playersScoreMap => {
               {/* <Typography style={style} onTouchStart={() => console.log(key)}>
                 {key}
               </Typography> */}
-              <Button style={buttonStyle} onTouchStart={() => console.log(key)}>
+              <Button
+                className="name-highlight"
+                style={buttonStyle}
+                onTouchStart={() => console.log(key)}
+              >
                 {key}
               </Button>
-              <Typography style={style}>
+              <Button
+                style={buttonStyle}
+                onTouchStart={() => console.log(key)}
+                disableRipple
+              >
+                {playersScoreMap[key] && allPlayersRolled ? `${roll}` : ``}
+              </Button>
+              {/* <Typography style={style}>
                 {playersScoreMap[key] ? `${roll}` : `-`}
-              </Typography>
+              </Typography> */}
             </Fragment>
           );
         })}
@@ -320,14 +332,13 @@ class DicePage extends Component {
         document.getElementById('add-player').focus();
         document.getElementById('add-player').select();
       }
-    }, 50);
+    }, 0);
 
     this.setState({ ...this.state, newGame: true, showModal: true });
   };
 
   addPlayerClicked = playerName => {
     const { players } = this.state;
-
     const newPlayers = [...players];
     const playersScoreMap = {};
 
@@ -539,7 +550,7 @@ class DicePage extends Component {
                   opacity: startNewRound ? '1' : '0.4'
                 }}
               >
-                Round
+                Clear
               </Button>
             </Grid>
           </div>
@@ -572,7 +583,8 @@ class DicePage extends Component {
               showModal: true,
               players: [],
               playersScoreMap: {},
-              playerAdded: false
+              playerAdded: false,
+              currentRoundRoll: 0
             })
           }
           cancelClick={() =>

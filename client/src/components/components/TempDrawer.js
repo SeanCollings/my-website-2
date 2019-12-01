@@ -346,7 +346,7 @@ class TemporaryDrawer extends React.Component {
               color: '#C7C7C7'
             }}
           >
-            {`release version: ${version}`}
+            {`release: ${version}`}
           </Typography>
         </SwipeableDrawer>
       </div>
@@ -369,7 +369,6 @@ function mapStateToProps({ auth, settings, app }) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  { getVersion }
-)(withRouter(withStyles(styles)(TemporaryDrawer)));
+export default connect(mapStateToProps, { getVersion })(
+  withRouter(withStyles(styles)(TemporaryDrawer))
+);

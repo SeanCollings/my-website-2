@@ -35,20 +35,32 @@ class ConfirmActionModal extends Component {
     errorMessage: ''
   };
 
+  textFieldKeyDown = e => {
+    const { playerName } = this.state;
+
+    if (e.keyCode === 13 && playerName.length > 0) {
+      this.addPlayerClicked();
+    }
+    // else if (e.keyCode === 27) {
+    //   this.cancelClicked();
+    // }
+  };
+
   addPlayerClicked = () => {
     const { playerName, currentPlayers } = this.state;
+    const textField = document.getElementById('add-player');
 
     if (playerName.length) {
       if (currentPlayers.length === 8) {
         return this.setState({ errorMessage: 'You already have 8 players!' });
       }
 
-      if (currentPlayers.includes(playerName)) {
+      if (currentPlayers.includes(playerName.toLowerCase())) {
         return this.setState({ errorMessage: 'Names must be unique' });
       }
 
       const allPlayers = [...currentPlayers];
-      allPlayers.push(playerName);
+      allPlayers.push(playerName.toLowerCase());
 
       this.setState({
         ...this.state,
@@ -57,13 +69,18 @@ class ConfirmActionModal extends Component {
         currentPlayers: allPlayers
       });
       this.props.addClick(playerName);
+
+      if (textField) {
+        document.getElementById('add-player').focus();
+        document.getElementById('add-player').select();
+      }
     } else {
       this.setState({ errorMessage: 'At least something here' });
     }
   };
 
   cancelClicked = () => {
-    const { playerName, currentPlayers } = this.state;
+    const { playerName, currentPlayers, errorMessage } = this.state;
 
     this.setState({
       showError: false,
@@ -72,7 +89,7 @@ class ConfirmActionModal extends Component {
       playerName: ''
     });
 
-    if (playerName.length && currentPlayers.length)
+    if (playerName.length && currentPlayers.length && !errorMessage.length)
       this.props.addClick(playerName);
 
     this.props.cancelClick();
@@ -112,6 +129,7 @@ class ConfirmActionModal extends Component {
               variant="outlined"
               helperText={errorMessage}
               value={playerName}
+              onKeyDown={e => this.textFieldKeyDown(e)}
               onChange={e =>
                 this.setState({
                   playerName: e.target.value,

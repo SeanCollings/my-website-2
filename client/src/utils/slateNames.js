@@ -128,7 +128,7 @@ export const nouns = [
   'Camel',
   'Temple',
   'Pyramid',
-  ' Coffee',
+  'Coffee',
   'Coffee cup',
   'Pereryv',
   'Burrito',

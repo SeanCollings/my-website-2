@@ -14,7 +14,8 @@ const styles = theme => ({
     maxWidth: '400px',
     width: '90%',
     padding: '12px',
-    maxHeight: '80%'
+    overflow: 'scroll',
+    maxHeight: '100%'
   },
   paper: {
     position: 'absolute',
@@ -41,7 +42,10 @@ class ConfirmActionModal extends Component {
         <div className={`${classes.modalStyles} ${classes.paper}`}>
           <Typography
             id="modal-title"
-            style={{ textAlign: 'center', fontWeight: 'bold' }}
+            style={{
+              textAlign: 'center',
+              fontWeight: 'bold'
+            }}
           >
             Rules - Finger of Die
           </Typography>
@@ -62,7 +66,7 @@ class ConfirmActionModal extends Component {
               <Typography>Play until someone gets 5 points</Typography>
             </li>
             <li>
-              <Typography>No negative numbers</Typography>
+              <Typography>No negative points</Typography>
             </li>
             <li>
               <Typography>
@@ -73,14 +77,16 @@ class ConfirmActionModal extends Component {
               <Typography>Highest roll in a round gets 1 point</Typography>
             </li>
             <li>
-              <Typography>Double 3 and 5 ie. 3=6, 5=10</Typography>
+              <Typography>
+                Double a roll of 3 and rool of 5 ie. 3=6, 5=10
+              </Typography>
             </li>
-            <li>
+            {/* <li>
               <Typography>
                 If two or more rolls are equal in a round, minus 1 from those
                 players
               </Typography>
-            </li>
+            </li> */}
             <li>
               <Typography>
                 Roll 3('6') and roll 6 are both a '6' but not equal
@@ -88,7 +94,13 @@ class ConfirmActionModal extends Component {
             </li>
             <li>
               <Typography>
-                3+ players: If the highest score is shared by 2 or more players
+                2 players: If the rolls for a round are equal, both players
+                minus 1 point
+              </Typography>
+            </li>
+            <li>
+              <Typography>
+                3+ players: If the highest roll is shared by 2 or more players
                 and are equal, no change in score occurs
               </Typography>
             </li>
