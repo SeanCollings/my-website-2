@@ -13,6 +13,8 @@ const styles = theme => ({
   }
 });
 
+const SIGN_UP_DISABLED = true;
+
 class CredentialPage extends Component {
   state = {
     signUpUser: false
@@ -30,7 +32,7 @@ class CredentialPage extends Component {
 
     return (
       <div className={classes.pageFill}>
-        <SignIn signUpUser={signUpUser} />
+        <SignIn signUpUser={signUpUser} signUpDisabled={SIGN_UP_DISABLED} />
         <Grid
           container
           spacing={0}
@@ -38,7 +40,8 @@ class CredentialPage extends Component {
           alignItems="center"
           justify="center"
           style={{
-            minHeight: '10vh'
+            minHeight: '10vh',
+            opacity: SIGN_UP_DISABLED ? '0.4' : '1'
           }}
         >
           <Typography
@@ -49,6 +52,7 @@ class CredentialPage extends Component {
             {signUpUser ? 'Got an account already?' : "Don't have an account?"}
           </Typography>
           <Button
+            disabled={SIGN_UP_DISABLED}
             style={{
               alignItems: 'center',
               // color: '#FFC300',

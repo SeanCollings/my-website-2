@@ -40,6 +40,11 @@ export default app => {
           { splashes: 1, lastSplashed: 1 }
         );
 
+        await Users.updateOne(
+          { _id: req.user._id },
+          { $set: { lastLogin: Date.now() } }
+        );
+
         const today = new Date();
         const isToday =
           user.lastSplashed.getDate() === today.getDate() &&

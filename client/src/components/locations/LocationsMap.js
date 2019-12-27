@@ -93,8 +93,8 @@ class LocationsMap extends Component {
           {
             origin: origin,
             destination: destination,
-            travelMode: google.maps.TravelMode.DRIVING
-            // travelMode: google.maps.TravelMode.WALKING
+            // travelMode: google.maps.TravelMode.DRIVING
+            travelMode: google.maps.TravelMode.WALKING
           },
           (result, status) => {
             if (status === google.maps.DirectionsStatus.OK) {
@@ -290,7 +290,7 @@ function mapStateToProps({ locations }) {
   return { locations };
 }
 
-export default connect(
-  mapStateToProps,
-  { locationsInitialised, onlineMembersUpdated }
-)(withScriptjs(withGoogleMap(LocationsMap)));
+export default connect(mapStateToProps, {
+  locationsInitialised,
+  onlineMembersUpdated
+})(withScriptjs(withGoogleMap(LocationsMap)));

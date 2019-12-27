@@ -57,7 +57,7 @@ app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }));
 
 app.use(
   cookieSession({
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    maxAge: 10 * 365 * 24 * 60 * 60 * 1000, // 10 years expire
     keys: [keys.cookieKey]
   })
 );
