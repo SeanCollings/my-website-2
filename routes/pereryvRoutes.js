@@ -10,7 +10,7 @@ const Slates = mongoose.model('slates');
 export default app => {
   app.get('/api/get_slates', requireLogin, async (req, res) => {
     try {
-      const slates = await Slates.find({ completed: false }).sort({
+      const slates = await Slates.find().sort({
         createdDate: 1
       });
       res.send(slates);
@@ -47,7 +47,9 @@ export default app => {
       try {
         const { slateName } = req.body;
 
-        const users = await PereryvUsers.find().sort({ position: 1 });
+        const users = await PereryvUsers.find({ active: true }).sort({
+          position: 1
+        });
 
         if (users.length) {
           await new Slates({

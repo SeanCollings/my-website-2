@@ -9,7 +9,9 @@ import {
   getCompletedSlates
 } from '../actions/pereryvActions';
 import ConfirmActionModal from '../components/modals/ConfirmActionModal';
+import CompletedSlates from './pereryv/CompletedSlates';
 import { adjectives, nouns } from '../utils/slateNames';
+import { sortByCreatedDate } from '../utils/utility';
 
 import Paper from './components/paper';
 import List from '@material-ui/core/List';
@@ -157,7 +159,8 @@ class PereryvPage extends Component {
 
     if (!slates.length) return <Paper content={`The Slates are clean...`} />;
 
-    return slates.map(slate => {
+    return sortByCreatedDate(slates, false).map(slate => {
+      if (slate.completed) return null;
       const currentSlateSelected = editSlate.includes(slate._id);
 
       return (
@@ -266,7 +269,7 @@ class PereryvPage extends Component {
     const {
       classes,
       auth,
-      pereryv: { completedSlates }
+      pereryv: { slates, completedSlates }
     } = this.props;
     const {
       showModal,
@@ -296,16 +299,19 @@ class PereryvPage extends Component {
           <AddIcon />
         </Fab>
         <Grid container direction="column" justify="center" alignItems="center">
-          <div
-            style={{
-              padding: '0px 8px',
-              borderLeft: '1px solid #581845',
-              borderRight: '1px solid #581845'
-            }}
-          >
-            <Paper content={`Slates Completed: ${completedSlates}`} />
-          </div>
           {this.renderSlates()}
+          {slates.length > 0 && (
+            <div
+              style={{
+                padding: '0px 42px',
+                borderBottom: '1px solid #dedede',
+                margin: '8px'
+              }}
+            >
+              <Paper content={`Completed Slates: ${completedSlates}`} />
+            </div>
+          )}
+          {slates.length > 0 && <CompletedSlates slates={slates} />}
         </Grid>
         <ConfirmActionModal
           showModal={showModal}
@@ -361,7 +367,10 @@ function mapStateToProps({ auth, resizeScreen, snackBar, pereryv }) {
   return { auth, resizeScreen, snackBar, pereryv };
 }
 
-export default connect(
-  mapStateToProps,
-  { getSlates, getPereryvUsers, createSlate, updateSlate, getCompletedSlates }
-)(withStyles(styles)(PereryvPage));
+export default connect(mapStateToProps, {
+  getSlates,
+  getPereryvUsers,
+  createSlate,
+  updateSlate,
+  getCompletedSlates
+})(withStyles(styles)(PereryvPage));

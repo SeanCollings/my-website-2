@@ -56,7 +56,8 @@ export const getCompletedSlates = () => async dispatch => {
 
   if ('indexedDB' in window) {
     readAllData('completed-slates').then(data => {
-      dispatch({ type: GET_COMPLETED_SLATES, payload: data[0].data });
+      if (data && data.length)
+        dispatch({ type: GET_COMPLETED_SLATES, payload: data[0].data });
     });
   }
 };

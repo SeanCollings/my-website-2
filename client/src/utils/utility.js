@@ -101,3 +101,17 @@ export const locationsEqual = (firstLocation, secondLocation) => {
     firstLocation.lng === secondLocation.lng
   );
 };
+
+export const sortByCreatedDate = (array, ascending) => {
+  const newArray = array;
+
+  if (ascending) {
+    return newArray.sort(
+      (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+    );
+  }
+
+  return newArray.sort(
+    (a, b) => new Date(a.createdDate) - new Date(b.createdDate)
+  );
+};
