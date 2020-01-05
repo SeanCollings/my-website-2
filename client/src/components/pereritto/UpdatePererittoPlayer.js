@@ -12,6 +12,7 @@ import { MessageTypeEnum } from '../../utils/constants';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+// import Typography from '@material-ui/core/Typography';
 // import TextField from '@material-ui/core/TextField';
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
 // import Checkbox from '@material-ui/core/Checkbox';
@@ -45,7 +46,10 @@ const styles = theme => ({
   }
 });
 
-const updateStates = ['Update Player', 'Remove Player', 'Mark Absent'];
+const UPDATE_BOARD = 'Update Board';
+const REMOVE_PLAYER = 'Remove Player';
+const MARK_ABSENT = 'Mark Absent';
+const updateStates = [UPDATE_BOARD, REMOVE_PLAYER, MARK_ABSENT];
 
 class UpdatePererittoPlayer extends Component {
   state = {
@@ -55,7 +59,7 @@ class UpdatePererittoPlayer extends Component {
     updatingPlayer: false,
     hideDates: true,
     showModal: false,
-    updateState: updateStates[0],
+    updateState: UPDATE_BOARD,
     updateInt: 0
   };
 
@@ -85,7 +89,7 @@ class UpdatePererittoPlayer extends Component {
 
     if (
       playerId === '' &&
-      (updateState === updateStates[0] || updateState === updateStates[2])
+      (updateState === UPDATE_BOARD || updateState === MARK_ABSENT)
     ) {
       this.setState({ errorName: true });
       return this.props.showMessage(MessageTypeEnum.error, 'Select a name!');
@@ -95,14 +99,14 @@ class UpdatePererittoPlayer extends Component {
       return this.props.showMessage(MessageTypeEnum.error, 'Select a date!');
 
     switch (updateState) {
-      case updateStates[0]:
+      case UPDATE_BOARD:
         this.setState({ updatingPlayer: true });
         this.props.updatePererittoUser(playerId, selectedDate);
         break;
-      case updateStates[1]:
+      case REMOVE_PLAYER:
         this.setState({ ...this.state, updatingPlayer: true, showModal: true });
         break;
-      case updateStates[2]:
+      case MARK_ABSENT:
         this.setState({ ...this.state, updatingPlayer: true, showModal: true });
         break;
       default:
@@ -113,14 +117,16 @@ class UpdatePererittoPlayer extends Component {
   renderPlayers = () => {
     const { pererittoUsers } = this.props;
     if (pererittoUsers.length > 0) {
-      return pererittoUsers.map(user => {
-        if (user.retired) return null;
-        return (
-          <MenuItem key={user._id} value={user._id}>
-            {user.name}
-          </MenuItem>
-        );
-      });
+      return pererittoUsers
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(user => {
+          if (user.retired) return null;
+          return (
+            <MenuItem key={user._id} value={user._id}>
+              {user.name}
+            </MenuItem>
+          );
+        });
     }
 
     return null;
@@ -142,7 +148,7 @@ class UpdatePererittoPlayer extends Component {
     const { updateInt } = this.state;
 
     let newUpdateInt = updateInt;
-    if (updateInt !== 2) newUpdateInt++;
+    if (updateInt !== updateStates.length - 1) newUpdateInt++;
     else newUpdateInt = 0;
 
     this.setState({
@@ -172,6 +178,7 @@ class UpdatePererittoPlayer extends Component {
                   value={playerId}
                   onChange={this.handleChange}
                   displayEmpty
+                  disabled={updateState === REMOVE_PLAYER}
                   style={{
                     opacity: playerId === '' ? '0.5' : '1'
                   }}
@@ -199,8 +206,7 @@ class UpdatePererittoPlayer extends Component {
               preventSelection={false}
               selectedDate={date => this.setState({ selectedDate: date })}
               hideDates={
-                updateState === updateStates[0] ||
-                updateState === updateStates[2]
+                updateState === UPDATE_BOARD || updateState === MARK_ABSENT
               }
             />
           </Grid>
@@ -213,17 +219,15 @@ class UpdatePererittoPlayer extends Component {
               <Button
                 size={'medium'}
                 disabled={
-                  updateState === updateStates[1] && !selectedDate
-                    ? true
-                    : false
+                  updateState === REMOVE_PLAYER && !selectedDate ? true : false
                 }
                 style={{
                   color: 'white',
                   backgroundColor:
-                    updateState === updateStates[2] ? '#c70039' : '#154360',
+                    updateState === MARK_ABSENT ? '#c70039' : '#154360',
                   opacity:
                     updatingPlayer ||
-                    (updateState === updateStates[1] && !selectedDate)
+                    (updateState === REMOVE_PLAYER && !selectedDate)
                       ? '0.5'
                       : '1'
                 }}
@@ -238,15 +242,15 @@ class UpdatePererittoPlayer extends Component {
           showModal={showModal}
           title={'Warning!'}
           message={`Are you sure you want to ${
-            updateState === updateStates[1]
+            updateState === REMOVE_PLAYER
               ? 'delete this date?'
               : 'mark this player as absent?'
           }`}
           confirmClick={() => {
             this.setState({ showModal: false });
-            updateState === updateStates[1] &&
+            updateState === REMOVE_PLAYER &&
               this.props.removeWinnerDate(selectedDate);
-            updateState === updateStates[2] &&
+            updateState === MARK_ABSENT &&
               this.props.markPlayerAbsent(playerId, selectedDate);
           }}
           cancelClick={() =>
@@ -271,7 +275,6 @@ function mapStateToProps({ auth, pererittoUsers, resizeScreen, snackBar }) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  { ...actions, showMessage }
-)(withStyles(styles)(UpdatePererittoPlayer));
+export default connect(mapStateToProps, { ...actions, showMessage })(
+  withStyles(styles)(UpdatePererittoPlayer)
+);

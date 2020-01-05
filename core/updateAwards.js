@@ -5,13 +5,17 @@ const CurrentAwards = mongoose.model('currentawards');
 const PastAwards = mongoose.model('pastawards');
 const Awards = mongoose.model('awards');
 
+const DATE_FRIDAY = 'Fri';
+const DATE_13 = '13';
+const DATE_2020 = '2020';
+const CURRENT_YEAR = new Date().getFullYear();
+const PREVIOUS_YEAR = new Date().getFullYear() - 1;
+
 // #region Update Awards
 export const updateAwards = async () => {
   try {
-    const currentYear = new Date().getFullYear();
-    const previousYear = new Date().getFullYear() - 1;
     const previousYearInCurrentAwards = await CurrentAwards.find({
-      year: previousYear
+      year: PREVIOUS_YEAR
     });
 
     // Do bulk remove operation
@@ -20,9 +24,9 @@ export const updateAwards = async () => {
     await bulkRemove.execute();
 
     if (previousYearInCurrentAwards.length > 0) {
-      determineWinners(false, currentYear, previousYear);
+      determineWinners(false, CURRENT_YEAR, PREVIOUS_YEAR);
     }
-    determineWinners(true, currentYear, previousYear);
+    determineWinners(true, CURRENT_YEAR, PREVIOUS_YEAR);
   } catch (error) {
     throw error;
   }
@@ -33,7 +37,7 @@ const determineWinners = async (
   currentYear,
   previousYear
 ) => {
-  const pererittoPlayers = await PererittoUser.find();
+  const pererittoPlayers = await PererittoUser.find().lean();
   const players = {};
   const playersArray = [];
 
@@ -42,7 +46,8 @@ const determineWinners = async (
     playersArray.push({
       id: pererittoPlayers[i]._id,
       retired: pererittoPlayers[i].retired,
-      retiredDate: pererittoPlayers[i].retiredDate,
+      retiredDates: pererittoPlayers[i].retiredDates,
+      returnedDates: pererittoPlayers[i].returnedDates,
       absentDates: pererittoPlayers[i].absentDates
     });
   }
@@ -50,9 +55,13 @@ const determineWinners = async (
   if (updateCurrentAwards) {
     const winnerDates = await WinnerDates.find({
       year: currentYear
+      // year: 2019
+      // year: 2018
     });
     console.log('Winners current year:', winnerDates.length);
     determineAwardTotals(winnerDates, players, currentYear, playersArray);
+    // determineAwardTotals(winnerDates, players, 2019, playersArray);
+    if (playersArray.length > 0) awardRandom(playersArray, currentYear);
   } else {
     const winnerDates = await WinnerDates.find({
       year: previousYear
@@ -60,8 +69,6 @@ const determineWinners = async (
     console.log('Winners previous year:', winnerDates.length);
     determineAwardTotals(winnerDates, players, previousYear, playersArray);
   }
-
-  if (playersArray.length > 0) awardRandom(playersArray, currentYear);
 };
 
 // ### Logic Gathering below ###
@@ -71,6 +78,8 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
   let lastWinner = null;
   const participated = new Set();
   const playersDateCounts = [];
+  const playersFriday13 = [];
+  const players2020 = new Set();
 
   const winnersMap = winnerDates.reduce((result, winner) => {
     if (winner.date) {
@@ -89,6 +98,16 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
     const winner = winnerDates[i]._winner.toString();
     if (!playersDateCounts.includes(winner)) playersDateCounts.push(winner);
 
+    if (winnerDates[i].date.includes(DATE_2020))
+      players2020.add(winnerDates[i]._winner.toString());
+
+    if (
+      winnerDates[i].date.includes(DATE_FRIDAY) &&
+      winnerDates[i].date.includes(DATE_13)
+    ) {
+      playersFriday13.push(winnerDates[i]._winner);
+    }
+
     participated.add(winnerDates[i]._winner.toString());
 
     let playerWinDate = new Date(winnerDates[i].date);
@@ -98,7 +117,7 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
     }
   }
 
-  determinePositions(players, year);
+  determinePositions(players, year, activePlayers);
   determineDateCounts(
     winnerDatesSorted,
     playersDateCounts,
@@ -108,12 +127,15 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
   );
   awardParticipated(participated, year);
   awardGotItLast(lastWinner, year);
+  awardFriday13th(playersFriday13, year);
+  awardHindsight(players2020, year);
 };
 
-const determinePositions = (players, year) => {
-  let first = [];
-  let second = [];
-  let third = [];
+const determinePositions = (players, year, activePlayers) => {
+  const first = [];
+  const second = [];
+  const third = [];
+  const last = [];
 
   const playersMap = Object.keys(players).map(key => {
     return { _id: key, count: players[key] };
@@ -121,6 +143,8 @@ const determinePositions = (players, year) => {
   let playersArray = [];
   playersArray.push(...playersMap);
   playersArray.sort((a, b) => b.count - a.count);
+
+  const [retiredPlayers] = getRetiredPlayers(activePlayers, year);
 
   if (playersArray[0].count !== 0) first.push(playersArray[0]._id);
 
@@ -140,9 +164,34 @@ const determinePositions = (players, year) => {
     } else third.push(playersArray[2]._id);
   }
 
+  // Get last place player
+  const playersLength = playersArray.length;
+  if (playersLength > 3) {
+    let lastScore = Infinity;
+
+    for (let i = playersLength - 1; i >= 0; i--) {
+      if (
+        !playerRetiredDuring(retiredPlayers, playersArray[i]._id, new Date())
+      ) {
+        lastScore = playersArray[i].count;
+        break;
+      }
+    }
+    for (let i = 0; i < playersLength; i++) {
+      if (
+        playersArray[i].count === lastScore &&
+        !playerRetiredDuring(retiredPlayers, playersArray[i]._id, new Date())
+      ) {
+        last.push(playersArray[i]._id);
+      }
+    }
+  }
+
   if (first.length > 0) awardFirstPlace(first, year);
   if (second.length > 0) awardSecondPlace(second, year);
   if (third.length > 0) awardThirdPlace(third, year);
+  if (first.length + second.length + third.length > 2 && last.length > 0)
+    awardLastPlace(last, year);
 };
 
 const determineDateCounts = async (
@@ -158,7 +207,9 @@ const determineDateCounts = async (
   const players3InARowMap = {};
   const playersGodlikeMap = {};
   const playersDemiGodlikeMap = {};
-  const retiredPlayers = [];
+  const retiredPlayersIds = [];
+  const retiredPlayers1 = [];
+
   for (let i = 0; i < playersWithWins.length; i++) {
     players3InARowMap[playersWithWins[i]] = 0;
   }
@@ -169,13 +220,34 @@ const determineDateCounts = async (
   }
 
   for (let i = 0; i < activePlayers.length; i++) {
+    const playerId = activePlayers[i].id.toString();
+    const retiredDates = activePlayers[i].retiredDates;
     if (activePlayers[i].retired) {
-      retiredPlayers.push({
-        id: activePlayers[i].id.toString(),
-        retiredDate: activePlayers[i].retiredDate
+      if (!retiredPlayersIds.includes(playerId))
+        retiredPlayersIds.push(playerId);
+
+      retiredPlayers1.push({
+        id: playerId,
+        retiredDates: activePlayers[i].retiredDates,
+        returnedDates: activePlayers[i].returnedDates
       });
     }
+
+    if (retiredDates && retiredDates.length > 0) {
+      for (let j = 0; j < retiredDates.length; j++) {
+        const inCurrentYear =
+          retiredDates[j].year.toString() === year.toString();
+        const hasRetiredDates = retiredDates[j].dates.length > 0;
+        if (inCurrentYear && hasRetiredDates) {
+          break;
+        }
+      }
+    }
   }
+  const [retiredPlayers, retiredCurrentYear] = getRetiredPlayers(
+    activePlayers,
+    year
+  );
 
   for (let i = 0; i < sortedDates.length; i++) {
     const winnerId = sortedDates[i]._winner.toString();
@@ -188,15 +260,13 @@ const determineDateCounts = async (
     for (let j = 0; j < playersWithWins.length; j++) {
       let playerId = playersWithWins[j];
 
-      if (!playerRetired(retiredPlayers, playerId, winnerDate)) {
-        if (winnerId === playerId) {
-          players3InARowMap[playerId] += 1;
-        } else {
-          players3InARowMap[playerId] = 0;
-        }
-
-        if (players3InARowMap[playerId] === 3) players3InARow.push(playerId);
+      if (winnerId === playerId) {
+        players3InARowMap[playerId] += 1;
+      } else {
+        players3InARowMap[playerId] = 0;
       }
+
+      if (players3InARowMap[playerId] === 3) players3InARow.push(playerId);
     }
 
     for (let playerId in allPlayers) {
@@ -205,7 +275,7 @@ const determineDateCounts = async (
       );
 
       if (
-        playerRetired(retiredPlayers, playerId, winnerDate) ||
+        playerRetiredDuring(retiredPlayers, playerId, winnerDate) ||
         (playerCreatedDate > defaultFirstDate && playerCreatedDate > winnerDate)
       ) {
         continue;
@@ -232,11 +302,103 @@ const determineDateCounts = async (
   if (players3InARow.length > 0) award3InARow(players3InARow, year);
   if (playersDemiGodlike.length > 0) awardDemiGodlike(playersDemiGodlike, year);
   if (playersGodlike.length > 0) awardGodlike(playersGodlike, year);
+  if (retiredCurrentYear.length > 0) awardRetired(retiredCurrentYear, year);
 };
 
-const playerRetired = (retiredPlayers, playerId, winnerDate) => {
-  const retiredPlayer = retiredPlayers.filter(player => player.id === playerId);
-  return retiredPlayer.length && retiredPlayer[0].retiredDate < winnerDate;
+const playerRetiredDuring = (retiredPlayers, playerId, dateToCheck) => {
+  const retiredPlayer = retiredPlayers.filter(player => {
+    for (const key in player) {
+      return key === playerId;
+    }
+  });
+
+  if (retiredPlayer.length) {
+    const { retired, returned } = retiredPlayer[0][playerId];
+    const allRetiredDates = [];
+    const allReturnedDates = [];
+
+    if (retired) {
+      Object.values(retired).forEach(dates => {
+        if (dates.length) {
+          allRetiredDates.push(...dates);
+        }
+      });
+    }
+    if (returned) {
+      Object.values(returned).forEach(dates => {
+        if (dates.length) {
+          allReturnedDates.push(...dates);
+        }
+      });
+    }
+
+    const beforeRetiredDates = allRetiredDates.filter(d => {
+      return d - dateToCheck <= 0;
+    });
+    const beforeReturnedDates = allReturnedDates.filter(d => {
+      return d - dateToCheck <= 0;
+    });
+
+    if (beforeRetiredDates.length) {
+      if (beforeReturnedDates.length) {
+        const maxBeforeRetiredDate = beforeRetiredDates.reduce((a, b) =>
+          a > b ? a : b
+        );
+        const maxBeforeReturndedDate = beforeReturnedDates.reduce((a, b) =>
+          a > b ? a : b
+        );
+
+        if (maxBeforeReturndedDate < maxBeforeRetiredDate) {
+          return true;
+        }
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+  return false;
+};
+
+const getRetiredPlayers = (activePlayers, year) => {
+  const allRetiredPlayers = [];
+  const retiredCurrentYear = [];
+
+  for (let i = 0; i < activePlayers.length; i++) {
+    const playerId = activePlayers[i].id.toString();
+    const retiredDates = activePlayers[i].retiredDates;
+    const returnedDates = activePlayers[i].returnedDates;
+    const allRetiredDates = {};
+    const allReturnedDates = {};
+    const hasRetired = false;
+    const hasReturned = false;
+
+    if (retiredDates && retiredDates.length > 0) {
+      for (let i = 0; i < retiredDates.length; i++) {
+        allRetiredDates[retiredDates[i].year] = [...retiredDates[i].dates];
+        if (
+          retiredDates[i].year.toString() === year.toString() &&
+          !retiredCurrentYear.includes(playerId)
+        )
+          retiredCurrentYear.push(playerId);
+      }
+      hasRetired = true;
+    }
+    if (returnedDates && returnedDates.length > 0) {
+      for (let i = 0; i < returnedDates.length; i++) {
+        allReturnedDates[returnedDates[i].year] = [...returnedDates[i].dates];
+      }
+      hasReturned = true;
+    }
+
+    if (hasRetired || hasReturned) {
+      allRetiredPlayers.push({
+        [playerId]: { retired: allRetiredDates, returned: allReturnedDates }
+      });
+    }
+  }
+
+  return [allRetiredPlayers, retiredCurrentYear];
 };
 
 // ^^ ### Logic Gathering above ### ^^
@@ -244,7 +406,6 @@ const playerRetired = (retiredPlayers, playerId, winnerDate) => {
 // ### Awards Section below ###
 
 const awardFirstPlace = async (firstArr, year) => {
-  const currentYear = new Date().getFullYear();
   const award = await Awards.findOne(
     {
       type: 'first'
@@ -255,7 +416,7 @@ const awardFirstPlace = async (firstArr, year) => {
   if (award) {
     const awardParams = { year, _award: award };
     for (let first of firstArr) {
-      if (year !== currentYear) {
+      if (year !== CURRENT_YEAR) {
         await new PastAwards({
           ...awardParams,
           title: 'Winner!',
@@ -273,7 +434,6 @@ const awardFirstPlace = async (firstArr, year) => {
 };
 
 const awardSecondPlace = async (secondArr, year) => {
-  const currentYear = new Date().getFullYear();
   const award = await Awards.findOne(
     {
       type: 'second'
@@ -284,7 +444,7 @@ const awardSecondPlace = async (secondArr, year) => {
   if (award) {
     const awardParams = { year, _award: award };
     for (let second of secondArr) {
-      if (year !== currentYear) {
+      if (year !== CURRENT_YEAR) {
         await new PastAwards({
           ...awardParams,
           title: 'Second Place!',
@@ -302,7 +462,6 @@ const awardSecondPlace = async (secondArr, year) => {
 };
 
 const awardThirdPlace = async (thirdArr, year) => {
-  const currentYear = new Date().getFullYear();
   const award = await Awards.findOne(
     {
       type: 'third'
@@ -313,7 +472,7 @@ const awardThirdPlace = async (thirdArr, year) => {
   if (award) {
     const awardParams = { year, _award: award };
     for (let third of thirdArr) {
-      if (year !== currentYear) {
+      if (year !== CURRENT_YEAR) {
         await new PastAwards({
           ...awardParams,
           title: 'Third Place!',
@@ -331,7 +490,6 @@ const awardThirdPlace = async (thirdArr, year) => {
 };
 
 const awardParticipated = async (participated, year) => {
-  const currentYear = new Date().getFullYear();
   const award = await Awards.findOne(
     {
       type: 'participant'
@@ -341,7 +499,7 @@ const awardParticipated = async (participated, year) => {
 
   const awardParams = { title: 'Felt the burn', year, _award: award };
   for (let part of participated) {
-    if (year !== currentYear) {
+    if (year !== CURRENT_YEAR) {
       await new PastAwards({ ...awardParams, _pereritto: part }).save();
     } else {
       await new CurrentAwards({ ...awardParams, _pereritto: part }).save();
@@ -350,7 +508,6 @@ const awardParticipated = async (participated, year) => {
 };
 
 const awardGotItLast = async (lastWinner, year) => {
-  const currentYear = new Date().getFullYear();
   const award = await Awards.findOne(
     {
       type: 'gotItLast'
@@ -365,7 +522,7 @@ const awardGotItLast = async (lastWinner, year) => {
       _award: award,
       _pereritto: lastWinner
     };
-    if (year !== currentYear) {
+    if (year !== CURRENT_YEAR) {
       await new PastAwards(awardParams).save();
     } else {
       await new CurrentAwards(awardParams).save();
@@ -374,7 +531,6 @@ const awardGotItLast = async (lastWinner, year) => {
 };
 
 const award3InARow = async (players3InARow, year) => {
-  const currentYear = new Date().getFullYear();
   const award = await Awards.findOne(
     {
       type: '3InARow'
@@ -389,7 +545,7 @@ const award3InARow = async (players3InARow, year) => {
       _award: award
     };
     for (let player of players3InARow) {
-      if (year !== currentYear) {
+      if (year !== CURRENT_YEAR) {
         await new PastAwards({ ...awardParams, _pereritto: player }).save();
       } else {
         await new CurrentAwards({ ...awardParams, _pereritto: player }).save();
@@ -399,7 +555,6 @@ const award3InARow = async (players3InARow, year) => {
 };
 
 const awardRandom = async (allPlayers, year) => {
-  const currentYear = new Date().getFullYear();
   const award = await Awards.findOne(
     {
       type: 'random'
@@ -417,7 +572,7 @@ const awardRandom = async (allPlayers, year) => {
     const randomPlayer =
       activePlayers[Math.floor(Math.random() * activePlayers.length)].id;
 
-    if (year !== currentYear) {
+    if (year !== CURRENT_YEAR) {
       await new PastAwards({ ...awardParams, _pereritto: randomPlayer }).save();
     } else {
       await new CurrentAwards({
@@ -429,8 +584,6 @@ const awardRandom = async (allPlayers, year) => {
 };
 
 const awardDemiGodlike = async (playersDemiGodlike, year) => {
-  const currentYear = new Date().getFullYear();
-
   const award = await Awards.findOne(
     {
       type: 'demiGodlike'
@@ -445,7 +598,7 @@ const awardDemiGodlike = async (playersDemiGodlike, year) => {
       _award: award
     };
     for (let player of playersDemiGodlike) {
-      if (year !== currentYear) {
+      if (year !== CURRENT_YEAR) {
         await new PastAwards({ ...awardParams, _pereritto: player }).save();
       } else {
         await new CurrentAwards({ ...awardParams, _pereritto: player }).save();
@@ -455,8 +608,6 @@ const awardDemiGodlike = async (playersDemiGodlike, year) => {
 };
 
 const awardGodlike = async (playersGodlike, year) => {
-  const currentYear = new Date().getFullYear();
-
   const award = await Awards.findOne(
     {
       type: 'godlike'
@@ -471,7 +622,107 @@ const awardGodlike = async (playersGodlike, year) => {
       _award: award
     };
     for (let player of playersGodlike) {
-      if (year !== currentYear) {
+      if (year !== CURRENT_YEAR) {
+        await new PastAwards({ ...awardParams, _pereritto: player }).save();
+      } else {
+        await new CurrentAwards({ ...awardParams, _pereritto: player }).save();
+      }
+    }
+  }
+};
+
+const awardFriday13th = async (players, year) => {
+  const award = await Awards.findOne(
+    {
+      type: 'friday13'
+    },
+    { _id: 1 }
+  ).limit(1);
+
+  if (award) {
+    const awardParams = {
+      title: 'Friday the 13th',
+      year,
+      _award: award
+    };
+    for (let player of players) {
+      if (year !== CURRENT_YEAR) {
+        await new PastAwards({ ...awardParams, _pereritto: player }).save();
+      } else {
+        await new CurrentAwards({ ...awardParams, _pereritto: player }).save();
+      }
+    }
+  }
+};
+
+const awardLastPlace = async (lastArr, year) => {
+  const award = await Awards.findOne(
+    {
+      type: 'lastPlace'
+    },
+    { _id: 1 }
+  ).limit(1);
+
+  if (award) {
+    const awardParams = { year, _award: award };
+    for (let last of lastArr) {
+      if (year !== CURRENT_YEAR) {
+        await new PastAwards({
+          ...awardParams,
+          title: 'Last Place',
+          _pereritto: last
+        }).save();
+      } else {
+        await new CurrentAwards({
+          ...awardParams,
+          title: 'Floating Last',
+          _pereritto: last
+        }).save();
+      }
+    }
+  }
+};
+
+const awardRetired = async (playersRetired, year) => {
+  const award = await Awards.findOne(
+    {
+      type: 'retired'
+    },
+    { _id: 1 }
+  ).limit(1);
+
+  if (award) {
+    const awardParams = { year, _award: award };
+    for (let player of playersRetired) {
+      if (year !== CURRENT_YEAR) {
+        await new PastAwards({
+          ...awardParams,
+          title: 'Retired',
+          _pereritto: player
+        }).save();
+      } else {
+        await new CurrentAwards({
+          ...awardParams,
+          title: 'Retired',
+          _pereritto: player
+        }).save();
+      }
+    }
+  }
+};
+
+const awardHindsight = async (playersHindsight, year) => {
+  const award = await Awards.findOne(
+    {
+      type: 'hindsight'
+    },
+    { _id: 1 }
+  ).limit(1);
+
+  if (award) {
+    const awardParams = { title: 'Hindsight', year, _award: award };
+    for (let player of playersHindsight) {
+      if (year !== CURRENT_YEAR) {
         await new PastAwards({ ...awardParams, _pereritto: player }).save();
       } else {
         await new CurrentAwards({ ...awardParams, _pereritto: player }).save();

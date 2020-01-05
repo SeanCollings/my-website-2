@@ -178,15 +178,70 @@ export default app => {
     async (req, res) => {
       try {
         const { _pereritto } = req.body;
-        const pererittoPlayer = await PererittoUser.findOne({
-          _id: _pereritto
-        });
+        const pererittoPlayer = await PererittoUser.findOne(
+          {
+            _id: _pereritto
+          },
+          { retiredDates: 1, returnedDates: 1, retired: 1 }
+        );
 
         if (pererittoPlayer) {
-          await PererittoUser.updateOne(
-            { _id: _pereritto },
-            { $set: { retired: true, retiredDate: new Date() } }
-          );
+          const currentYear = new Date().getFullYear().toString();
+          const { retiredDates, retired } = pererittoPlayer;
+
+          if (retired) {
+            return res.send({
+              type: MessageTypeEnum.error,
+              message: 'That player is already retired!'
+            });
+          }
+
+          if (retiredDates.length > 0) {
+            const allYears = [];
+            const allYearsAndDates = [...retiredDates];
+
+            for (let i = 0; i < retiredDates.length; i++) {
+              allYears.push(retiredDates[i].year);
+            }
+
+            if (!allYears.includes(currentYear)) {
+              const newRetiredDates = {
+                year: currentYear,
+                dates: [new Date()]
+              };
+              allYearsAndDates.push(newRetiredDates);
+              await PererittoUser.updateOne(
+                { _id: _pereritto },
+                { $set: { retired: true, retiredDates: allYearsAndDates } }
+              );
+            } else {
+              const currentRetiredYear = retiredDates.filter(
+                date => date.year === currentYear
+              )[0];
+              const currentYearsDates = [...currentRetiredYear.dates];
+              currentYearsDates.push(new Date());
+              const newCurrentYear = {
+                year: currentYear,
+                dates: currentYearsDates
+              };
+              const newYearAndDates = allYearsAndDates.filter(
+                el => el.year.toString() !== currentYear
+              );
+              newYearAndDates.push(newCurrentYear);
+              await PererittoUser.updateOne(
+                { _id: _pereritto },
+                { $set: { retired: true, retiredDates: newYearAndDates } }
+              );
+            }
+          } else {
+            const newRetiredDates = [
+              { year: currentYear, dates: [new Date()] }
+            ];
+            await PererittoUser.updateOne(
+              { _id: _pereritto },
+              { $set: { retired: true, retiredDates: newRetiredDates } }
+            );
+          }
 
           return res.status(200).send({
             type: MessageTypeEnum.success,
@@ -217,15 +272,71 @@ export default app => {
     async (req, res) => {
       try {
         const { _pereritto } = req.body;
-        const pererittoPlayer = await PererittoUser.findOne({
-          _id: _pereritto
-        });
+        const pererittoPlayer = await PererittoUser.findOne(
+          {
+            _id: _pereritto
+          },
+          { retiredDates: 1, returnedDates: 1, retired: 1 }
+        );
 
         if (pererittoPlayer) {
-          await PererittoUser.updateOne(
-            { _id: _pereritto },
-            { $set: { retired: false } }
-          );
+          const currentYear = new Date().getFullYear().toString();
+          const { returnedDates, retired } = pererittoPlayer;
+
+          if (!retired) {
+            return res.send({
+              type: MessageTypeEnum.error,
+              message: 'That player is not retired!'
+            });
+          }
+
+          if (returnedDates.length > 0) {
+            const allYears = [];
+            const allYearsAndDates = [...returnedDates];
+
+            for (let i = 0; i < returnedDates.length; i++) {
+              allYears.push(returnedDates[i].year);
+            }
+
+            if (!allYears.includes(currentYear)) {
+              const newReturnedDates = {
+                year: currentYear,
+                dates: [new Date()]
+              };
+              allYearsAndDates.push(newReturnedDates);
+              await PererittoUser.updateOne(
+                { _id: _pereritto },
+                { $set: { retired: false, returnedDates: allYearsAndDates } }
+              );
+            } else {
+              const currentReturnedYear = returnedDates.filter(
+                date => date.year === currentYear
+              )[0];
+              const currentYearsDates = [...currentReturnedYear.dates];
+              currentYearsDates.push(new Date());
+              const newCurrentYear = {
+                year: currentYear,
+                dates: currentYearsDates
+              };
+              const newYearAndDates = allYearsAndDates.filter(
+                el => el.year.toString() !== currentYear
+              );
+              newYearAndDates.push(newCurrentYear);
+              await PererittoUser.updateOne(
+                { _id: _pereritto },
+                { $set: { retired: false, returnedDates: newYearAndDates } }
+              );
+            }
+          } else {
+            const newReturnedDates = [
+              { year: currentYear, dates: [new Date()] }
+            ];
+            await PererittoUser.updateOne(
+              { _id: _pereritto },
+              { $set: { retired: false, returnedDates: newReturnedDates } }
+            );
+          }
+
           return res.status(200).send({
             type: MessageTypeEnum.success,
             message: 'Player successfully returned!'

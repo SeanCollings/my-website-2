@@ -50,10 +50,10 @@ class PererittoAwards extends Component {
 
   renderShelves = () => {
     const { classes, awards } = this.props;
-    const { allAwards } = awards;
-    // console.log('AWARDS:', allAwards);
+    const allAwards = awards.allAwards;
 
-    const awardsPerShelf = 3;
+    if (allAwards) allAwards.sort((a, b) => b.year - a.year);
+
     const shelfArray = [];
     const originalMessage = '. Wall of Flame .';
     let numberOfShelves = 2;
@@ -62,6 +62,7 @@ class PererittoAwards extends Component {
       const awardArray = [];
 
       if (allAwards) {
+        const awardsPerShelf = allAwards.length > 12 ? 4 : 3;
         numberOfShelves = Math.ceil(allAwards.length / awardsPerShelf);
         numberOfShelves = numberOfShelves < 2 ? 2 : numberOfShelves;
 
@@ -89,9 +90,7 @@ class PererittoAwards extends Component {
                 style={{
                   transform:
                     allAwards[j]._award.canFall && (fallFloor || topple)
-                      ? `rotate(${direction}${
-                          allAwards[j]._award.fallAngle
-                        }deg)`
+                      ? `rotate(${direction}${allAwards[j]._award.fallAngle}deg)`
                       : '',
                   marginTop: distance ? distance : '',
                   filter:

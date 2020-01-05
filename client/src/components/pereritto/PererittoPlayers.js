@@ -202,7 +202,8 @@ class PererittoPlayers extends Component {
         colour: user.colour,
         lastWinDate: new Date(0),
         retired: user.retired,
-        retiredDate: user.retiredDate,
+        retiredDates: user.retiredDates,
+        returnedDates: user.returnedDates,
         createdYear
       });
     });
@@ -234,6 +235,84 @@ class PererittoPlayers extends Component {
     }
   };
 
+  getMaxDatefromArray = arr => {
+    if (arr.length === 1) return arr[0];
+    return arr.reduce((a, b) => (a > b ? a : b));
+  };
+
+  getRetiredPlayers = player => {
+    const { selectedYear } = this.state;
+    const currentYear = new Date().getFullYear().toString();
+    const retiredDates = player.retiredDates;
+    const returnedDates = player.returnedDates;
+    const retiredYears = [];
+    const returnedYears = [];
+    const allRetiredDates = {};
+    const allReturnedDates = {};
+
+    if (selectedYear === currentYear && player.retired) {
+      return true;
+    }
+
+    if (retiredDates.length > 0) {
+      for (let i = 0; i < retiredDates.length; i++) {
+        retiredYears.push(retiredDates[i].year);
+        allRetiredDates[retiredDates[i].year] = [...retiredDates[i].dates];
+      }
+    }
+    if (returnedDates.length > 0) {
+      for (let i = 0; i < returnedDates.length; i++) {
+        returnedYears.push(returnedDates[i].year);
+        allReturnedDates[returnedDates[i].year] = [...returnedDates[i].dates];
+      }
+    }
+
+    if (selectedYear && retiredYears.includes(selectedYear.toString())) {
+      if (returnedYears.includes(selectedYear.toString())) {
+        const maxRetiredDate = this.getMaxDatefromArray(
+          allRetiredDates[selectedYear]
+        );
+        const maxReturnedDate = this.getMaxDatefromArray(
+          allReturnedDates[selectedYear]
+        );
+
+        if (maxReturnedDate > maxRetiredDate) return false;
+      }
+      return true;
+    }
+
+    return false;
+  };
+
+  playerRetiredInNewYear = player => {
+    const { retiredDates, returnedDates } = player;
+
+    if (!player.count > 0 && retiredDates && retiredDates.length > 0) {
+      if (!returnedDates || returnedDates.length === 0) return true;
+
+      const allRetiredDates = [];
+      const allReturnedDates = [];
+      retiredDates.forEach(date => {
+        if (date.dates.length) {
+          allRetiredDates.push(...[...date.dates]);
+        }
+      });
+      returnedDates.forEach(date => {
+        if (date.dates.length) {
+          allReturnedDates.push(...[...date.dates]);
+        }
+      });
+
+      const maxRetiredDate = allRetiredDates.reduce((a, b) => (a > b ? a : b));
+      const maxReturnedDate = allReturnedDates.reduce((a, b) =>
+        a > b ? a : b
+      );
+
+      return maxRetiredDate > maxReturnedDate;
+    }
+    return false;
+  };
+
   buildPlayerTally = () => {
     const { pererittoUsers, winners } = this.props;
 
@@ -241,14 +320,17 @@ class PererittoPlayers extends Component {
 
     const playerTally = this.mapPlayerTally(pererittoUsers);
     const overallWinDate = this.countWinners(winners, playerTally);
-    const activePlayers = Object.values(playerTally).filter(el => {
-      const retiredYear = new Date(el.retiredDate).getFullYear();
-      return !el.retired || this.state.selectedYear !== retiredYear;
+    const activePlayers = Object.values(playerTally).filter(player => {
+      return (
+        !this.getRetiredPlayers(player) && !this.playerRetiredInNewYear(player)
+      );
     });
 
     let concatPlayerList = [];
     Object.keys(activePlayers).forEach(key => {
-      concatPlayerList = concatPlayerList.concat(activePlayers[key]);
+      concatPlayerList = concatPlayerList
+        .concat(activePlayers[key])
+        .sort((a, b) => a.name.localeCompare(b.name));
     });
 
     return this.renderPlayerList(concatPlayerList, overallWinDate);
@@ -256,6 +338,8 @@ class PererittoPlayers extends Component {
 
   renderRetiredPlayers = () => {
     const { classes, pererittoUsers, winners } = this.props;
+    const { selectedYear } = this.state;
+
     let overallWinDate = new Date(0);
 
     if (pererittoUsers === null) return null;
@@ -263,10 +347,11 @@ class PererittoPlayers extends Component {
     const players = this.mapPlayerTally(pererittoUsers, overallWinDate);
     this.countWinners(winners, players, overallWinDate);
 
-    const retiredPlayers = Object.values(players).filter(el => {
-      const retiredYear = new Date(el.retiredDate).getFullYear();
+    const retiredPlayers = Object.values(players).filter(player => {
       return (
-        el.retired && this.state.selectedYear === retiredYear && el.count > 0
+        this.getRetiredPlayers(player) &&
+        Number(player.createdYear) <= Number(selectedYear) &&
+        player.count > 0
       );
     });
 
@@ -366,7 +451,8 @@ class PererittoPlayers extends Component {
               PaperProps: {
                 style: {
                   backgroundColor: '#DEDEDE',
-                  maxHeight: 300
+                  height: '200px',
+                  overflow: 'auto'
                 }
               }
             }}

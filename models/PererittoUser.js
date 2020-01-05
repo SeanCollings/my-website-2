@@ -5,7 +5,8 @@ const pererittoSchema = new Schema({
   colour: String,
   active: { type: Boolean, default: true },
   retired: { type: Boolean, default: false },
-  retiredDate: { type: Date },
+  retiredDates: [{ year: String, dates: Array }],
+  returnedDates: [{ year: String, dates: Array }],
   absentDates: Array
 });
 
