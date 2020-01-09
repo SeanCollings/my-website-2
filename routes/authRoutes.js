@@ -1,4 +1,5 @@
 import passport from 'passport';
+import { getLastReleaseCreatedDate } from './appRoutes';
 
 const mongoose = require('mongoose');
 const Users = mongoose.model('users');
@@ -21,8 +22,12 @@ export default app => {
   );
 
   app.get('/api/logout', (req, res) => {
-    req.logout();
-    res.redirect('/home');
+    try {
+      req.logout();
+      res.redirect('/home');
+    } catch (err) {
+      throw err;
+    }
   });
 
   app.get('/api/current_user', async (req, res) => {
@@ -40,10 +45,13 @@ export default app => {
           { splashes: 1, lastSplashed: 1 }
         );
 
-        await Users.updateOne(
-          { _id: req.user._id },
-          { $set: { lastLogin: Date.now() } }
-        );
+        const userLastLoggedIn = new Date(req.user.lastLogin);
+        if (userLastLoggedIn > getLastReleaseCreatedDate()) {
+          await Users.updateOne(
+            { _id: req.user._id },
+            { $set: { lastLogin: Date.now() } }
+          );
+        }
 
         const today = new Date();
         const isToday =

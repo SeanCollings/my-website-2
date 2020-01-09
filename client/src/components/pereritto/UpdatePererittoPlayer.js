@@ -10,6 +10,13 @@ import ConfirmActionModal from '../modals/ConfirmActionModal';
 import { MessageTypeEnum } from '../../utils/constants';
 
 import { withStyles } from '@material-ui/core/styles';
+import {
+  Typography,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
+} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 // import Typography from '@material-ui/core/Typography';
@@ -22,6 +29,8 @@ import FormControl from '@material-ui//core/FormControl';
 import Select from '@material-ui/core/Select';
 import Avatar from '@material-ui/core/Avatar';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import UnselectedIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import SelectedIcon from '@material-ui/icons/CheckBox';
 
 const styles = theme => ({
   root: {
@@ -48,8 +57,8 @@ const styles = theme => ({
 
 const UPDATE_BOARD = 'Update Board';
 const REMOVE_PLAYER = 'Remove Player';
-const MARK_ABSENT = 'Mark Absent';
-const updateStates = [UPDATE_BOARD, REMOVE_PLAYER, MARK_ABSENT];
+const CUSTOM_AWARD = 'Custom Award';
+const updateStates = [UPDATE_BOARD, REMOVE_PLAYER];
 
 class UpdatePererittoPlayer extends Component {
   state = {
@@ -60,11 +69,24 @@ class UpdatePererittoPlayer extends Component {
     hideDates: true,
     showModal: false,
     updateState: UPDATE_BOARD,
-    updateInt: 0
+    updateInt: 0,
+    presentPlayers: [],
+    presentUpdated: false
   };
 
   componentDidMount() {
     // this.props.getPererittoUsers();
+  }
+
+  componentDidUpdate({ pererittoUsers }, newState) {
+    const { presentUpdated } = this.state;
+
+    if (!presentUpdated && pererittoUsers && pererittoUsers.length > 0) {
+      const presentPlayers = pererittoUsers
+        .filter(user => !user.retired)
+        .map(user => user._id);
+      this.setState({ ...this.state, presentUpdated: true, presentPlayers });
+    }
   }
 
   shouldComponentUpdate(nextProps) {
@@ -81,15 +103,22 @@ class UpdatePererittoPlayer extends Component {
   };
 
   handleChange = event => {
-    this.setState({ playerId: event.target.value });
+    const { presentPlayers, presentUpdated } = this.state;
+    const playerId = event.target.value;
+
+    const newState = [...presentPlayers];
+    if (!presentPlayers.includes(playerId) && presentUpdated)
+      newState.push(playerId);
+
+    this.setState({ playerId, presentPlayers: newState });
   };
 
   updatePlayerClick = () => {
-    const { playerId, selectedDate, updateState } = this.state;
+    const { playerId, selectedDate, updateState, presentPlayers } = this.state;
 
     if (
       playerId === '' &&
-      (updateState === UPDATE_BOARD || updateState === MARK_ABSENT)
+      (updateState === UPDATE_BOARD || updateState === CUSTOM_AWARD)
     ) {
       this.setState({ errorName: true });
       return this.props.showMessage(MessageTypeEnum.error, 'Select a name!');
@@ -100,18 +129,123 @@ class UpdatePererittoPlayer extends Component {
 
     switch (updateState) {
       case UPDATE_BOARD:
+        if (!presentPlayers.includes(playerId))
+          return this.props.showMessage(
+            MessageTypeEnum.error,
+            'The selected player needs to be present!'
+          );
+
         this.setState({ updatingPlayer: true });
-        this.props.updatePererittoUser(playerId, selectedDate);
+        this.props.updatePererittoUser(playerId, selectedDate, presentPlayers);
         break;
       case REMOVE_PLAYER:
         this.setState({ ...this.state, updatingPlayer: true, showModal: true });
         break;
-      case MARK_ABSENT:
+      case CUSTOM_AWARD:
         this.setState({ ...this.state, updatingPlayer: true, showModal: true });
         break;
       default:
         break;
     }
+  };
+
+  updatePresentPlayer = userId => {
+    const { presentPlayers, playerId } = this.state;
+    const newState = [...presentPlayers];
+
+    if (playerId === userId) return null;
+
+    const index = newState.indexOf(userId);
+    if (index > -1) newState.splice(index, 1);
+    else newState.push(userId);
+
+    this.setState({ presentPlayers: newState });
+  };
+
+  renderPresentPlayers = () => {
+    const { pererittoUsers } = this.props;
+    const { playerId, presentPlayers } = this.state;
+
+    if (!pererittoUsers) return null;
+
+    return (
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+        style={{ marginTop: '12px', marginBottom: '40px' }}
+      >
+        <List
+          style={{
+            width: '200px',
+            border: '1px solid #a2a2a2',
+            borderRadius: '8px',
+            padding: '8px',
+            background: '#dedede'
+          }}
+        >
+          {pererittoUsers.map(user => {
+            if (user.retired) return null;
+
+            return (
+              <ListItem
+                key={user._id}
+                style={{
+                  padding: '1px',
+                  backgroundColor: '#dadada',
+                  borderLeft: '1px solid #ad1209',
+                  borderRight: '1px solid #ad1209',
+                  borderBottom: '1px solid #eaeaea',
+                  borderRadius: '2px'
+                }}
+                button
+                onClick={() => this.updatePresentPlayer(user._id)}
+              >
+                <ListItemIcon>
+                  {presentPlayers.includes(user._id) ? (
+                    <SelectedIcon
+                      style={{
+                        // color: '#ad1209',
+                        color: user.colour,
+                        backgroundColor:
+                          playerId === user._id ? '#fafafa' : '#eaeaea',
+                        borderRadius: '3px'
+                      }}
+                    />
+                  ) : (
+                    <UnselectedIcon
+                      style={{
+                        // color: '#ad1209',
+                        color: user.colour,
+                        backgroundColor: '#dedede',
+                        borderRadius: '3px'
+                      }}
+                    />
+                  )}
+                </ListItemIcon>
+                <ListItemText
+                  id={user._id}
+                  disableTypography
+                  primary={
+                    <Typography
+                      type="body2"
+                      style={{
+                        color: presentPlayers.includes(user._id)
+                          ? '#000000de'
+                          : '#adadad'
+                      }}
+                    >
+                      {user.name}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            );
+          })}
+        </List>
+      </Grid>
+    );
   };
 
   renderPlayers = () => {
@@ -206,7 +340,7 @@ class UpdatePererittoPlayer extends Component {
               preventSelection={false}
               selectedDate={date => this.setState({ selectedDate: date })}
               hideDates={
-                updateState === UPDATE_BOARD || updateState === MARK_ABSENT
+                updateState === UPDATE_BOARD || updateState === CUSTOM_AWARD
               }
             />
           </Grid>
@@ -224,7 +358,7 @@ class UpdatePererittoPlayer extends Component {
                 style={{
                   color: 'white',
                   backgroundColor:
-                    updateState === MARK_ABSENT ? '#c70039' : '#154360',
+                    updateState === CUSTOM_AWARD ? '#c70039' : '#154360',
                   opacity:
                     updatingPlayer ||
                     (updateState === REMOVE_PLAYER && !selectedDate)
@@ -236,6 +370,9 @@ class UpdatePererittoPlayer extends Component {
                 {updateState}
               </Button>
             </Loader>
+            {updateState === UPDATE_BOARD &&
+              playerId !== '' &&
+              this.renderPresentPlayers()}
           </Grid>
         </Grid>
         <ConfirmActionModal
@@ -250,7 +387,7 @@ class UpdatePererittoPlayer extends Component {
             this.setState({ showModal: false });
             updateState === REMOVE_PLAYER &&
               this.props.removeWinnerDate(selectedDate);
-            updateState === MARK_ABSENT &&
+            updateState === CUSTOM_AWARD &&
               this.props.markPlayerAbsent(playerId, selectedDate);
           }}
           cancelClick={() =>

@@ -451,7 +451,7 @@ class PererittoPlayers extends Component {
               PaperProps: {
                 style: {
                   backgroundColor: '#DEDEDE',
-                  height: '200px',
+                  maxHeight: '200px',
                   overflow: 'auto'
                 }
               }

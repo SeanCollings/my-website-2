@@ -37,20 +37,42 @@ export default app => {
         //   year: parseInt(req.query.year)
         // });
         const winners = await WinnerDates.find();
-        const players = await PererittoUsers.find();
+        const players = await PererittoUsers.find(
+          {},
+          {
+            _id: 1,
+            colour: 1,
+            name: 1
+          }
+        ).lean();
+
+        const playerIdNameMap = players.map(player => ({
+          [player._id]: player.name
+        }));
 
         if (winners.length > 0 && players.length > 0) {
           const playerMap = {};
           const transformedWinners = [];
 
           for (let i = 0; i < players.length; i++) {
-            playerMap[players[i]._id] = { ...players[i]._doc };
+            playerMap[players[i]._id] = { ...players[i] };
           }
 
           for (let i = 0; i < winners.length; i++) {
+            let presentPlayerNames = [];
+            if (winners[i].presentPlayers.length > 0) {
+              presentPlayerNames = playerIdNameMap
+                .filter(player =>
+                  winners[i].presentPlayers.includes(Object.keys(player))
+                )
+                .map(player => Object.values(player)[0])
+                .sort((a, b) => a.localeCompare(b));
+            }
+
             transformedWinners.push({
               ...winners[i]._doc,
-              _winner: playerMap[winners[i]._winner]
+              _winner: playerMap[winners[i]._winner],
+              presentPlayers: presentPlayerNames
             });
           }
 

@@ -91,10 +91,15 @@ export const addPererittoUser = (
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
 };
 
-export const updatePererittoUser = (id, date) => async dispatch => {
+export const updatePererittoUser = (
+  id,
+  date,
+  presentPlayers
+) => async dispatch => {
   const res = await axios.post('/api/update_pereritto', {
     id,
-    date
+    date,
+    presentPlayers
   });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });

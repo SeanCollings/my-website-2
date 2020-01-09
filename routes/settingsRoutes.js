@@ -7,15 +7,19 @@ const Users = mongoose.model('users');
 
 export default app => {
   app.get('/api/get_usersettings', requireLogin, async (req, res) => {
-    const settings = await Settings.findOne({ _user: req.user._id });
+    try {
+      const settings = await Settings.findOne({ _user: req.user._id });
 
-    if (settings === null) {
-      const newSettings = await new Settings({
-        _user: req.user._id
-      }).save();
-      return res.send(newSettings);
+      if (settings === null) {
+        const newSettings = await new Settings({
+          _user: req.user._id
+        }).save();
+        return res.send(newSettings);
+      }
+      return res.send(settings);
+    } catch (err) {
+      throw err;
     }
-    return res.send(settings);
   });
 
   app.post('/api/update_profilepic', requireLogin, async (req, res) => {

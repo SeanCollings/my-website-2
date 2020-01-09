@@ -7,6 +7,14 @@ const mongoose = require('mongoose');
 const Users = mongoose.model('users');
 const AppSettings = mongoose.model('appsettings');
 
+export const getLastReleaseCreatedDate = () => {
+  const releaseCreated = process.env.HEROKU_RELEASE_CREATED_AT
+    ? new Date(process.env.HEROKU_RELEASE_CREATED_AT)
+    : new Date('2019-06-03T20:42:00Z');
+
+  return releaseCreated;
+};
+
 export default app => {
   app.get('/api/get_version', (req, res) => {
     try {
@@ -22,16 +30,12 @@ export default app => {
 
   app.get('/api/get_releasecreated', requireLogin, async (req, res) => {
     try {
-      const releaseCreated = process.env.HEROKU_RELEASE_CREATED_AT
-        ? new Date(process.env.HEROKU_RELEASE_CREATED_AT)
-        : new Date('2019-06-03T20:42:00Z');
       const version = process.env.HEROKU_RELEASE_VERSION
         ? process.env.HEROKU_RELEASE_VERSION
         : 'v00';
 
       const userLastLoggedIn = new Date(req.user.lastLogin);
-
-      if (userLastLoggedIn < releaseCreated) {
+      if (userLastLoggedIn < getLastReleaseCreatedDate()) {
         res.send({
           type: MessageTypeEnum.info,
           message: `App version ${version} released.`
@@ -67,11 +71,15 @@ export default app => {
   });
 
   app.get('/api/get_manifest', (req, res) => {
-    const message =
-      loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ||
-      'Pure Seanography';
+    try {
+      const message =
+        loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ||
+        'Pure Seanography';
 
-    res.send(manifest(message));
+      res.send(manifest(message));
+    } catch (err) {
+      throw err;
+    }
   });
 
   app.get('/api/get_settings', async (req, res) => {
@@ -94,6 +102,7 @@ export default app => {
       });
     } catch (err) {
       console.log(err);
+      throw err;
     }
   });
 };

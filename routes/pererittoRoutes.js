@@ -10,7 +10,11 @@ const WinnerDates = mongoose.model('winnerDates');
 
 export default app => {
   app.get('/api/pereritto', requireLogin, (req, res) => {
-    res.sendStatus(200);
+    try {
+      res.sendStatus(200);
+    } catch (err) {
+      throw err;
+    }
   });
 
   //#region add_pereritto
@@ -65,8 +69,12 @@ export default app => {
 
   //#region get_pereritto
   app.get('/api/get_pereritto', async (req, res) => {
-    const users = await PererittoUser.find().sort({ name: 1 });
-    res.send(users);
+    try {
+      const users = await PererittoUser.find().sort({ name: 1 });
+      res.send(users);
+    } catch (err) {
+      throw err;
+    }
   });
   //#endregion get_pereritto
 
@@ -76,36 +84,51 @@ export default app => {
     requireLogin,
     requireSuperAccess,
     async (req, res) => {
-      const user = await PererittoUser.findOne({ _id: req.body.id });
+      try {
+        const { id, date, presentPlayers } = req.body;
 
-      if (user === null) {
-        res.send({
-          type: MessageTypeEnum.error,
-          message: 'That user does not exist!'
-        });
-      } else {
-        const year = parseInt(req.body.date.substring(11));
-        const winnerDateCheck = await WinnerDates.find({ date: req.body.date });
+        const user = await PererittoUser.findOne({ _id: id });
 
-        if (winnerDateCheck.length > 0) {
-          res.send({
+        if (user === null) {
+          return res.send({
             type: MessageTypeEnum.error,
-            message: 'That date already has a winner!'
+            message: 'That user does not exist!'
           });
         } else {
-          await new WinnerDates({
-            date: req.body.date,
-            year,
-            _winner: user
-          }).save();
+          const currentYear = new Date().getFullYear();
+          const year = parseInt(date.substring(11));
+          const winnerDateCheck = await WinnerDates.find({ date: date });
 
-          updateAwards();
+          if (year < currentYear) {
+            return res.send({
+              type: MessageTypeEnum.error,
+              message: 'Past awards are not allowed!'
+            });
+          }
 
-          res.status(200).send({
-            type: MessageTypeEnum.success,
-            message: 'Pereritto user successfully updated!'
-          });
+          if (winnerDateCheck.length > 0) {
+            return res.send({
+              type: MessageTypeEnum.error,
+              message: 'That date already has a winner!'
+            });
+          } else {
+            await new WinnerDates({
+              date: date,
+              year,
+              presentPlayers,
+              _winner: user
+            }).save();
+
+            updateAwards();
+
+            return res.status(200).send({
+              type: MessageTypeEnum.success,
+              message: 'Pereritto user successfully updated!'
+            });
+          }
         }
+      } catch (err) {
+        throw err;
       }
     }
   );
@@ -187,6 +210,7 @@ export default app => {
 
         if (pererittoPlayer) {
           const currentYear = new Date().getFullYear().toString();
+          const newDate = new Date(new Date().toDateString());
           const { retiredDates, retired } = pererittoPlayer;
 
           if (retired) {
@@ -207,7 +231,7 @@ export default app => {
             if (!allYears.includes(currentYear)) {
               const newRetiredDates = {
                 year: currentYear,
-                dates: [new Date()]
+                dates: [newDate]
               };
               allYearsAndDates.push(newRetiredDates);
               await PererittoUser.updateOne(
@@ -219,7 +243,7 @@ export default app => {
                 date => date.year === currentYear
               )[0];
               const currentYearsDates = [...currentRetiredYear.dates];
-              currentYearsDates.push(new Date());
+              currentYearsDates.push(newDate);
               const newCurrentYear = {
                 year: currentYear,
                 dates: currentYearsDates
@@ -234,9 +258,7 @@ export default app => {
               );
             }
           } else {
-            const newRetiredDates = [
-              { year: currentYear, dates: [new Date()] }
-            ];
+            const newRetiredDates = [{ year: currentYear, dates: [newDate] }];
             await PererittoUser.updateOne(
               { _id: _pereritto },
               { $set: { retired: true, retiredDates: newRetiredDates } }
@@ -281,6 +303,7 @@ export default app => {
 
         if (pererittoPlayer) {
           const currentYear = new Date().getFullYear().toString();
+          const newDate = new Date(new Date().toDateString());
           const { returnedDates, retired } = pererittoPlayer;
 
           if (!retired) {
@@ -301,7 +324,7 @@ export default app => {
             if (!allYears.includes(currentYear)) {
               const newReturnedDates = {
                 year: currentYear,
-                dates: [new Date()]
+                dates: [newDate]
               };
               allYearsAndDates.push(newReturnedDates);
               await PererittoUser.updateOne(
@@ -313,7 +336,7 @@ export default app => {
                 date => date.year === currentYear
               )[0];
               const currentYearsDates = [...currentReturnedYear.dates];
-              currentYearsDates.push(new Date());
+              currentYearsDates.push(newDate);
               const newCurrentYear = {
                 year: currentYear,
                 dates: currentYearsDates
@@ -328,9 +351,7 @@ export default app => {
               );
             }
           } else {
-            const newReturnedDates = [
-              { year: currentYear, dates: [new Date()] }
-            ];
+            const newReturnedDates = [{ year: currentYear, dates: [newDate] }];
             await PererittoUser.updateOne(
               { _id: _pereritto },
               { $set: { retired: false, returnedDates: newReturnedDates } }

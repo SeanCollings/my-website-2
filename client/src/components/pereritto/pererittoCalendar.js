@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
 import DatePicker from '../components/DatePicker';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Grid, Typography } from '@material-ui/core';
 
 class PererittoCalendar extends Component {
-  state = { showMoreMonths: false };
+  state = { showMoreMonths: false, presentPlayers: '' };
 
   render() {
-    const { showMoreMonths } = this.state;
+    const { showMoreMonths, presentPlayers } = this.state;
     const { resizeScreen, winners } = this.props;
     const selectedYearsArray = [];
 
@@ -20,7 +20,7 @@ class PererittoCalendar extends Component {
     }
 
     return (
-      <div>
+      <div style={{ position: 'relative' }}>
         <div style={{ paddingTop: resizeScreen ? '8px' : '24px' }} />
         <Grid item style={{ textAlign: 'center' }}>
           <Button
@@ -40,7 +40,16 @@ class PererittoCalendar extends Component {
           data={selectedYearsArray}
           preventSelection={true}
           showMoreMonths={showMoreMonths}
+          showPlayers={true}
+          presentPlayerNames={names => this.setState({ presentPlayers: names })}
         />
+        <Typography
+          id="present-players"
+          style={{ marginTop: showMoreMonths ? '' : '8px', maxWidth: '260px' }}
+          // onClick={() => this.setState({ presentPlayers: '' })}
+        >
+          {presentPlayers.replace(/,/g, ', ')}
+        </Typography>
       </div>
     );
   }
@@ -55,7 +64,4 @@ function mapStateToProps({ auth, pererittoUsers, resizeScreen, winners }) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  actions
-)(PererittoCalendar);
+export default connect(mapStateToProps, actions)(PererittoCalendar);

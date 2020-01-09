@@ -13,8 +13,9 @@ class DatePicker extends Component {
     showMoreMonths: false,
     monthsToDisplay: 6,
     data: null,
-    selectedRemoveDate: null,
-    pererittoId: 'pereritto_id'
+    selectedCalendarDate: null,
+    pererittoId: 'pereritto_id',
+    showToolTip: false
   };
 
   mobileScreen = this.props.resizeScreen || !this.props.preventSelection;
@@ -36,6 +37,17 @@ class DatePicker extends Component {
       ? 'Custom-NavButton Custom-NavButton--prev'
       : 'Custom-NavButton Custom-NavButton-Multiple--prev'
   };
+
+  componentDidMount() {
+    // const navButtons = document.getElementsByClassName('Custom-NavButton');
+    // if (navButtons && navButtons.length > 0) {
+    //   for (let i = 0; i < navButtons.length; i++) {
+    //     navButtons[i].addEventListener('click', () => {
+    //       console.log(this.state.selectedCalendarDate);
+    //     });
+    //   }
+    // }
+  }
 
   shouldComponentUpdate(nextProps) {
     if (
@@ -79,24 +91,23 @@ class DatePicker extends Component {
       if (props.hideDates) {
         this.setState({ selectedDay: null });
       } else {
-        this.setState({ selectedRemoveDate: null });
+        this.setState({ selectedCalendarDate: null });
       }
       this.props.selectedDate(null);
     }
   }
 
   handleDayClick = (day, modifiers, e) => {
-    const { preventSelection } = this.props;
+    const { preventSelection, showPlayers, presentPlayerNames } = this.props;
 
     // if (Object.keys(modifiers)[0] && Object.keys(modifiers)[0].includes(pererittoId)) {
     //   const keySplit = Object.keys(modifiers)[0].split('|');
     //   const bounds = this.datePicker.getBoundingClientRect();
     //   this.props.showTooltip(true,keySplit[2],e.clientX,e.clientY - bounds.top,'#b17e26');
     // }
+    let date = day.toString().substring(0, 15);
 
     if (!preventSelection) {
-      let date = day.toString().substring(0, 15);
-
       if (this.props.hideDates) {
         this.setState({
           selectedDay: modifiers.selected ? null : new Date(date)
@@ -107,7 +118,7 @@ class DatePicker extends Component {
 
         this.setState({
           ...this.state,
-          selectedRemoveDate:
+          selectedCalendarDate:
             modifiers.selected || dateExists.length === 0
               ? null
               : new Date(date),
@@ -116,6 +127,49 @@ class DatePicker extends Component {
         this.props.selectedDate(
           modifiers.selected || dateExists.length === 0 ? null : date
         );
+      }
+    } else if (showPlayers) {
+      const dateExists = this.checkIfDateExists(date);
+      if (
+        dateExists.length > 0 &&
+        dateExists[0].presentPlayers &&
+        dateExists[0].presentPlayers.length > 0
+      ) {
+        const date = dateExists[0].date;
+        const dateSelected = document.querySelector(`[aria-label="${date}"]`);
+
+        if (dateSelected) {
+          const rect = dateSelected.getBoundingClientRect();
+          const position = {
+            top: rect.top - 128 + window.scrollY,
+            center: rect.left + rect.width / 2 + window.scrollX
+          };
+
+          const tooltip = document.getElementById('tooltip');
+          if (tooltip) {
+            const tooltipWidth = tooltip.offsetWidth;
+            tooltip.style.top = `${position.top}px`;
+            tooltip.style.left = `${position.center - tooltipWidth / 2}px`;
+          }
+        }
+
+        const players = dateExists[0].presentPlayers.join(',');
+        this.setState({
+          ...this.state,
+          selectedCalendarDate:
+            modifiers.selected || dateExists.length === 0
+              ? null
+              : new Date(date),
+          showToolTip: true
+        });
+        presentPlayerNames(players);
+      } else {
+        presentPlayerNames('');
+        this.setState({
+          ...this.state,
+          selectedCalendarDate: null,
+          showToolTip: false
+        });
       }
     }
   };
@@ -167,9 +221,10 @@ class DatePicker extends Component {
       preventSelection,
       showMoreMonths,
       winners,
-      hideDates
+      hideDates,
+      showPlayers
     } = this.props;
-    const { selectedRemoveDate, pererittoId } = this.state;
+    const { selectedCalendarDate, pererittoId } = this.state;
 
     let modifiers = {};
     let modifiersStyles = {};
@@ -183,21 +238,27 @@ class DatePicker extends Component {
       winners.winners.forEach(date => {
         if (date.date.length > 0) {
           const name = date._winner.name;
-          modifiers[`${pererittoId}|${date._id}|${name}`] = new Date(date.date);
+          const colour = date._winner.colour;
+          const mods = `${pererittoId}|${date._id}|${name}`;
+
+          modifiers[mods] = new Date(date.date);
 
           if (
-            !selectedRemoveDate ||
-            (selectedRemoveDate &&
-              new Date(date.date).getTime() !== selectedRemoveDate.getTime())
+            !selectedCalendarDate ||
+            (selectedCalendarDate &&
+              new Date(date.date).getTime() !== selectedCalendarDate.getTime())
           ) {
-            modifiersStyles[`${pererittoId}|${date._id}|${name}`] = {
+            modifiersStyles[mods] = {
               color: 'white',
-              backgroundColor: date._winner.colour
+              backgroundColor: colour
             };
           } else {
-            modifiersStyles[`${pererittoId}|${date._id}|${name}`] = {
+            modifiersStyles[mods] = {
               color: 'white',
-              backgroundColor: '#232020'
+              backgroundColor: showPlayers ? colour : '#232020',
+              filter: showPlayers
+                ? `drop-shadow(1px 1px 2px #232020) contrast(1.1)`
+                : ''
             };
           }
         }
@@ -242,6 +303,18 @@ class DatePicker extends Component {
               : this.setMonthsBack()
           }
         />
+        {/* {showPlayers && (
+          <div
+            id="tooltip"
+            style={{
+              background: 'aliceblue',
+              position: 'absolute',
+              display: showToolTip ? '' : 'none'
+            }}
+          >
+            Jarrod
+          </div>
+        )} */}
       </div>
     );
   }
