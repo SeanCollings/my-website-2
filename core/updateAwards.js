@@ -204,11 +204,11 @@ const determinePositions = (players, year, activePlayers) => {
       }
     }
     for (let i = 0; i < playersLength; i++) {
+      const playerId = playersArray[i]._id;
       if (
         playersArray[i].count === lastScore &&
-        !playerRetiredDuring(retiredPlayers, playersArray[i]._id, newDate)
+        !playerRetiredDuring(retiredPlayers, playerId, newDate)
       ) {
-        const playerId = playersArray[i]._id;
         if (
           !first.includes(playerId) &&
           !second.includes(playerId) &&

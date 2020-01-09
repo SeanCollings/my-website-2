@@ -37,7 +37,10 @@ import pusher from './services/pusher';
 import locationRoutes from './routes/locationRoutes';
 import pereryvRoutes from './routes/pereryvRoutes';
 
-mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
+mongoose.connect(keys.mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 webPush.setVapidDetails(
   'mailto:nightharrier@gmail.com',
