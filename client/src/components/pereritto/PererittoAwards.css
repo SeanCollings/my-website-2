@@ -97,6 +97,12 @@
   animation: random 1s linear infinite;
 }
 
+.bullet:hover {
+  animation: fired 1s linear forwards;
+  filter: grayscale(0.5);
+  z-index: 4;
+}
+
 @keyframes random {
   0%,
   100%,
@@ -111,5 +117,15 @@
   75% {
     transform: rotate(-4deg) scale(1.05);
     filter: hue-rotate(400deg);
+  }
+}
+
+@keyframes fired {
+  from {
+    left: 0;
+  }
+  to {
+    left: 1000%;
+    display: none;
   }
 }

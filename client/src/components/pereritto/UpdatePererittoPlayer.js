@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import Loader from 'react-loader-advanced';
 import MiniLoader from 'react-loader-spinner';
@@ -7,7 +7,7 @@ import { showMessage } from '../../actions/snackBarActions';
 
 import DatePicker from '../components/DatePicker';
 import ConfirmActionModal from '../modals/ConfirmActionModal';
-import { MessageTypeEnum } from '../../utils/constants';
+import { MessageTypeEnum, FIRST, LAST } from '../../utils/constants';
 
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -71,7 +71,9 @@ class UpdatePererittoPlayer extends Component {
     updateState: UPDATE_BOARD,
     updateInt: 0,
     presentPlayers: [],
-    presentUpdated: false
+    presentUpdated: false,
+    choseFirstAndWon: false,
+    choseLastAndWon: false
   };
 
   componentDidMount() {
@@ -114,7 +116,14 @@ class UpdatePererittoPlayer extends Component {
   };
 
   updatePlayerClick = () => {
-    const { playerId, selectedDate, updateState, presentPlayers } = this.state;
+    const {
+      playerId,
+      selectedDate,
+      updateState,
+      presentPlayers,
+      choseFirstAndWon,
+      choseLastAndWon
+    } = this.state;
 
     if (
       playerId === '' &&
@@ -135,8 +144,17 @@ class UpdatePererittoPlayer extends Component {
             'The selected player needs to be present!'
           );
 
-        this.setState({ updatingPlayer: true });
-        this.props.updatePererittoUser(playerId, selectedDate, presentPlayers);
+        let choseAndWon;
+        if (choseFirstAndWon) choseAndWon = FIRST;
+        else if (choseLastAndWon) choseAndWon = LAST;
+
+        this.setState({ ...this.state, updatingPlayer: true });
+        this.props.updatePererittoUser(
+          playerId,
+          selectedDate,
+          presentPlayers,
+          choseAndWon
+        );
         break;
       case REMOVE_PLAYER:
         this.setState({ ...this.state, updatingPlayer: true, showModal: true });
@@ -162,6 +180,73 @@ class UpdatePererittoPlayer extends Component {
     this.setState({ presentPlayers: newState });
   };
 
+  renderChoseAndWon = () => {
+    const { choseFirstAndWon, choseLastAndWon } = this.state;
+
+    const iconStyles = {
+      display: 'table-cell',
+      verticalAlign: 'middle',
+      color: '#ad1209',
+      background: '#ffdab9',
+      borderRadius: '4px'
+    };
+
+    return (
+      <div style={{ margin: '0 auto 30px', display: 'table' }}>
+        <div
+          onClick={() =>
+            this.setState({
+              ...this.state,
+              choseFirstAndWon: !choseFirstAndWon,
+              choseLastAndWon: false
+            })
+          }
+          style={{ display: 'table', marginBottom: '4px', cursor: 'pointer' }}
+        >
+          {choseFirstAndWon ? (
+            <SelectedIcon style={iconStyles} />
+          ) : (
+            <UnselectedIcon style={iconStyles} />
+          )}
+          <Typography
+            style={{
+              display: 'table-cell',
+              verticalAlign: 'middle',
+              paddingLeft: '4px'
+            }}
+          >
+            Winner chose first
+          </Typography>
+        </div>
+        <div
+          onClick={() =>
+            this.setState({
+              ...this.state,
+              choseLastAndWon: !choseLastAndWon,
+              choseFirstAndWon: false
+            })
+          }
+          style={{ display: 'table', cursor: 'pointer' }}
+        >
+          {choseLastAndWon ? (
+            <SelectedIcon style={iconStyles} />
+          ) : (
+            <UnselectedIcon style={iconStyles} />
+          )}
+          <Typography
+            style={{
+              display: 'table-cell',
+              verticalAlign: 'middle',
+              paddingLeft: '4px'
+            }}
+          >
+            Winner chose last
+          </Typography>
+        </div>
+      </div>
+    );
+  };
+
   renderPresentPlayers = () => {
     const { pererittoUsers } = this.props;
     const { playerId, presentPlayers } = this.state;
@@ -174,7 +259,7 @@ class UpdatePererittoPlayer extends Component {
         direction="column"
         justify="center"
         alignItems="center"
-        style={{ marginTop: '12px', marginBottom: '40px' }}
+        style={{ marginTop: '24px', marginBottom: '12px' }}
       >
         <List
           style={{
@@ -370,9 +455,12 @@ class UpdatePererittoPlayer extends Component {
                 {updateState}
               </Button>
             </Loader>
-            {updateState === UPDATE_BOARD &&
-              playerId !== '' &&
-              this.renderPresentPlayers()}
+            {updateState === UPDATE_BOARD && playerId !== '' && (
+              <Fragment>
+                {this.renderPresentPlayers()}
+                {this.renderChoseAndWon()}
+              </Fragment>
+            )}
           </Grid>
         </Grid>
         <ConfirmActionModal

@@ -85,7 +85,7 @@ export default app => {
     requireSuperAccess,
     async (req, res) => {
       try {
-        const { id, date, presentPlayers } = req.body;
+        const { id, date, presentPlayers, choseAndWon } = req.body;
 
         const user = await PererittoUser.findOne({ _id: id });
 
@@ -116,6 +116,7 @@ export default app => {
               date: date,
               year,
               presentPlayers,
+              choseAndWon,
               _winner: user
             }).save();
 

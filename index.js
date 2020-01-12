@@ -37,9 +37,30 @@ import pusher from './services/pusher';
 import locationRoutes from './routes/locationRoutes';
 import pereryvRoutes from './routes/pereryvRoutes';
 
-mongoose.connect(keys.mongoURI, {
+const mongooseParams = {
   useNewUrlParser: true,
   useUnifiedTopology: true
+};
+
+mongoose.connect(keys.mongoURI, mongooseParams).catch(err => {
+  new Error(err);
+});
+
+let db = mongoose.connection;
+
+// db.on(
+//   'error',
+//   console.error.bind(console, 'error connecting with mongodb database:')
+// );
+db.once('open', () => {
+  console.log('connected to mongodb database');
+});
+db.on('disconnected', () => {
+  //Reconnect on timeout
+  mongoose.connect(keys.mongoURI, mongooseParams).catch(err => {
+    new Error(err);
+  });
+  db = mongoose.connection;
 });
 
 webPush.setVapidDetails(

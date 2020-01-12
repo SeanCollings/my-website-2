@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
+import PieChart from '../components/PieChart';
+
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -416,7 +418,7 @@ class PererittoPlayers extends Component {
   }
 
   render() {
-    const { resizeScreen, classes } = this.props;
+    const { resizeScreen, classes, winners } = this.props;
     const { selectedYear } = this.state;
 
     return (
@@ -463,6 +465,7 @@ class PererittoPlayers extends Component {
         </Grid>
         {this.buildPlayerTally()}
         {this.renderRetiredPlayers()}
+        <PieChart winners={winners} selectedYear={selectedYear} />
       </div>
     );
   }

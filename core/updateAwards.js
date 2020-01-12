@@ -1,3 +1,5 @@
+import { FIRST, LAST } from '../client/src/utils/constants';
+
 const mongoose = require('mongoose');
 const PererittoUser = mongoose.model('pererittos');
 const WinnerDates = mongoose.model('winnerDates');
@@ -62,7 +64,6 @@ const determineWinners = async (
       console.log('Winners current year:', winnerDates.length);
       determineAwardTotals(winnerDates, players, currentYear, playersArray);
       // determineAwardTotals(winnerDates, players, 2019, playersArray);
-      if (playersArray.length > 0) awardRandom(playersArray, currentYear);
     } else {
       const winnerDates = await WinnerDates.find({
         year: previousYear
@@ -86,6 +87,8 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
   const playersFriday13 = [];
   const players2020 = new Set();
   const allPresentPlayers = [];
+  const firstChoiceWins = {};
+  const lastChoiceWins = {};
 
   const winnersMap = winnerDates.reduce((result, winner) => {
     if (winner.date) {
@@ -118,6 +121,7 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
   }
 
   for (let i = 0; i < winnerDates.length; i++) {
+    // console.log('winnerDates[i]', winnerDates[i]);
     players[winnerDates[i]._winner] += 1;
 
     const winner = winnerDates[i]._winner.toString();
@@ -140,7 +144,23 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
       latestDate = new Date(winnerDates[i].date);
       lastWinner = winnerDates[i]._winner;
     }
+
+    if (winnerDates[i].choseAndWon && winnerDates[i].choseAndWon === FIRST) {
+      if (!firstChoiceWins[winner]) firstChoiceWins[winner] = 1;
+      else firstChoiceWins[winner] += 1;
+    }
+    if (winnerDates[i].choseAndWon && winnerDates[i].choseAndWon === LAST) {
+      if (!lastChoiceWins[winner]) lastChoiceWins[winner] = 1;
+      else lastChoiceWins[winner] += 1;
+    }
   }
+
+  const allAllowedRandom = allPresentPlayers.filter(player => {
+    const playerActive = activePlayers.find(el => el.id.toString() === player);
+    if (playerActive && !playerActive.retired) return true;
+
+    return false;
+  });
 
   determinePositions(players, year, activePlayers);
   determineDateCounts(
@@ -156,6 +176,12 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
   awardFriday13th(playersFriday13, year);
   awardHindsight(players2020, year);
   if (firstWinOfTheYear) awardYearFirst(firstWinOfTheYear, year);
+  if (allAllowedRandom.length > 0 && year === CURRENT_YEAR)
+    awardRandom(allAllowedRandom, year);
+  if (Object.keys(firstChoiceWins).length > 0)
+    awardFirstChoice(firstChoiceWins, year);
+  if (Object.keys(lastChoiceWins).length > 0)
+    awardLastChoice(lastChoiceWins, year);
 };
 
 const determinePositions = (players, year, activePlayers) => {
@@ -172,6 +198,8 @@ const determinePositions = (players, year, activePlayers) => {
   playersArray.sort((a, b) => b.count - a.count);
 
   const [retiredPlayers] = getRetiredPlayers(activePlayers, year);
+
+  // TODO: update place logic
 
   if (playersArray[0].count !== 0) first.push(playersArray[0]._id);
 
@@ -198,11 +226,22 @@ const determinePositions = (players, year, activePlayers) => {
     let lastScore = Infinity;
 
     for (let i = playersLength - 1; i >= 0; i--) {
-      if (!playerRetiredDuring(retiredPlayers, playersArray[i]._id, newDate)) {
+      if (year !== CURRENT_YEAR) {
+        const lastDay = new Date(year, 11, 31);
+        if (
+          !playerRetiredDuring(retiredPlayers, playersArray[i]._id, lastDay)
+        ) {
+          lastScore = playersArray[i].count;
+          break;
+        }
+      } else if (
+        !playerRetiredDuring(retiredPlayers, playersArray[i]._id, newDate)
+      ) {
         lastScore = playersArray[i].count;
         break;
       }
     }
+
     for (let i = 0; i < playersLength; i++) {
       const playerId = playersArray[i]._id;
       if (
@@ -669,9 +708,8 @@ const awardRandom = async (allPlayers, year) => {
         year,
         _award: award
       };
-      const activePlayers = allPlayers.filter(player => !player.retired);
       const randomPlayer =
-        activePlayers[Math.floor(Math.random() * activePlayers.length)].id;
+        allPlayers[Math.floor(Math.random() * allPlayers.length)];
 
       if (year !== CURRENT_YEAR) {
         await new PastAwards({
@@ -864,6 +902,72 @@ const awardHindsight = async (playersHindsight, year) => {
         } else {
           await new CurrentAwards({
             ...awardParams,
+            _pereritto: player
+          }).save();
+        }
+      }
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+const awardFirstChoice = async (playersFirst, year) => {
+  try {
+    const award = await Awards.findOne(
+      {
+        type: 'choiceFirst'
+      },
+      { _id: 1 }
+    ).limit(1);
+
+    if (award) {
+      const awardParams = { year, _award: award };
+      for (let player of Object.keys(playersFirst)) {
+        const title = `First Choice Win (${playersFirst[player]})`;
+        if (year !== CURRENT_YEAR) {
+          await new PastAwards({
+            ...awardParams,
+            title,
+            _pereritto: player
+          }).save();
+        } else {
+          await new CurrentAwards({
+            ...awardParams,
+            title,
+            _pereritto: player
+          }).save();
+        }
+      }
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+const awardLastChoice = async (playersLast, year) => {
+  try {
+    const award = await Awards.findOne(
+      {
+        type: 'choiceLast'
+      },
+      { _id: 1 }
+    ).limit(1);
+
+    if (award) {
+      const awardParams = { year, _award: award };
+      for (let player of Object.keys(playersLast)) {
+        const title = `Last Choice Win (${playersLast[player]})`;
+        if (year !== CURRENT_YEAR) {
+          await new PastAwards({
+            ...awardParams,
+            title,
+            _pereritto: player
+          }).save();
+        } else {
+          await new CurrentAwards({
+            ...awardParams,
+            title,
             _pereritto: player
           }).save();
         }

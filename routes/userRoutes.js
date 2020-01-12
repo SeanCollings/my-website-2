@@ -2,6 +2,7 @@ import requireLogin from '../middlewares/requireLogin';
 import requireSuperAccess from '../middlewares/requireSuperAccess';
 import { MessageTypeEnum } from '../client/src/utils/constants';
 import { MAINTENANCE_MENU } from '../client/src/utils/maintenance';
+import to from '../core/to';
 
 const mongoose = require('mongoose');
 const Users = mongoose.model('users');
@@ -14,19 +15,26 @@ export default app => {
     requireSuperAccess,
     async (req, res) => {
       try {
+        let err, pererittoPlayer, isPererittoPlayer;
         let users = [];
 
         switch (req.query.param1) {
           case MAINTENANCE_MENU.ALL_USERS.type:
-            users = await Users.find().sort({ givenName: 1, familyName: 1 });
+            [err, users] = await to(
+              Users.find().sort({ givenName: 1, familyName: 1 })
+            );
+            if (err) throw new Error(err);
             break;
           case MAINTENANCE_MENU.PERERITTO_USERS.type:
-            users = await Users.find(
-              { pererittoUser: true },
-              { pererittoUser: 1, _pereritto: 1, givenName: 1, familyName: 1 }
-            ).sort({
-              givenName: 1
-            });
+            [err, users] = await to(
+              Users.find(
+                { pererittoUser: true },
+                { pererittoUser: 1, _pereritto: 1, givenName: 1, familyName: 1 }
+              ).sort({
+                givenName: 1
+              })
+            );
+            if (err) throw new Error(err);
 
             if (users.length > 0) {
               const transformedUsers = [];
@@ -34,12 +42,15 @@ export default app => {
               switch (req.query.param2) {
                 case MAINTENANCE_MENU.PERERITTO_USERS.options[0]:
                   for (let i = 0; i < users.length; i++) {
-                    const pererittoPlayer = await PererittoUser.find(
-                      {
-                        _id: users[i]._pereritto
-                      },
-                      { _id: 1, retired: 1, retiredDate: 1 }
-                    ).limit(1);
+                    [err, pererittoPlayer] = await to(
+                      PererittoUser.find(
+                        {
+                          _id: users[i]._pereritto
+                        },
+                        { _id: 1, retired: 1, retiredDate: 1 }
+                      ).limit(1)
+                    );
+                    if (err) throw new Error(err);
 
                     if (pererittoPlayer.length > 0) {
                       const updatedUser = {
@@ -56,12 +67,16 @@ export default app => {
                   return res.send(transformedUsers);
                 case MAINTENANCE_MENU.PERERITTO_USERS.options[1]:
                   for (let i = 0; i < users.length; i++) {
-                    const isPererittoPlayer = await PererittoUser.findOne(
-                      {
-                        _id: users[i]._pereritto
-                      },
-                      { _id: 1 }
-                    ).limit(1);
+                    [err, isPererittoPlayer] = await to(
+                      PererittoUser.findOne(
+                        {
+                          _id: users[i]._pereritto
+                        },
+                        { _id: 1 }
+                      ).limit(1)
+                    );
+                    if (err) throw new Error(err);
+
                     if (!isPererittoPlayer) transformedUsers.push(users[i]);
                   }
 
@@ -70,16 +85,22 @@ export default app => {
             }
             break;
           case 'User Groups':
-            users = await Users.find(
-              {},
-              { givenName: 1, familyName: 1, uploadedPhoto: 1 }
-            ).sort({
-              givenName: 1,
-              familyName: 1
-            });
+            [err, users] = await to(
+              Users.find(
+                {},
+                { givenName: 1, familyName: 1, uploadedPhoto: 1 }
+              ).sort({
+                givenName: 1,
+                familyName: 1
+              })
+            );
+            if (err) throw new Error(err);
             break;
           default:
-            users = await Users.find().sort({ familyName: 1, givenName: 1 });
+            [err, users] = await to(
+              Users.find().sort({ familyName: 1, givenName: 1 })
+            );
+            if (err) throw new Error(err);
             break;
         }
 

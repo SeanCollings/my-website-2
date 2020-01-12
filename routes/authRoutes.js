@@ -1,5 +1,6 @@
 import passport from 'passport';
 import { getLastReleaseCreatedDate } from './appRoutes';
+import to from '../core/to';
 
 const mongoose = require('mongoose');
 const Users = mongoose.model('users');
@@ -31,43 +32,44 @@ export default app => {
   });
 
   app.get('/api/current_user', async (req, res) => {
-    try {
-      // if (req.user) {
-      //   await Users.updateOne(
-      //     { _id: req.user._id }
-      // { $set: { lastLogin: Date.now() } }
-      //   );
-      // }
+    let err, user;
+    // if (req.user) {
+    //   await Users.updateOne(
+    //     { _id: req.user._id }
+    // { $set: { lastLogin: Date.now() } }
+    //   );
+    // }
 
-      if (req.user) {
-        const user = await Users.findOne(
-          { _id: req.user._id },
-          { splashes: 1, lastSplashed: 1 }
-        );
+    if (req.user) {
+      [err, user] = await to(
+        Users.findOne({ _id: req.user._id }, { splashes: 1, lastSplashed: 1 })
+      );
+      if (err) throw new Error(err);
 
-        const userLastLoggedIn = new Date(req.user.lastLogin);
-        if (userLastLoggedIn > getLastReleaseCreatedDate()) {
-          await Users.updateOne(
+      const userLastLoggedIn = new Date(req.user.lastLogin);
+      if (userLastLoggedIn > getLastReleaseCreatedDate()) {
+        [err] = await to(
+          Users.updateOne(
             { _id: req.user._id },
             { $set: { lastLogin: Date.now() } }
-          );
-        }
-
-        const today = new Date();
-        const isToday =
-          user.lastSplashed.getDate() === today.getDate() &&
-          user.lastSplashed.getMonth() === today.getMonth() &&
-          user.lastSplashed.getFullYear() === today.getFullYear();
-
-        if (!isToday && user.splashes < 5)
-          await Users.updateOne(
-            { _id: req.user._id },
-            { $set: { splashes: 5 } }
-          );
+          )
+        );
+        if (err) throw new Error(err);
       }
-      res.send(req.user);
-    } catch (err) {
-      throw err;
+
+      const today = new Date();
+      const isToday =
+        user.lastSplashed.getDate() === today.getDate() &&
+        user.lastSplashed.getMonth() === today.getMonth() &&
+        user.lastSplashed.getFullYear() === today.getFullYear();
+
+      if (!isToday && user.splashes < 5) {
+        [err] = await to(
+          Users.updateOne({ _id: req.user._id }, { $set: { splashes: 5 } })
+        );
+        if (err) throw new Error(err);
+      }
     }
+    res.send(req.user);
   });
 };

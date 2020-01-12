@@ -153,7 +153,9 @@ class DatePicker extends Component {
           }
         }
 
-        const players = dateExists[0].presentPlayers.join(',');
+        const presentPlayers = dateExists[0].presentPlayers;
+        presentPlayers.sort((a, b) => (a > b ? a : b));
+
         this.setState({
           ...this.state,
           selectedCalendarDate:
@@ -162,7 +164,7 @@ class DatePicker extends Component {
               : new Date(date),
           showToolTip: true
         });
-        presentPlayerNames(players);
+        presentPlayerNames(presentPlayers.join(','));
       } else {
         presentPlayerNames('');
         this.setState({

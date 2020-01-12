@@ -24,7 +24,7 @@ import 'slick-carousel/slick/slick-theme.css';
 
 const styles = theme => ({
   pageFill: {
-    // paddingBottom: '2.5rem',
+    paddingBottom: '1rem',
     maxWidth: '100%'
     // backgroundColor: '#FF4136'
   },

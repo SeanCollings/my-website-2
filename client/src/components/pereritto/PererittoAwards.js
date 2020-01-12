@@ -28,10 +28,14 @@ const styles = theme => ({
   }
 });
 
+const RANDOM_RANDY = 'Random Randy';
+const LAST_CHOICE_WIN = 'Last Choice Win';
+
 class PererittoAwards extends Component {
   state = {
     awardMessage: '. Wall of Flame .',
-    shelvesRendered: false
+    shelvesRendered: false,
+    randyUpdated: false
   };
 
   componentDidMount() {
@@ -42,17 +46,41 @@ class PererittoAwards extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.awards !== this.props.awards) return true;
+    const { randyUpdated } = this.state;
+
+    if (nextProps.awards !== this.props.awards) {
+      if (!randyUpdated && nextProps.awards.allAwards) {
+        this.setState({ randyUpdated: true });
+      }
+
+      return true;
+    }
     if (this.state.awardMessage !== nextState.awardMessage) return true;
 
     return false;
   }
 
   renderShelves = () => {
-    const { classes, awards } = this.props;
+    const { classes, awards, resizeScreen } = this.props;
+    const { randyUpdated } = this.state;
     const allAwards = awards.allAwards;
 
-    if (allAwards) allAwards.sort((a, b) => b.year - a.year);
+    if (allAwards) {
+      allAwards.sort((a, b) => b.year - a.year);
+
+      const randomRandyInArray = allAwards.some(
+        el => el.title === RANDOM_RANDY
+      );
+
+      if (randomRandyInArray && !randyUpdated) {
+        const index = allAwards.findIndex(el => el.title === RANDOM_RANDY);
+        const randy = allAwards[index];
+        const randomPositon = Math.floor(Math.random() * allAwards.length);
+
+        allAwards.splice(index, 1);
+        allAwards.splice(randomPositon, 0, randy);
+      }
+    }
 
     const shelfArray = [];
     const originalMessage = '. Wall of Flame .';
@@ -77,7 +105,10 @@ class PererittoAwards extends Component {
             const direction = Math.random() < 0.7 ? '' : '-';
             const pixelsTofall = 50 + 102 * (numberOfShelves - i - 1);
             const randomRandy =
-              allAwards[j].title === 'Random Randy' ? true : false;
+              allAwards[j].title === RANDOM_RANDY ? true : false;
+            const lastChoiceAward = allAwards[j].title.includes(LAST_CHOICE_WIN)
+              ? true
+              : false;
             let distance = null;
 
             if (allAwards[j]._award.canFall) {
@@ -100,12 +131,14 @@ class PererittoAwards extends Component {
                 }}
                 className={`${classes.award} transform-scale ${
                   randomRandy ? 'change-hue' : ''
-                }`}
+                } ${lastChoiceAward && resizeScreen ? 'bullet' : ''}`}
                 alt={allAwards[j].title}
                 src={allAwards[j]._award.image}
                 onClick={() =>
                   this.setState({
-                    awardMessage: `${allAwards[j].title} - ${allAwards[j].year}`
+                    ...this.state,
+                    awardMessage: `${allAwards[j].title} - ${allAwards[j].year}`,
+                    randyUpdated: true
                   })
                 }
               />

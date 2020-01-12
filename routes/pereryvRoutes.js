@@ -145,7 +145,13 @@ export default app => {
 
           await Slates.updateOne(
             { _id: slateId },
-            { $set: { members: updatedMembers, completed: isSlateComplete } }
+            {
+              $set: {
+                members: updatedMembers,
+                completed: isSlateComplete,
+                completedDate: isSlateComplete ? new Date() : null
+              }
+            }
           );
 
           return res.send({

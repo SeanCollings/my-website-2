@@ -1,0 +1,15 @@
+.more-icon {
+  color: #581845;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.more-icon.closed {
+  transform: rotate(0deg);
+  transition: transform 0.15s linear;
+}
+.more-icon.open {
+  transform: rotate(180deg);
+  transition: transform 0.15s linear;
+}

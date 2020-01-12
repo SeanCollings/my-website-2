@@ -281,7 +281,10 @@ class PereryvPage extends Component {
     } = this.state;
 
     return (
-      <div className={classes.pageFill} style={{ maxWidth: '100%' }}>
+      <div
+        className={classes.pageFill}
+        style={{ maxWidth: '100%', paddingBottom: '12px' }}
+      >
         <Fab
           onClick={this.addSlate}
           aria-label="add"
@@ -293,13 +296,14 @@ class PereryvPage extends Component {
             right: '30px',
             disabled: addingSlate,
             opacity: addingSlate ? '0.6' : '1',
-            display: auth.superUser ? '' : 'none'
+            display: auth.superUser ? '' : 'none',
+            zIndex: '10'
           }}
         >
           <AddIcon />
         </Fab>
         <Grid container direction="column" justify="center" alignItems="center">
-          {this.renderSlates()}
+          <div>{this.renderSlates()}</div>
           {slates.length > 0 && (
             <div
               style={{

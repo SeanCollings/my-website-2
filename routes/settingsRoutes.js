@@ -1,5 +1,6 @@
 import requireLogin from '../middlewares/requireLogin';
 import { MessageTypeEnum } from '../client/src/utils/constants';
+import to from '../core/to';
 
 const mongoose = require('mongoose');
 const Settings = mongoose.model('settings');
@@ -7,19 +8,22 @@ const Users = mongoose.model('users');
 
 export default app => {
   app.get('/api/get_usersettings', requireLogin, async (req, res) => {
-    try {
-      const settings = await Settings.findOne({ _user: req.user._id });
+    let err, settings;
 
-      if (settings === null) {
-        const newSettings = await new Settings({
+    [err, settings] = await to(Settings.findOne({ _user: req.user._id }));
+    if (err) throw new Error(err);
+
+    if (settings === null) {
+      [err, newSettings] = await to(
+        new Settings({
           _user: req.user._id
-        }).save();
-        return res.send(newSettings);
-      }
-      return res.send(settings);
-    } catch (err) {
-      throw err;
+        }).save()
+      );
+      if (err) throw new Error(err);
+
+      return res.send(newSettings);
     }
+    return res.send(settings);
   });
 
   app.post('/api/update_profilepic', requireLogin, async (req, res) => {

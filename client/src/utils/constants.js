@@ -12,6 +12,8 @@ export const PERERITTO_PATH = '/pereritto';
 export const MAINTENANCE_PATH = '/maintenance';
 export const LOCATIONS_PATH = '/locations';
 export const DICE_PATH = '/dice';
+export const FIRST = 'first';
+export const LAST = 'last';
 
 export const MOBILE_SCREEN_SIZE = 700;
 

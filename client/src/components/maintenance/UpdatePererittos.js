@@ -161,7 +161,6 @@ class UpdatePererittos extends Component {
                   Header: props => (
                     <TableHead>
                       <TableRow style={{ backgroundColor: '#EF6161' }}>
-                        {/* <TableCell style={{ paddingRight: '0px' }} /> */}
                         <TableCell
                           style={{
                             paddingRight: '0px',

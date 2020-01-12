@@ -4,6 +4,7 @@ const slateSchema = new Schema({
   name: String,
   members: Array,
   createdDate: Date,
+  completedDate: Date,
   completed: { type: Boolean, default: false }
 });
 
