@@ -5,8 +5,13 @@ import * as actions from '../../actions';
 import DatePicker from '../components/DatePicker';
 import { Button, Grid, Typography } from '@material-ui/core';
 
+const SELECT_A_DATE = 'Select a date to see who was there...';
+
 class PererittoCalendar extends Component {
-  state = { showMoreMonths: false, presentPlayers: '' };
+  state = {
+    showMoreMonths: false,
+    presentPlayers: SELECT_A_DATE
+  };
 
   render() {
     const { showMoreMonths, presentPlayers } = this.state;
@@ -41,7 +46,11 @@ class PererittoCalendar extends Component {
           preventSelection={true}
           showMoreMonths={showMoreMonths}
           showPlayers={true}
-          presentPlayerNames={names => this.setState({ presentPlayers: names })}
+          presentPlayerNames={names =>
+            this.setState({
+              presentPlayers: names.length ? names : SELECT_A_DATE
+            })
+          }
         />
         <Typography
           id="present-players"

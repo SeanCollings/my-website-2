@@ -39,20 +39,13 @@ class CompletedSlates extends React.Component {
 
           return (
             <Grid
+              className={`no-select slate-details`}
               key={slate._id}
               container
               direction="column"
               justify="center"
               alignItems="center"
-              style={{
-                marginBottom: '4px',
-                paddingTop: '2px',
-                background: '#dedede',
-                borderRadius: '8px',
-                width: '230px',
-                position: 'relative',
-                cursor: 'pointer'
-              }}
+              style={{ width: '230px' }}
               onClick={() => this.handleSlateClick(slate._id)}
             >
               <Typography

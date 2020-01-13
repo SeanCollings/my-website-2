@@ -106,7 +106,7 @@ class LocationsPage extends Component {
     const heightFactor = resizeScreen ? '56px' : '64px';
 
     if (app.locationState !== 'granted')
-      return <WhoopsieDoodle toEnable="Location" />;
+      return <WhoopsieDoodle toEnable="Locations" />;
 
     return (
       <div>

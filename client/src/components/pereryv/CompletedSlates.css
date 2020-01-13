@@ -13,3 +13,23 @@
   transform: rotate(180deg);
   transition: transform 0.15s linear;
 }
+
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.slate-details {
+  margin-bottom: 4px;
+  padding-top: 2px;
+  background: #dedede;
+  border-radius: 8px;
+  width: 230px;
+  position: relative;
+  cursor: pointer;
+}

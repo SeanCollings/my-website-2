@@ -69,7 +69,7 @@ const PieChart = ({ winners, selectedYear }) => {
           animationDuration={500}
           animationEasing="ease-out"
           lengthAngle={360}
-          startAngle={271}
+          startAngle={270}
           radius={49}
           // paddingAngle={data.length > 1 ? 0 : 1}
           paddingAngle={1}

@@ -134,6 +134,9 @@ class LocationsMap extends Component {
             (result, status) => {
               if (status === google.maps.DirectionsStatus.OK) {
                 const overViewCoords = result.routes[0].overview_path;
+                // const distance = result.routes[0].legs[0].distance.text;
+                // const duration = result.routes[0].legs[0].duration.text;
+                // const details = { path: overViewCoords, distance, duration };
                 directionsArr.push(overViewCoords);
                 this.props.onlineMembersUpdated(false);
                 this.setState({ otherPlayerDirections: directionsArr });

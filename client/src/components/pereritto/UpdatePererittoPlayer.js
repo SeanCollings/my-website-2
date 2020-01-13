@@ -116,14 +116,7 @@ class UpdatePererittoPlayer extends Component {
   };
 
   updatePlayerClick = () => {
-    const {
-      playerId,
-      selectedDate,
-      updateState,
-      presentPlayers,
-      choseFirstAndWon,
-      choseLastAndWon
-    } = this.state;
+    const { playerId, selectedDate, updateState, presentPlayers } = this.state;
 
     if (
       playerId === '' &&
@@ -143,18 +136,7 @@ class UpdatePererittoPlayer extends Component {
             MessageTypeEnum.error,
             'The selected player needs to be present!'
           );
-
-        let choseAndWon;
-        if (choseFirstAndWon) choseAndWon = FIRST;
-        else if (choseLastAndWon) choseAndWon = LAST;
-
-        this.setState({ ...this.state, updatingPlayer: true });
-        this.props.updatePererittoUser(
-          playerId,
-          selectedDate,
-          presentPlayers,
-          choseAndWon
-        );
+        this.setState({ ...this.state, updatingPlayer: true, showModal: true });
         break;
       case REMOVE_PLAYER:
         this.setState({ ...this.state, updatingPlayer: true, showModal: true });
@@ -165,6 +147,27 @@ class UpdatePererittoPlayer extends Component {
       default:
         break;
     }
+  };
+
+  updateBoardFinal = () => {
+    const {
+      playerId,
+      selectedDate,
+      presentPlayers,
+      choseFirstAndWon,
+      choseLastAndWon
+    } = this.state;
+
+    let choseAndWon;
+    if (choseFirstAndWon) choseAndWon = FIRST;
+    else if (choseLastAndWon) choseAndWon = LAST;
+
+    this.props.updatePererittoUser(
+      playerId,
+      selectedDate,
+      presentPlayers,
+      choseAndWon
+    );
   };
 
   updatePresentPlayer = userId => {
@@ -259,7 +262,7 @@ class UpdatePererittoPlayer extends Component {
         direction="column"
         justify="center"
         alignItems="center"
-        style={{ marginTop: '24px', marginBottom: '12px' }}
+        style={{ marginTop: '12px', marginBottom: '12px' }}
       >
         <List
           style={{
@@ -465,14 +468,17 @@ class UpdatePererittoPlayer extends Component {
         </Grid>
         <ConfirmActionModal
           showModal={showModal}
-          title={'Warning!'}
+          title={'Notice!'}
           message={`Are you sure you want to ${
             updateState === REMOVE_PLAYER
               ? 'delete this date?'
+              : updateState === UPDATE_BOARD
+              ? 'update the board?'
               : 'mark this player as absent?'
           }`}
           confirmClick={() => {
             this.setState({ showModal: false });
+            updateState === UPDATE_BOARD && this.updateBoardFinal();
             updateState === REMOVE_PLAYER &&
               this.props.removeWinnerDate(selectedDate);
             updateState === CUSTOM_AWARD &&

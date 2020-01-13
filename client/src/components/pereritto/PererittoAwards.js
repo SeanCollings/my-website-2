@@ -29,6 +29,7 @@ const styles = theme => ({
 });
 
 const RANDOM_RANDY = 'Random Randy';
+const FIRST_CHOICE_WIN = 'First Choice Win';
 const LAST_CHOICE_WIN = 'Last Choice Win';
 
 class PererittoAwards extends Component {
@@ -106,9 +107,12 @@ class PererittoAwards extends Component {
             const pixelsTofall = 50 + 102 * (numberOfShelves - i - 1);
             const randomRandy =
               allAwards[j].title === RANDOM_RANDY ? true : false;
-            const lastChoiceAward = allAwards[j].title.includes(LAST_CHOICE_WIN)
-              ? true
-              : false;
+            const firstChoiceAward = allAwards[j].title.includes(
+              FIRST_CHOICE_WIN
+            );
+            const lastChoiceAward = allAwards[j].title.includes(
+              LAST_CHOICE_WIN
+            );
             let distance = null;
 
             if (allAwards[j]._award.canFall) {
@@ -131,7 +135,8 @@ class PererittoAwards extends Component {
                 }}
                 className={`${classes.award} transform-scale ${
                   randomRandy ? 'change-hue' : ''
-                } ${lastChoiceAward && resizeScreen ? 'bullet' : ''}`}
+                } ${lastChoiceAward && resizeScreen ? 'bullet' : ''}
+                ${firstChoiceAward ? 'thumbs-up' : ''}`}
                 alt={allAwards[j].title}
                 src={allAwards[j]._award.image}
                 onClick={() =>

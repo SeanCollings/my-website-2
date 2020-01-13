@@ -103,6 +103,10 @@
   z-index: 4;
 }
 
+.thumbs-up:hover {
+  animation: pulse 1.5s linear infinite;
+}
+
 @keyframes random {
   0%,
   100%,
@@ -127,5 +131,19 @@
   to {
     left: 1000%;
     display: none;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100%,
+  50% {
+    transform: scale(1) rotate(20deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-4deg);
+  }
+  75% {
+    transform: scale(1.09) rotate(-3deg);
   }
 }
