@@ -64,11 +64,13 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
   if (currentYearWinners.length === 0) return null;
   const totalWins = currentYearWinners.length;
 
-  const series = playersActiveOrWinners.map(player =>
-    ((player.count / totalWins) * 100).toFixed(2)
-  );
+  const series = playersActiveOrWinners
+    .filter(player => player.count > 0)
+    .map(player => ((player.count / totalWins) * 100).toFixed(2));
 
-  const colors = playersActiveOrWinners.map(player => player.colour);
+  const colors = playersActiveOrWinners
+    .filter(player => player.count > 0)
+    .map(player => player.colour);
   // console.log('totalAppearance', totalAppearance);
   // series.push(50);
   // colors.push('#b10dc9');
@@ -196,7 +198,11 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
             marginTop: !selectedPlayer ? '-15px' : '-15px'
           }}
         >
-          {!selectedPlayer ? 'Rounds' : 'Plays'}
+          {!selectedPlayer
+            ? currentYearWinners.length > 1
+              ? `Rounds`
+              : 'Round'
+            : 'Plays'}
         </Typography>
       </Button>
     </div>
