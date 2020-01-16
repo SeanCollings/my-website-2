@@ -58,8 +58,7 @@ const PieChart = ({ winners, selectedYear }) => {
       style={{
         position: 'relative',
         width: '180px',
-        height: '180px',
-        margin: '18px auto 24px'
+        height: '180px'
       }}
     >
       <div style={{ position: 'absolute', zIndex: '2', cursor: 'pointer' }}>

@@ -441,7 +441,10 @@ class UpdatePererittoPlayer extends Component {
               <Button
                 size={'medium'}
                 disabled={
-                  updateState === REMOVE_PLAYER && !selectedDate ? true : false
+                  (updateState === REMOVE_PLAYER && !selectedDate) ||
+                  (updateState === UPDATE_BOARD && !selectedDate)
+                    ? true
+                    : false
                 }
                 style={{
                   color: 'white',

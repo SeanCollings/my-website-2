@@ -103,6 +103,10 @@
   z-index: 4;
 }
 
+.thumbs-up {
+  filter: sepia(0.1);
+}
+
 .thumbs-up:hover {
   animation: pulse 1.5s linear infinite;
 }

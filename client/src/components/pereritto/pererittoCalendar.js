@@ -13,6 +13,18 @@ class PererittoCalendar extends Component {
     presentPlayers: SELECT_A_DATE
   };
 
+  displayPresentPlayers = (names, display) => {
+    if (display) {
+      this.setState({
+        presentPlayers: names.length ? names : SELECT_A_DATE
+      });
+    } else {
+      this.setState({
+        presentPlayers: ''
+      });
+    }
+  };
+
   render() {
     const { showMoreMonths, presentPlayers } = this.state;
     const { resizeScreen, winners } = this.props;
@@ -46,11 +58,7 @@ class PererittoCalendar extends Component {
           preventSelection={true}
           showMoreMonths={showMoreMonths}
           showPlayers={true}
-          presentPlayerNames={names =>
-            this.setState({
-              presentPlayers: names.length ? names : SELECT_A_DATE
-            })
-          }
+          presentPlayerNames={this.displayPresentPlayers}
         />
         <Typography
           id="present-players"

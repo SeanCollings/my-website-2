@@ -7,6 +7,8 @@ import classNames from 'react-day-picker/lib/src/classNames';
 
 import './DatePicker.css';
 
+const SELECT_A_DATE = 'Select a date to see who was there...';
+
 class DatePicker extends Component {
   state = {
     selectedDay: null,
@@ -15,7 +17,9 @@ class DatePicker extends Component {
     data: null,
     selectedCalendarDate: null,
     pererittoId: 'pereritto_id',
-    showToolTip: false
+    showToolTip: false,
+    presentNames: '',
+    datePre2020: false
   };
 
   mobileScreen = this.props.resizeScreen || !this.props.preventSelection;
@@ -95,10 +99,15 @@ class DatePicker extends Component {
       }
       this.props.selectedDate(null);
     }
+
+    if (showMoreMonths !== props.showMoreMonths) {
+      this.handleMonthChange();
+    }
   }
 
   handleDayClick = (day, modifiers, e) => {
     const { preventSelection, showPlayers, presentPlayerNames } = this.props;
+    const { datePre2020 } = this.state;
 
     // if (Object.keys(modifiers)[0] && Object.keys(modifiers)[0].includes(pererittoId)) {
     //   const keySplit = Object.keys(modifiers)[0].split('|');
@@ -162,17 +171,44 @@ class DatePicker extends Component {
             modifiers.selected || dateExists.length === 0
               ? null
               : new Date(date),
-          showToolTip: true
+          showToolTip: true,
+          presentNames: presentPlayers.toString()
         });
-        presentPlayerNames(presentPlayers.join(','));
+        presentPlayerNames(presentPlayers.toString(), true);
       } else {
-        presentPlayerNames('');
+        presentPlayerNames(SELECT_A_DATE, !datePre2020);
         this.setState({
           ...this.state,
           selectedCalendarDate: null,
-          showToolTip: false
+          showToolTip: false,
+          presentNames: ''
         });
       }
+    }
+  };
+
+  monthDifference = (dateFrom, dateTo) => {
+    return (
+      dateTo.getMonth() -
+      dateFrom.getMonth() +
+      12 * (dateTo.getFullYear() - dateFrom.getFullYear())
+    );
+  };
+
+  handleMonthChange = month => {
+    const { showMoreMonths, presentPlayerNames } = this.props;
+    const { presentNames } = this.state;
+
+    const checkMonth = month ? month : new Date();
+    const pre2020Small = new Date(checkMonth).getFullYear() < 2020;
+    const pre2020Big = this.monthDifference(checkMonth, new Date()) >= 6;
+
+    if ((!showMoreMonths && pre2020Small) || pre2020Big) {
+      this.setState({ datePre2020: true });
+      presentPlayerNames('');
+    } else {
+      presentPlayerNames(presentNames.toString(), true);
+      this.setState({ datePre2020: false });
     }
   };
 
@@ -304,6 +340,7 @@ class DatePicker extends Component {
                 : null
               : this.setMonthsBack()
           }
+          onMonthChange={this.handleMonthChange}
         />
         {/* {showPlayers && (
           <div

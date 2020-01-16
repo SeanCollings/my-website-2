@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
 import PieChart from '../components/PieChart';
+import RadialChart from '../components/RadialChart';
 
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -16,6 +17,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import FloristIcon from '@material-ui/icons/LocalFloristRounded';
+import RightIcon from '@material-ui/icons/ArrowForward';
+import LeftIcon from '@material-ui/icons/ArrowBack';
 // import RefreshIcon from '@material-ui/icons/RefreshRounded';
 
 import trophy from '../../images/trophy.png';
@@ -49,15 +52,36 @@ const styles = theme => ({
     '&:after': {
       borderBottomColor: '#ffa07a'
     }
+  },
+  leftButton: {
+    position: 'absolute',
+    left: '0',
+    color: '#EAEAEA'
+    // top: '50%',
+    // transform: 'translateY(-50%)',
+  },
+  rightButton: {
+    position: 'absolute',
+    right: '0',
+    color: '#EAEAEA'
+    // top: '50%',
+    // transform: 'translateY(-50%)',
   }
 });
+const YEAR_2020 = 2020;
+const SCOVILLE_SCALE = 'The Scoville Scale';
+const DAUNTLESS_DISTRIBUTION = 'The Dauntless Distribution';
+
+const CHART_SELECTIONS = [SCOVILLE_SCALE, DAUNTLESS_DISTRIBUTION];
 
 class PererittoPlayers extends Component {
   state = {
     playedYears: null,
     selectedYear: null,
     loadedYears: [],
-    retiredPlayers: []
+    retiredPlayers: [],
+    selectedChartIndex: 0,
+    selectedChart: CHART_SELECTIONS[0]
   };
 
   componentDidMount() {
@@ -417,9 +441,28 @@ class PererittoPlayers extends Component {
     return null;
   }
 
+  toggleChart = toggleRight => {
+    const { selectedChartIndex } = this.state;
+    let newIndex = selectedChartIndex;
+
+    if (toggleRight) {
+      if (selectedChartIndex !== CHART_SELECTIONS.length - 1) newIndex++;
+      else newIndex = 0;
+    } else {
+      if (selectedChartIndex !== 0) newIndex--;
+      else newIndex = CHART_SELECTIONS.length - 1;
+    }
+
+    this.setState({
+      ...this.state,
+      selectedChartIndex: newIndex,
+      selectedChart: CHART_SELECTIONS[newIndex]
+    });
+  };
+
   render() {
-    const { resizeScreen, classes, winners } = this.props;
-    const { selectedYear } = this.state;
+    const { resizeScreen, classes, winners, pererittoUsers } = this.props;
+    const { selectedYear, selectedChart } = this.state;
 
     return (
       <div
@@ -465,7 +508,35 @@ class PererittoPlayers extends Component {
         </Grid>
         {this.buildPlayerTally()}
         {this.renderRetiredPlayers()}
-        <PieChart winners={winners} selectedYear={selectedYear} />
+        <div style={{ margin: '18px auto 24px', position: 'relative' }}>
+          {selectedYear >= YEAR_2020 && (
+            <LeftIcon
+              className={classes.leftButton}
+              onClick={() => this.toggleChart(false)}
+            />
+          )}
+          {selectedYear >= YEAR_2020 && (
+            <RightIcon
+              className={classes.rightButton}
+              onClick={() => this.toggleChart(false)}
+            />
+          )}
+          {selectedChart === SCOVILLE_SCALE && (
+            <PieChart winners={winners} selectedYear={selectedYear} />
+          )}
+          {selectedChart === DAUNTLESS_DISTRIBUTION && (
+            <RadialChart
+              winners={winners}
+              selectedYear={selectedYear}
+              pererittoUsers={pererittoUsers}
+            />
+          )}
+          <Typography
+            style={{ marginTop: '12px', fontWeight: '100', color: '#EAEAEA' }}
+          >
+            {selectedChart}
+          </Typography>
+        </div>
       </div>
     );
   }
