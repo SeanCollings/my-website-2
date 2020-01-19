@@ -64,6 +64,8 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
   if (currentYearWinners.length === 0) return null;
   const totalWins = currentYearWinners.length;
 
+  // playersActiveOrWinners.sort((a, b) => b.count - a.count);
+
   const series = playersActiveOrWinners
     .filter(player => player.count > 0)
     .map(player => ((player.count / totalWins) * 100).toFixed(2));
@@ -129,7 +131,6 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
           series={series}
           type="radialBar"
           height={273}
-          children
         />
       </div>
       <div
@@ -146,7 +147,7 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
       ></div>
       <div
         style={{
-          borderBottom: '3px solid bisque',
+          borderBottom: '5px solid bisque',
           width: '78px',
           position: 'absolute',
           top: '87px'
@@ -154,7 +155,7 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
       ></div>
       <div
         style={{
-          borderRight: '3px solid bisque',
+          borderRight: '5px solid bisque',
           height: '78px',
           position: 'absolute',
           left: '87px'

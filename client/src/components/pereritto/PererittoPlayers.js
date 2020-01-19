@@ -4,6 +4,7 @@ import * as actions from '../../actions';
 
 import PieChart from '../components/PieChart';
 import RadialChart from '../components/RadialChart';
+import StackedBarChart from '../components/StackedBarChart';
 
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -71,8 +72,13 @@ const styles = theme => ({
 const YEAR_2020 = 2020;
 const SCOVILLE_SCALE = 'The Scoville Scale';
 const DAUNTLESS_DISTRIBUTION = 'The Dauntless Distribution';
+const WIN_VS_ATTENDANCE = 'The Win vs Atten Dance';
 
-const CHART_SELECTIONS = [SCOVILLE_SCALE, DAUNTLESS_DISTRIBUTION];
+const CHART_SELECTIONS = [
+  SCOVILLE_SCALE,
+  DAUNTLESS_DISTRIBUTION,
+  WIN_VS_ATTENDANCE
+];
 
 class PererittoPlayers extends Component {
   state = {
@@ -518,7 +524,7 @@ class PererittoPlayers extends Component {
           {selectedYear >= YEAR_2020 && (
             <RightIcon
               className={classes.rightButton}
-              onClick={() => this.toggleChart(false)}
+              onClick={() => this.toggleChart(true)}
             />
           )}
           {selectedChart === SCOVILLE_SCALE && (
@@ -526,6 +532,13 @@ class PererittoPlayers extends Component {
           )}
           {selectedChart === DAUNTLESS_DISTRIBUTION && (
             <RadialChart
+              winners={winners}
+              selectedYear={selectedYear}
+              pererittoUsers={pererittoUsers}
+            />
+          )}
+          {selectedChart === WIN_VS_ATTENDANCE && (
+            <StackedBarChart
               winners={winners}
               selectedYear={selectedYear}
               pererittoUsers={pererittoUsers}

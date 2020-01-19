@@ -1,0 +1,45 @@
+.chart_horiz {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  max-width: 100px;
+  border-radius: 4px;
+}
+
+.chart_bar {
+  /* animation: 1s anim-lightspeed-in ease forwards; */
+  animation: 1.3s anim-width-in ease forwards;
+  z-index: 1;
+}
+
+.chart_miss {
+  position: relative;
+  overflow: hidden;
+  /* animation: 2s anim-width-in ease forwards; */
+  /* animation: 0.2s anim-lightspeed-in ease forwards; */
+}
+
+.grid_line {
+  border-right: 1px solid bisque;
+  position: absolute;
+  opacity: 0.3;
+  height: 22px;
+}
+
+@keyframes anim-lightspeed-in {
+  0% {
+    transform: translateX(-200%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes anim-width-in {
+  0% {
+    min-width: 100%;
+  }
+  100% {
+    min-width: 0%;
+  }
+}
