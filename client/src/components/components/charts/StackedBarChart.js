@@ -6,19 +6,19 @@ import './StackedBarChart.css';
 const BORDER_COLOUR = 'bisque';
 
 const stackedBar = (first, second, colour) => {
-  const height = '20px';
+  const height = '22px';
 
   return (
     <div
       className="chart_horiz"
       style={{
-        border: `1px solid ${BORDER_COLOUR}`
+        border: `1px solid ${BORDER_COLOUR}`,
+        height
       }}
     >
       <div
         className="chart_bar"
         style={{
-          height,
           width: `${first}px`,
           background: `${colour}`
         }}
@@ -26,7 +26,6 @@ const stackedBar = (first, second, colour) => {
       <div
         className="chart_miss"
         style={{
-          height,
           width: `${second}px`,
           background: `#EAEAEA99`,
           borderLeft: `1px solid ${BORDER_COLOUR}`,
@@ -47,11 +46,13 @@ const handleSetShowPercentage = (id, showPercentage, setShowPercentage) => {
 
 const renderChart = (players, showPercentage, setShowPercentage) => {
   return players.map(player => {
+    if (player.attended === 0) return null;
+
     const showPercent = showPercentage.includes(player.id);
     const percentageWin = (player.wins / player.attended) * 100;
     const percentageMiss = 100 - percentageWin;
 
-    let avatarText = player.name.charAt(0);
+    let avatarText = player.name.charAt(0).toUpperCase();
     if (showPercent) avatarText = `${percentageWin.toFixed(0)}%`;
 
     return (
@@ -65,11 +66,11 @@ const renderChart = (players, showPercentage, setShowPercentage) => {
         <Avatar
           style={{
             backgroundColor: player.colour,
-            width: '24px',
-            height: '24px',
+            width: '26px',
+            height: '26px',
             border: `1px solid ${BORDER_COLOUR} `,
             marginRight: '8px',
-            fontSize: showPercent ? '9px' : '14px'
+            fontSize: showPercent ? '11px' : '14px'
           }}
         >
           {avatarText}
@@ -140,8 +141,10 @@ const StackedBarChart = ({ winners, selectedYear, pererittoUsers }) => {
       let wins = 0;
       let difference = 0;
       for (let key in totalAppearance) {
-        if (player.name === key) {
-          attended = totalAppearance[key].count;
+        if (player.id === key) {
+          attended = totalAppearance[key].count
+            ? totalAppearance[key].count
+            : 0;
           wins = playerTotalWins[player.id]
             ? playerTotalWins[player.id].count
             : 0;
@@ -154,12 +157,21 @@ const StackedBarChart = ({ winners, selectedYear, pererittoUsers }) => {
 
   playerWinAttendedCount.sort((a, b) => b.wins - a.wins);
 
+  // playerWinAttendedCount.push({
+  //   name: 'Vaughn',
+  //   colour: '#b10dc9',
+  //   id: '123',
+  //   wins: 2,
+  //   attended: 4
+  // });
+
   return (
     <div
       style={{
         position: 'relative',
         width: '180px',
-        height: '180px'
+        minHeight: '180px',
+        margin: 'auto'
       }}
     >
       <List style={{ padding: 0 }}>

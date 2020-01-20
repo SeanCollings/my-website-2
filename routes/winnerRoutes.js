@@ -72,7 +72,7 @@ export default app => {
             transformedWinners.push({
               ...winners[i]._doc,
               _winner: playerMap[winners[i]._winner],
-              presentPlayers: presentPlayerNames
+              presentPlayers: winners[i].presentPlayers
             });
           }
 

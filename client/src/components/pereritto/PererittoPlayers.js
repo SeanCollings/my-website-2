@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
-import PieChart from '../components/PieChart';
-import RadialChart from '../components/RadialChart';
-import StackedBarChart from '../components/StackedBarChart';
+import PieChart from '../components/charts/PieChart';
+import RadialChart from '../components/charts/RadialChart';
+import StackedBarChart from '../components/charts/StackedBarChart';
 
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -57,14 +57,16 @@ const styles = theme => ({
   leftButton: {
     position: 'absolute',
     left: '0',
-    color: '#EAEAEA'
+    color: '#EAEAEA',
+    cursor: 'pointer'
     // top: '50%',
     // transform: 'translateY(-50%)',
   },
   rightButton: {
     position: 'absolute',
     right: '0',
-    color: '#EAEAEA'
+    color: '#EAEAEA',
+    cursor: 'pointer'
     // top: '50%',
     // transform: 'translateY(-50%)',
   }
@@ -514,7 +516,13 @@ class PererittoPlayers extends Component {
         </Grid>
         {this.buildPlayerTally()}
         {this.renderRetiredPlayers()}
-        <div style={{ margin: '18px auto 24px', position: 'relative' }}>
+        <div
+          style={{
+            margin: '18px auto 24px',
+            position: 'relative',
+            width: '260px'
+          }}
+        >
           {selectedYear >= YEAR_2020 && (
             <LeftIcon
               className={classes.leftButton}
@@ -545,7 +553,12 @@ class PererittoPlayers extends Component {
             />
           )}
           <Typography
-            style={{ marginTop: '12px', fontWeight: '100', color: '#EAEAEA' }}
+            style={{
+              marginTop: '12px',
+              fontWeight: '100',
+              color: '#EAEAEA',
+              textAlign: 'center'
+            }}
           >
             {selectedChart}
           </Typography>

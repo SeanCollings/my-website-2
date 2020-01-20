@@ -7,8 +7,6 @@ import classNames from 'react-day-picker/lib/src/classNames';
 
 import './DatePicker.css';
 
-const SELECT_A_DATE = 'Select a date to see who was there...';
-
 class DatePicker extends Component {
   state = {
     selectedDay: null,
@@ -18,8 +16,9 @@ class DatePicker extends Component {
     selectedCalendarDate: null,
     pererittoId: 'pereritto_id',
     showToolTip: false,
-    presentNames: '',
-    datePre2020: false
+    presentNames: {},
+    datePre2020: false,
+    selectedPlayer: null
   };
 
   mobileScreen = this.props.resizeScreen || !this.props.preventSelection;
@@ -162,8 +161,10 @@ class DatePicker extends Component {
           }
         }
 
+        const selectedPlayer = dateExists[0]._winner._id;
         const presentPlayers = dateExists[0].presentPlayers;
-        presentPlayers.sort((a, b) => (a > b ? a : b));
+        // presentPlayers.sort((a, b) => (a > b ? a : b));
+        const presentNames = { players: presentPlayers, selectedDate: date };
 
         this.setState({
           ...this.state,
@@ -172,16 +173,18 @@ class DatePicker extends Component {
               ? null
               : new Date(date),
           showToolTip: true,
-          presentNames: presentPlayers.toString()
+          presentNames,
+          selectedPlayer
         });
-        presentPlayerNames(presentPlayers.toString(), true);
+        presentPlayerNames(presentNames, true, selectedPlayer);
       } else {
-        presentPlayerNames(SELECT_A_DATE, !datePre2020);
+        presentPlayerNames('', !datePre2020);
         this.setState({
           ...this.state,
           selectedCalendarDate: null,
           showToolTip: false,
-          presentNames: ''
+          presentNames: {},
+          selectedPlayer: null
         });
       }
     }
@@ -197,7 +200,7 @@ class DatePicker extends Component {
 
   handleMonthChange = month => {
     const { showMoreMonths, presentPlayerNames } = this.props;
-    const { presentNames } = this.state;
+    const { presentNames, selectedPlayer } = this.state;
 
     const checkMonth = month ? month : new Date();
     const pre2020Small = new Date(checkMonth).getFullYear() < 2020;
@@ -207,7 +210,7 @@ class DatePicker extends Component {
       this.setState({ datePre2020: true });
       presentPlayerNames('');
     } else {
-      presentPlayerNames(presentNames.toString(), true);
+      presentPlayerNames(presentNames, true, selectedPlayer);
       this.setState({ datePre2020: false });
     }
   };

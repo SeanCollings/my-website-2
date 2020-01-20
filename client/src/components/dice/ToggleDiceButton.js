@@ -27,7 +27,8 @@ const ToggleDiceButton = props => {
             background: '#c70039',
             position: 'fixed',
             bottom: '40px',
-            right: '30px'
+            borderRadius: '48% 0 0 48%',
+            right: '0px'
           }}
         >
           <Avatar

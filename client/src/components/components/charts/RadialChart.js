@@ -4,14 +4,15 @@ import { Typography, Button } from '@material-ui/core';
 
 const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const playerTotalWins = {};
+  const totalAppearance = {};
 
   if (!winners || !winners.winners) return null;
 
-  const playerTotalWins = {};
-  const totalAppearance = {};
   const currentYearWinners = winners.winners.filter(
     winner => winner.year === selectedYear
   );
+
   const allPlayers = pererittoUsers.map(user => {
     const name = user.name;
     const colour = user.colour;
@@ -55,7 +56,7 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
     .map(player => {
       let count = 0;
       for (let key in totalAppearance) {
-        if (player.name === key) count = totalAppearance[key];
+        if (player.id === key) count = totalAppearance[key];
       }
 
       return { ...player, count };
@@ -122,7 +123,8 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
       style={{
         position: 'relative',
         width: '180px',
-        height: '180px'
+        height: '180px',
+        margin: 'auto'
       }}
     >
       <div style={{ position: 'absolute', zIndex: '2', cursor: 'pointer' }}>

@@ -58,10 +58,17 @@ const PieChart = ({ winners, selectedYear }) => {
       style={{
         position: 'relative',
         width: '180px',
-        height: '180px'
+        height: '180px',
+        margin: 'auto'
       }}
     >
-      <div style={{ position: 'absolute', zIndex: '2', cursor: 'pointer' }}>
+      <div
+        style={{
+          position: 'absolute',
+          zIndex: '2',
+          cursor: 'pointer'
+        }}
+      >
         <Chart
           data={data}
           animate
