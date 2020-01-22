@@ -155,11 +155,13 @@ class PererittoCalendar extends Component {
           }}
         >
           <Avatar
-            className={`${selected ? 'avatar_pop' : ''}`}
+            className={`${selected ? 'avatar_pop' : ''} ${
+              unselected ? 'avatar_reset' : ''
+            }`}
             style={{
               backgroundColor: player.colour,
-              width: '24px',
-              height: '24px',
+              width: '1.5rem',
+              height: '1.5rem',
               border: `1px solid ${isPlayerSelected ? '#909090' : '#AAAAAA'}`,
               margin: '0 8px',
               fontSize: '14px',
@@ -184,10 +186,9 @@ class PererittoCalendar extends Component {
                 textTransform: 'none',
                 fontWeight: isPlayerSelected ? 500 : 100,
                 marginRight: '8px',
-                height: '22px',
-                lineHeight: '22px',
+                height: '1.5rem',
+                lineHeight: '1.5',
                 zIndex: 1
-                // filter: isPlayerSelected ? '' : 'brightness(0.9)'
               }}
             >
               {`${player.name}`}
@@ -260,10 +261,7 @@ class PererittoCalendar extends Component {
             maxWidth: !presentPlayers.players ? '260px' : '160px',
             padding: !presentPlayers.players ? '0px' : '8px 0 8px',
             background: !presentPlayers.players ? '' : '#DEDEDE',
-            borderRadius: '4px',
-            filter: !presentPlayers.players
-              ? ''
-              : 'drop-shadow(1px 1px 2px #444444)'
+            borderRadius: '4px'
           }}
         >
           {this.renderPresentPlayers()}

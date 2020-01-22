@@ -16,7 +16,8 @@ import {
   SET_SUBSCRIPTION_NULL,
   GET_SPLASHES,
   GET_NOTIFICATION_GROUPS,
-  GET_GROUP_MEMBERS
+  GET_GROUP_MEMBERS,
+  GET_USER_AWARDS_TOTAL
 } from './types';
 
 export const fetchUser = () => dispatch => {
@@ -222,6 +223,12 @@ export const getUserAwards = () => async dispatch => {
   const res = await axios.get(`/api/get_userawards`);
 
   dispatch({ type: GET_USER_AWARDS, payload: res.data });
+};
+
+export const getUserAwardsTotal = () => async dispatch => {
+  const res = await axios.get(`/api/get_userawards_total`);
+
+  dispatch({ type: GET_USER_AWARDS_TOTAL, payload: res.data });
 };
 
 export const updateSubscriptions = newSub => async dispatch => {

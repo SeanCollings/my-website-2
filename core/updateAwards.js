@@ -162,7 +162,7 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
     return false;
   });
 
-  determinePositions(players, year, activePlayers);
+  determinePositions(players, year, activePlayers, allPresentPlayers);
   determineDateCounts(
     winnerDatesSorted,
     playersDateCounts,
@@ -184,10 +184,15 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
     awardLastChoice(lastChoiceWins, year);
 };
 
-const determinePositions = (players, year, activePlayers) => {
-  const first = [];
-  const second = [];
-  const third = [];
+const determinePositions = (
+  players,
+  year,
+  activePlayers,
+  allPresentPlayers
+) => {
+  let first = [];
+  let second = [];
+  let third = [];
   const last = [];
 
   const playersMap = Object.keys(players).map(key => {
@@ -199,24 +204,38 @@ const determinePositions = (players, year, activePlayers) => {
 
   const [retiredPlayers] = getRetiredPlayers(activePlayers, year);
 
-  // TODO: update place logic
-
-  if (playersArray[0].count !== 0) first.push(playersArray[0]._id);
-
-  if (playersArray[1].count !== 0) {
-    if (playersArray[1].count === playersArray[0].count) {
-      first.push(playersArray[1]._id);
+  const highestCountList = {};
+  for (let i = 0; i < playersArray.length; i++) {
+    const count = playersArray[i].count;
+    if (!highestCountList[count]) {
+      if (Object.keys(highestCountList).length === 3) break;
+      highestCountList[count] = 1;
     } else {
-      second.push(playersArray[1]._id);
+      highestCountList[count] += 1;
     }
   }
 
-  if (playersArray[2].count !== 0) {
-    if (playersArray[2].count === playersArray[0].count) {
-      first.push(playersArray[2]._id);
-    } else if (playersArray[2].count === playersArray[1].count) {
-      second.push(playersArray[2]._id);
-    } else third.push(playersArray[2]._id);
+  const orderedHighestCount = Object.keys(highestCountList)
+    .map(count => Number(count))
+    .sort((a, b) => b - a);
+
+  // Get first place player
+  if (orderedHighestCount.length > 0 && orderedHighestCount[0] > 0) {
+    first = playersArray
+      .filter(player => player.count === orderedHighestCount[0])
+      .map(player => player._id);
+  }
+  // Get second place player
+  if (orderedHighestCount.length > 1 && orderedHighestCount[1] > 0) {
+    second = playersArray
+      .filter(player => player.count === orderedHighestCount[1])
+      .map(player => player._id);
+  }
+  // Get third place player
+  if (orderedHighestCount.length > 2 && orderedHighestCount[2] > 0) {
+    third = playersArray
+      .filter(player => player.count === orderedHighestCount[2])
+      .map(player => player._id);
   }
 
   // Get last place player
@@ -246,7 +265,8 @@ const determinePositions = (players, year, activePlayers) => {
       const playerId = playersArray[i]._id;
       if (
         playersArray[i].count === lastScore &&
-        !playerRetiredDuring(retiredPlayers, playerId, newDate)
+        !playerRetiredDuring(retiredPlayers, playerId, newDate) &&
+        playerWasPresent(allPresentPlayers, playerId)
       ) {
         if (
           !first.includes(playerId) &&

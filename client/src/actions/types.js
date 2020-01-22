@@ -11,6 +11,7 @@ export const HIDE_LOADER = 'hide_loader';
 export const SHOW_TOOLTIP = 'show_tooltip';
 export const HIDE_TOOLTIP = 'hide_tooltip';
 export const GET_USER_AWARDS = 'get_user_awards';
+export const GET_USER_AWARDS_TOTAL = 'get_user_awards_total';
 export const BEFORE_INSTALL_PROMPT = 'before_install_prompt';
 export const REMOVE_DEFERRED_PROMPT = 'remove_deferred_prompt';
 export const UPDATE_SUBSCRIPTIONS = 'update_subscriptions';

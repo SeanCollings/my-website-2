@@ -68,4 +68,57 @@ export default app => {
       throw error;
     }
   });
+
+  app.get('/api/get_userawards_total', requireLogin, async (req, res) => {
+    try {
+      const pererittoUser = await PererittoUser.findOne({
+        _id: req.user._pereritto
+      });
+
+      if (pererittoUser) {
+        const excludedAwardTypes = ['retired'];
+        const excludedAwards = ['Retired'];
+
+        const awards = await Awards.find(
+          { type: { $nin: excludedAwardTypes } },
+          { _id: 1, type: 1 }
+        );
+        const currentAwards = await CurrentAwards.find(
+          {
+            _pereritto: pererittoUser._id,
+            title: { $nin: excludedAwards }
+          },
+          { _award: 1, type: 1 }
+        );
+        const pastAwards = await PastAwards.find(
+          {
+            _pereritto: pererittoUser._id,
+            title: { $nin: excludedAwards }
+          },
+          { _award: 1, type: 1 }
+        );
+
+        const awardsTogether = [...currentAwards, ...pastAwards];
+        const uniqueAwards = [
+          ...new Set(awardsTogether.map(item => item._award.toString()))
+        ];
+
+        if (!awardsTogether || !uniqueAwards) {
+          return res.send({
+            userAwards: 0,
+            totalAwards: 0
+          });
+        }
+
+        return res.send({
+          userAwards: uniqueAwards.length,
+          totalAwards: awards.length
+        });
+      }
+
+      return res.status(404);
+    } catch (error) {
+      throw error;
+    }
+  });
 };

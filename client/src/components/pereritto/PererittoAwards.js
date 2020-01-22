@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
+import GaugeChart from '../components/charts/GaugeChart';
 import './PererittoAwards.css';
 
 import { Typography } from '@material-ui/core';
@@ -41,8 +42,8 @@ class PererittoAwards extends Component {
 
   componentDidMount() {
     if (!this.props.awards.allAwards) {
-      // console.log('GET called');
       this.props.getUserAwards();
+      this.props.getUserAwardsTotal();
     }
   }
 
@@ -176,7 +177,11 @@ class PererittoAwards extends Component {
   };
 
   render() {
+    const {
+      awards: { allAwards, userTotal }
+    } = this.props;
     const { awardMessage } = this.state;
+
     return (
       <div
         style={{
@@ -204,6 +209,7 @@ class PererittoAwards extends Component {
           <div className="cabinet-top" />
           {this.renderShelves()}
         </div>
+        {allAwards && userTotal && <GaugeChart allAwards={userTotal} />}
       </div>
     );
   }

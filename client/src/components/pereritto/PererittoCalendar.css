@@ -1,15 +1,19 @@
 .move_button {
   /* filter: drop-shadow(2px 4px 6px black); */
-  animation: 0.5s anim-move ease forwards;
+  animation: 0.3s anim-move ease forwards;
 }
 
 .button_close {
   /* transition: all 5s ease-out; */
-  animation: 0.5s reverse-anim-move ease forwards;
+  animation: 0.3s reverse-anim-move ease forwards;
 }
 
 .avatar_pop {
-  animation: 0.5s av-pop ease forwards;
+  animation: 0.3s av-pop ease forwards;
+}
+
+.avatar_reset {
+  animation: 0.3s av-reset ease forwards;
 }
 
 @keyframes anim-move {
@@ -28,7 +32,7 @@
 }
 @keyframes reverse-anim-move {
   0% {
-    transform: translateX(40px) scale(1.02);
+    transform: translateX(45px) scale(1.02);
     box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.2),
       1px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
   }
@@ -56,5 +60,20 @@
   }
   100% {
     filter: drop-shadow(rgb(68, 68, 68) 1px 1px 2px);
+  }
+}
+
+@keyframes av-reset {
+  0% {
+    filter: drop-shadow(rgb(68, 68, 68) 1px 1px 2px);
+  }
+  80% {
+    filter: drop-shadow(rgb(68, 68, 68) 1px 1px 1px);
+  }
+  92% {
+    filter: drop-shadow(rgb(68, 68, 68) 1px 1px 0px);
+  }
+  100% {
+    filter: none;
   }
 }

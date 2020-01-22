@@ -22,6 +22,7 @@
     "react-color": "^2.17.3",
     "react-day-picker": "^7.3.0",
     "react-dom": "^16.8.6",
+    "react-gauge-chart": "^0.2.5",
     "react-google-maps": "^9.4.5",
     "react-gravatar": "^2.6.3",
     "react-html5-camera-photo": "^1.4.1",
