@@ -4,6 +4,7 @@ import ReactDayPicker from 'react-day-picker';
 
 import 'react-day-picker/lib/style.css';
 import classNames from 'react-day-picker/lib/src/classNames';
+import { FIRST, LAST } from '../../utils/constants';
 
 import './DatePicker.css';
 
@@ -224,7 +225,7 @@ class DatePicker extends Component {
   }
 
   renderDay = day => {
-    const { winners, hideDates } = this.props;
+    const { winners, hideDates, showPlayers } = this.props;
 
     let dateToRender = day.toString().substring(0, 15);
 
@@ -232,12 +233,26 @@ class DatePicker extends Component {
     const renderDates = () => {
       if (!hideDates && winners.winners && winners.winners.length > 0) {
         for (let i = 0; i < winners.winners.length; i++) {
-          if (winners.winners[i].date === dateToRender)
+          if (winners.winners[i].date === dateToRender) {
+            const choseAndWon = winners.winners[i].choseAndWon;
             return (
-              <div>
+              <div
+                style={{
+                  borderRadius: '50%',
+                  borderTop:
+                    showPlayers && choseAndWon === FIRST
+                      ? '1px solid #eaeaea'
+                      : '',
+                  borderBottom:
+                    showPlayers && choseAndWon === LAST
+                      ? '1px solid #eaeaea'
+                      : ''
+                }}
+              >
                 {winners.winners[i]._winner.name.charAt(0).toUpperCase()}
               </div>
             );
+          }
         }
       }
 

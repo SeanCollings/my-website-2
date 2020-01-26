@@ -111,6 +111,10 @@
   animation: pulse 1.5s linear infinite;
 }
 
+.main-attender:hover {
+  animation: alarm-clock 0.2s linear infinite;
+}
+
 @keyframes random {
   0%,
   100%,
@@ -149,5 +153,19 @@
   }
   75% {
     transform: scale(1.09) rotate(-3deg);
+  }
+}
+
+@keyframes alarm-clock {
+  0%,
+  100%,
+  50% {
+    transform: scale(1.1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.15) rotate(-12deg);
+  }
+  75% {
+    transform: scale(1.15) rotate(12deg);
   }
 }

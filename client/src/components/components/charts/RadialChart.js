@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import Chart from 'react-apexcharts';
+import { memoize } from './chartUtils';
 import { Typography, Button } from '@material-ui/core';
+
+const getAllPlayers = memoize(pererittoUsers => {
+  return pererittoUsers.map(user => {
+    const name = user.name;
+    const colour = user.colour;
+    const retired = user.retired;
+    const id = user._id;
+    return { name, colour, retired, id, count: 0 };
+  });
+});
 
 const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
@@ -13,13 +24,7 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
     winner => winner.year === selectedYear
   );
 
-  const allPlayers = pererittoUsers.map(user => {
-    const name = user.name;
-    const colour = user.colour;
-    const retired = user.retired;
-    const id = user._id;
-    return { name, colour, retired, id, count: 0 };
-  });
+  const allPlayers = getAllPlayers(pererittoUsers);
 
   currentYearWinners.forEach(winner => {
     const id = winner._winner._id;
@@ -168,8 +173,8 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
           setSelectedPlayer(null);
         }}
         style={{
-          width: '73px',
-          height: '73px',
+          width: '76px',
+          height: '76px',
           float: 'left',
           borderRadius: '50%',
           display: 'block',

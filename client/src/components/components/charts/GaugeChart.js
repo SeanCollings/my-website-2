@@ -22,11 +22,11 @@ const GaugeChart = ({ allAwards }) => {
 
   if (percent > 0 && percent <= 0.12) needleColor = '#faa900';
   else if (percent > 0.12 && percent <= 0.25) needleColor = '#f69000';
-  else if (percent > 0.26 && percent <= 0.37) needleColor = '#f17800';
-  else if (percent > 0.38 && percent <= 0.5) needleColor = '#ec6200';
-  else if (percent > 0.51 && percent <= 0.62) needleColor = '#e64100';
-  else if (percent > 0.63 && percent <= 0.75) needleColor = '#e12c00';
-  else if (percent > 0.76 && percent <= 0.87) needleColor = '#dc1800';
+  else if (percent > 0.25 && percent <= 0.37) needleColor = '#f17800';
+  else if (percent > 0.37 && percent <= 0.5) needleColor = '#ec6200';
+  else if (percent > 0.5 && percent <= 0.62) needleColor = '#e64100';
+  else if (percent > 0.62 && percent <= 0.75) needleColor = '#e12c00';
+  else if (percent > 0.75 && percent <= 0.87) needleColor = '#dc1800';
 
   return (
     <div
@@ -45,7 +45,7 @@ const GaugeChart = ({ allAwards }) => {
           nrOfLevels={NUMBER_OF_LEVELS}
           percent={percent}
           cornerRadius={3}
-          formatTextValue={value => `${userAwards}`}
+          formatTextValue={value => `${value}%`}
           textColor={textColor}
           needleColor={needleColor}
           needleBaseColor={needleColor}

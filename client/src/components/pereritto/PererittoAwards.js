@@ -32,6 +32,7 @@ const styles = theme => ({
 const RANDOM_RANDY = 'Random Randy';
 const FIRST_CHOICE_WIN = 'First Choice Win';
 const LAST_CHOICE_WIN = 'Last Choice Win';
+const MAIN_ATTENDER = 'Main Attender';
 
 class PererittoAwards extends Component {
   state = {
@@ -102,8 +103,8 @@ class PererittoAwards extends Component {
           j++
         ) {
           if (allAwards[j]) {
-            const topple = Math.random() < 0.01;
-            const fallFloor = Math.random() < 0.005;
+            const topple = Math.random() < 0.005;
+            const fallFloor = Math.random() < 0.004;
             const direction = Math.random() < 0.7 ? '' : '-';
             const pixelsTofall = 50 + 102 * (numberOfShelves - i - 1);
             const randomRandy =
@@ -113,6 +114,9 @@ class PererittoAwards extends Component {
             );
             const lastChoiceAward = allAwards[j].title.includes(
               LAST_CHOICE_WIN
+            );
+            const mainAttenderAward = allAwards[j].title.includes(
+              MAIN_ATTENDER
             );
             let distance = null;
 
@@ -137,6 +141,7 @@ class PererittoAwards extends Component {
                 className={`${classes.award} transform-scale ${
                   randomRandy ? 'change-hue' : ''
                 } ${lastChoiceAward && resizeScreen ? 'bullet' : ''}
+                ${mainAttenderAward ? 'main-attender' : ''}
                 ${firstChoiceAward ? 'thumbs-up' : ''}`}
                 alt={allAwards[j].title}
                 src={allAwards[j]._award.image}
@@ -147,6 +152,18 @@ class PererittoAwards extends Component {
                     randyUpdated: true
                   })
                 }
+                // onMouseOver={() =>
+                //   !resizeScreen &&
+                //   this.setState({
+                //     ...this.state,
+                //     awardMessage: `${allAwards[j].title} - ${allAwards[j].year}`,
+                //     randyUpdated: true
+                //   })
+                // }
+                // onMouseOut={() =>
+                //   !resizeScreen &&
+                //   this.setState({ awardMessage: originalMessage })
+                // }
               />
             );
           } else {

@@ -1,4 +1,6 @@
 import { FIRST, LAST } from '../client/src/utils/constants';
+import awardsTypes, { getAward } from './awardTypes';
+import awardTypes from './awardTypes';
 
 const mongoose = require('mongoose');
 const PererittoUser = mongoose.model('pererittos');
@@ -95,7 +97,8 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
       result.push({
         date: new Date(winner.date),
         _winner: winner._winner,
-        presentPlayers: winner.presentPlayers
+        presentPlayers: winner.presentPlayers,
+        choseAndWon: winner.choseAndWon
       });
 
       if (
@@ -116,12 +119,12 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
   winnerDatesSorted.push(...winnersMap);
   winnerDatesSorted.sort((a, b) => a.date - b.date);
 
+  // Get first win of the year
   if (winnerDatesSorted.length > 0) {
     firstWinOfTheYear = winnerDatesSorted[0]._winner;
   }
 
   for (let i = 0; i < winnerDates.length; i++) {
-    // console.log('winnerDates[i]', winnerDates[i]);
     players[winnerDates[i]._winner] += 1;
 
     const winner = winnerDates[i]._winner.toString();
@@ -171,6 +174,7 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
     activePlayers,
     allPresentPlayers
   );
+
   awardParticipated(participated, year);
   if (lastWinner) awardGotItLast(lastWinner, year);
   awardFriday13th(playersFriday13, year);
@@ -179,9 +183,9 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
   if (allAllowedRandom.length > 0 && year === CURRENT_YEAR)
     awardRandom(allAllowedRandom, year);
   if (Object.keys(firstChoiceWins).length > 0)
-    awardFirstChoice(firstChoiceWins, year);
+    awardsTypes.awardFirstChoice(firstChoiceWins, year);
   if (Object.keys(lastChoiceWins).length > 0)
-    awardLastChoice(lastChoiceWins, year);
+    awardsTypes.awardLastChoice(lastChoiceWins, year);
 };
 
 const determinePositions = (
@@ -301,10 +305,24 @@ const determineDateCounts = async (
   const playersGodlikeMap = {};
   const playersDemiGodlikeMap = {};
   const retiredPlayersIds = [];
-  const retiredPlayers1 = [];
+  const totalPlayerAttendance = {};
+  const attendance80 = [];
+  const attendanceInARowMap = {};
+  const attendanceInARow = {};
+  const nothingSpecialMap = {};
+  const nothingSpecial = {};
+  const bifectaMap = {};
+  const bifecta = {};
+  const trifectaMap = {};
+  const trifecta = {};
 
   for (let i = 0; i < allPresentPlayers.length; i++) {
     players3InARowMap[allPresentPlayers[i]] = 0;
+    totalPlayerAttendance[allPresentPlayers[i]] = 0;
+    attendanceInARowMap[allPresentPlayers[i]] = 0;
+    nothingSpecialMap[allPresentPlayers[i]] = 0;
+    bifectaMap[allPresentPlayers[i]] = 0;
+    trifectaMap[allPresentPlayers[i]] = 0;
   }
 
   for (let playerId in allPlayers) {
@@ -318,12 +336,6 @@ const determineDateCounts = async (
     if (activePlayers[i].retired) {
       if (!retiredPlayersIds.includes(playerId))
         retiredPlayersIds.push(playerId);
-
-      retiredPlayers1.push({
-        id: playerId,
-        retiredDates: activePlayers[i].retiredDates,
-        returnedDates: activePlayers[i].returnedDates
-      });
     }
 
     if (retiredDates && retiredDates.length > 0) {
@@ -346,10 +358,63 @@ const determineDateCounts = async (
     const winnerId = sortedDates[i]._winner.toString();
     const winnerDate = sortedDates[i].date;
     const presentPlayers = sortedDates[i].presentPlayers;
+    const choseAndWon = sortedDates[i].choseAndWon;
     const defaultFirstDate = new Date('2019-06-01');
     // const playerCreatedDate = new Date(
     //   parseInt(winnerId.substring(0, 8), 16) * 1000
     // );
+
+    for (let j = 0; j < presentPlayers.length; j++) {
+      totalPlayerAttendance[presentPlayers[j]] += 1;
+    }
+
+    if (!choseAndWon) {
+      nothingSpecialMap[winnerId] += 1;
+      bifectaMap[winnerId] = 0;
+      trifectaMap[winnerId] = 0;
+    } else {
+      nothingSpecialMap[winnerId] = 0;
+      trifectaMap[winnerId] += 1;
+
+      if (choseAndWon === FIRST) {
+        if (bifectaMap[winnerId] > 0) {
+          if (!bifecta[winnerId]) bifecta[winnerId] = 1;
+          else bifecta[winnerId] += 1;
+
+          bifectaMap[winnerId] = 0;
+        }
+      } else if (choseAndWon === LAST) {
+        bifectaMap[winnerId] = 1;
+      }
+
+      if (trifectaMap[winnerId] === 3) {
+        if (!trifecta[winnerId]) trifecta[winnerId] = 1;
+        else trifecta[winnerId] += 1;
+
+        trifectaMap[winnerId] = 0;
+      }
+    }
+
+    if (nothingSpecialMap[winnerId] === 5) {
+      nothingSpecialMap[winnerId] = 0;
+      if (!nothingSpecial[winnerId]) nothingSpecial[winnerId] = 1;
+      else nothingSpecial[winnerId] += 1;
+    }
+
+    for (let player in attendanceInARowMap) {
+      if (presentPlayers.includes(player)) {
+        attendanceInARowMap[player] += 1;
+      } else {
+        attendanceInARowMap[player] = 0;
+      }
+
+      if (attendanceInARowMap[player] === 20) {
+        if (!attendanceInARow[player]) attendanceInARow[player] = 1;
+        else attendanceInARow[player] += 1;
+
+        attendanceInARowMap[player] = 0;
+      }
+    }
 
     for (let j = 0; j < allPresentPlayers.length; j++) {
       let playerId = allPresentPlayers[j];
@@ -396,10 +461,24 @@ const determineDateCounts = async (
     }
   }
 
+  const attendance80Percent = sortedDates.length * 0.8;
+  for (let player in totalPlayerAttendance) {
+    if (totalPlayerAttendance[player] >= attendance80Percent)
+      attendance80.push(player);
+  }
+
   if (players3InARow.length > 0) award3InARow(players3InARow, year);
   if (playersDemiGodlike.length > 0) awardDemiGodlike(playersDemiGodlike, year);
   if (playersGodlike.length > 0) awardGodlike(playersGodlike, year);
   if (retiredCurrentYear.length > 0) awardRetired(retiredCurrentYear, year);
+  if (attendance80.length > 0) awardTypes.awardAttendance80(attendance80, year);
+  if (Object.keys(attendanceInARow).length > 0)
+    awardTypes.awardMainAttender(attendanceInARow, year);
+  if (Object.keys(nothingSpecial).length > 0)
+    awardTypes.awardNothingSpecial(nothingSpecial, year);
+  if (Object.keys(bifecta).length > 0) awardTypes.awardBifecta(bifecta, year);
+  if (Object.keys(trifecta).length > 0)
+    awardTypes.awardTrifecta(trifecta, year);
 };
 
 const playerRetiredDuring = (retiredPlayers, playerId, dateToCheck) => {
@@ -511,12 +590,7 @@ const getRetiredPlayers = (activePlayers, year) => {
 
 const awardFirstPlace = async (firstArr, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'first'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('first');
 
     if (award) {
       const awardParams = { year, _award: award };
@@ -543,12 +617,7 @@ const awardFirstPlace = async (firstArr, year) => {
 
 const awardSecondPlace = async (secondArr, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'second'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('second');
 
     if (award) {
       const awardParams = { year, _award: award };
@@ -575,12 +644,7 @@ const awardSecondPlace = async (secondArr, year) => {
 
 const awardThirdPlace = async (thirdArr, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'third'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('third');
 
     if (award) {
       const awardParams = { year, _award: award };
@@ -607,12 +671,7 @@ const awardThirdPlace = async (thirdArr, year) => {
 
 const awardYearFirst = async (player, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'yearFirst'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('yearFirst');
 
     if (award) {
       const awardParams = { title: 'First of the year!', year, _award: award };
@@ -635,12 +694,7 @@ const awardYearFirst = async (player, year) => {
 
 const awardParticipated = async (participated, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'participant'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('participant');
 
     const awardParams = { title: 'Felt the burn', year, _award: award };
     for (let part of participated) {
@@ -657,12 +711,7 @@ const awardParticipated = async (participated, year) => {
 
 const awardGotItLast = async (lastWinner, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'gotItLast'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('gotItLast');
 
     if (award) {
       const awardParams = {
@@ -684,12 +733,7 @@ const awardGotItLast = async (lastWinner, year) => {
 
 const award3InARow = async (players3InARow, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: '3InARow'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('3InARow');
 
     if (award) {
       const awardParams = {
@@ -715,12 +759,7 @@ const award3InARow = async (players3InARow, year) => {
 
 const awardRandom = async (allPlayers, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'random'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('random');
 
     if (award) {
       const awardParams = {
@@ -750,12 +789,7 @@ const awardRandom = async (allPlayers, year) => {
 
 const awardDemiGodlike = async (playersDemiGodlike, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'demiGodlike'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('demiGodlike');
 
     if (award) {
       const awardParams = {
@@ -781,12 +815,7 @@ const awardDemiGodlike = async (playersDemiGodlike, year) => {
 
 const awardGodlike = async (playersGodlike, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'godlike'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('godlike');
 
     if (award) {
       const awardParams = {
@@ -812,12 +841,7 @@ const awardGodlike = async (playersGodlike, year) => {
 
 const awardFriday13th = async (players, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'friday13'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('friday13');
 
     if (award) {
       const awardParams = {
@@ -843,12 +867,7 @@ const awardFriday13th = async (players, year) => {
 
 const awardLastPlace = async (lastArr, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'lastPlace'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('lastPlace');
 
     if (award) {
       const awardParams = { year, _award: award };
@@ -875,12 +894,7 @@ const awardLastPlace = async (lastArr, year) => {
 
 const awardRetired = async (playersRetired, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'retired'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('retired');
 
     if (award) {
       const awardParams = { year, _award: award };
@@ -907,12 +921,7 @@ const awardRetired = async (playersRetired, year) => {
 
 const awardHindsight = async (playersHindsight, year) => {
   try {
-    const award = await Awards.findOne(
-      {
-        type: 'hindsight'
-      },
-      { _id: 1 }
-    ).limit(1);
+    const award = await getAward('hindsight');
 
     if (award) {
       const awardParams = { title: 'Hindsight', year, _award: award };
@@ -922,72 +931,6 @@ const awardHindsight = async (playersHindsight, year) => {
         } else {
           await new CurrentAwards({
             ...awardParams,
-            _pereritto: player
-          }).save();
-        }
-      }
-    }
-  } catch (err) {
-    throw err;
-  }
-};
-
-const awardFirstChoice = async (playersFirst, year) => {
-  try {
-    const award = await Awards.findOne(
-      {
-        type: 'choiceFirst'
-      },
-      { _id: 1 }
-    ).limit(1);
-
-    if (award) {
-      const awardParams = { year, _award: award };
-      for (let player of Object.keys(playersFirst)) {
-        const title = `First Choice Win (${playersFirst[player]})`;
-        if (year !== CURRENT_YEAR) {
-          await new PastAwards({
-            ...awardParams,
-            title,
-            _pereritto: player
-          }).save();
-        } else {
-          await new CurrentAwards({
-            ...awardParams,
-            title,
-            _pereritto: player
-          }).save();
-        }
-      }
-    }
-  } catch (err) {
-    throw err;
-  }
-};
-
-const awardLastChoice = async (playersLast, year) => {
-  try {
-    const award = await Awards.findOne(
-      {
-        type: 'choiceLast'
-      },
-      { _id: 1 }
-    ).limit(1);
-
-    if (award) {
-      const awardParams = { year, _award: award };
-      for (let player of Object.keys(playersLast)) {
-        const title = `Last Choice Win (${playersLast[player]})`;
-        if (year !== CURRENT_YEAR) {
-          await new PastAwards({
-            ...awardParams,
-            title,
-            _pereritto: player
-          }).save();
-        } else {
-          await new CurrentAwards({
-            ...awardParams,
-            title,
             _pereritto: player
           }).save();
         }

@@ -339,9 +339,20 @@ class UpdatePererittoPlayer extends Component {
   renderPlayers = () => {
     const { pererittoUsers } = this.props;
     if (pererittoUsers.length > 0) {
-      return pererittoUsers
+      return [...pererittoUsers /*, { mystery: 'Mystery', name: 'xxxxxx' }*/]
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(user => {
+          if (user.mystery)
+            return (
+              <MenuItem
+                key={user.mystery}
+                value={user.mystery}
+                style={{ fontWeight: '500', color: '#c70039' }}
+              >
+                {user.mystery}
+              </MenuItem>
+            );
+
           if (user.retired) return null;
           return (
             <MenuItem key={user._id} value={user._id}>

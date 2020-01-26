@@ -121,7 +121,7 @@ class HomePage extends Component {
                 color: '#ffc300'
               }}
             >
-              Peryvtrev
+              Pervytrev
             </Button>
           </NavLink>
         )}
@@ -221,7 +221,4 @@ function mapStateToProps({ auth }) {
   return { auth, pereryvUser: auth ? auth.pereryvUser : null };
 }
 
-export default connect(
-  mapStateToProps,
-  actions
-)(withStyles(styles)(HomePage));
+export default connect(mapStateToProps, actions)(withStyles(styles)(HomePage));

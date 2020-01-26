@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
+import { memoize } from '../components/charts/chartUtils';
 import './PererittoCalendar.css';
 import DatePicker from '../components/DatePicker';
 import {
@@ -88,6 +89,18 @@ class PererittoCalendar extends Component {
     });
   };
 
+  getAllPlayers = memoize((pererittoUsers, totalAppearance) => {
+    return pererittoUsers.map(user => {
+      const name = user.name;
+      const colour = user.colour;
+      const retired = user.retired;
+      const id = user._id;
+      const total = totalAppearance[id] ? totalAppearance[id] : 0;
+
+      return { name, colour, retired, id, total };
+    });
+  });
+
   renderPresentPlayers = () => {
     const { pererittoUsers, winners } = this.props;
     const {
@@ -126,15 +139,7 @@ class PererittoCalendar extends Component {
       }
     });
 
-    const allPlayers = pererittoUsers.map(user => {
-      const name = user.name;
-      const colour = user.colour;
-      const retired = user.retired;
-      const id = user._id;
-      const total = totalAppearance[id] ? totalAppearance[id] : 0;
-
-      return { name, colour, retired, id, total };
-    });
+    const allPlayers = this.getAllPlayers(pererittoUsers, totalAppearance);
 
     const playersToDisplay = allPlayers.filter(player =>
       presentPlayers.players.includes(player.id)

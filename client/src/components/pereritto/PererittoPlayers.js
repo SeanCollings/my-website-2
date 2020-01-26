@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
+import { memoize } from '../components/charts/chartUtils';
 import PieChart from '../components/charts/PieChart';
 import RadialChart from '../components/charts/RadialChart';
 import StackedBarChart from '../components/charts/StackedBarChart';
@@ -430,7 +431,16 @@ class PererittoPlayers extends Component {
       this.setState({ loadedYears: [...this.state.loadedYears, year] });
     }
 
-    this.setState({ selectedYear: year });
+    if (year < YEAR_2020) {
+      this.setState({
+        ...this.state,
+        selectedYear: year,
+        selectedChartIndex: 0,
+        selectedChart: CHART_SELECTIONS[0]
+      });
+    } else {
+      this.setState({ selectedYear: year });
+    }
   };
 
   renderDates() {
@@ -467,6 +477,14 @@ class PererittoPlayers extends Component {
       selectedChart: CHART_SELECTIONS[newIndex]
     });
   };
+
+  getCurrentYearWinners = memoize((winners, selectedYear) => {
+    const currentYearWinners = winners.winners.filter(
+      winner => winner.year === selectedYear
+    );
+
+    return currentYearWinners;
+  });
 
   render() {
     const { resizeScreen, classes, winners, pererittoUsers } = this.props;

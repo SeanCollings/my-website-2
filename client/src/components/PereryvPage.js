@@ -292,7 +292,7 @@ class PereryvPage extends Component {
             color: '#dedede',
             background: '#581845',
             position: 'fixed',
-            bottom: '60px',
+            bottom: '40px',
             right: '0px',
             borderRadius: '50% 0 0 50%',
             disabled: addingSlate,

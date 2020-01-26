@@ -21,7 +21,14 @@ export default app => {
         switch (req.query.param1) {
           case MAINTENANCE_MENU.ALL_USERS.type:
             [err, users] = await to(
-              Users.find().sort({ givenName: 1, familyName: 1 })
+              Users.find(
+                {},
+                {
+                  uploadedPhoto: 0,
+                  googlePhoto: 0,
+                  googleId: 0
+                }
+              ).sort({ givenName: 1, familyName: 1 })
             );
             if (err) throw new Error(err);
             break;

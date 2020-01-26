@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
 import { List, ListItem, Avatar } from '@material-ui/core';
+import { memoize } from './chartUtils';
 
 import './StackedBarChart.css';
 
 const BORDER_COLOUR = 'bisque';
+
+const getAllPlayers = memoize(pererittoUsers => {
+  return pererittoUsers.map(user => {
+    const name = user.name;
+    const colour = user.colour;
+    const retired = user.retired;
+    const id = user._id;
+    return { name, colour, retired, id, wins: 0, attended: 0 };
+  });
+});
 
 const stackedBar = (first, second, colour) => {
   const height = '22px';
@@ -94,13 +105,7 @@ const StackedBarChart = ({ winners, selectedYear, pererittoUsers }) => {
     winner => winner.year === selectedYear
   );
 
-  const allPlayers = pererittoUsers.map(user => {
-    const name = user.name;
-    const colour = user.colour;
-    const retired = user.retired;
-    const id = user._id;
-    return { name, colour, retired, id, wins: 0, attended: 0 };
-  });
+  const allPlayers = getAllPlayers(pererittoUsers);
 
   currentYearWinners.forEach(winner => {
     const id = winner._winner._id;
