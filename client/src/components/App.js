@@ -28,6 +28,7 @@ import NotificationsPage from './NotificationsPage';
 import LocationsPage from './LocationsPage';
 import PereryvPage from './PereryvPage';
 import DicePage from './dice/DicePage';
+import QuizzesPage from './QuizzesPage';
 
 import {
   PERERITTO_PATH,
@@ -188,6 +189,24 @@ class App extends Component {
       });
     }
     return <Route path="/dice" render={props => <DicePage {...props} />} />;
+  }
+
+  renderQuizzes() {
+    const { auth, app, updateHeading, location } = this.props;
+
+    if (auth) {
+      if (location.pathname.includes('/quizzes/') && !app.headingName) {
+        updateHeading({
+          heading: 'Create Quiz',
+          previousPage: '/quizzes'
+        });
+      }
+
+      return (
+        <Route path="/quizzes" render={props => <QuizzesPage {...props} />} />
+      );
+    }
+    return;
   }
 
   checkRedirect() {
@@ -370,6 +389,7 @@ class App extends Component {
           {this.renderLocations()}
           {this.renderPereryv()}
           {this.renderDice()}
+          {this.renderQuizzes()}
           <Route path="/home" render={props => <HomePage {...props} />} />
           {this.checkRedirect()}
         </Switch>

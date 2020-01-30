@@ -3,7 +3,7 @@ import Loader from 'react-loader-advanced';
 import MiniLoader from 'react-loader-spinner';
 
 const LoaderComponent = props => {
-  const { showLoader, spinnerColor } = props;
+  const { showLoader, spinnerColor, hideSpinner, small } = props;
 
   const spinner = (
     <span>
@@ -11,10 +11,16 @@ const LoaderComponent = props => {
     </span>
   );
 
+  const spinnerSmall = (
+    <span>
+      <MiniLoader type="TailSpin" color="#FFC300" height={38} width={38} />
+    </span>
+  );
+
   return (
     <Loader
       show={showLoader}
-      message={spinner}
+      message={hideSpinner ? null : small ? spinnerSmall : spinner}
       backgroundStyle={{ backgroundColor: 'transparent' }}
     >
       {props.children}

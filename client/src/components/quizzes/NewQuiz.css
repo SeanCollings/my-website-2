@@ -1,0 +1,84 @@
+.quiz-container {
+  margin-top: 12px;
+  margin: auto;
+  max-width: 90%;
+  width: 100%;
+}
+
+.update-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 0px solid;
+  background: aliceblue;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  resize: none;
+  overflow: auto;
+}
+
+.quiz-input {
+  width: 100%;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid #581845;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.quiz-input:focus {
+  border: 1px solid #0055dd;
+  background-color: aliceblue;
+  outline: none;
+}
+
+.icon {
+  color: #0c254e;
+  padding: 2px;
+  cursor: pointer;
+  margin: auto;
+  opacity: 0.8;
+}
+
+/* .icon:hover {
+  color: #0c254e;
+} */
+
+.icon:active {
+  opacity: 0.6;
+  /* margin-top: 2px; */
+}
+
+.icon-remove {
+  color: #880000;
+  padding: 2px;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.icon-remove:active {
+  opacity: 0.7;
+  /* margin-top: 2px; */
+}
+
+.icon-light {
+  color: #dedede;
+  cursor: pointer;
+  padding-left: 8px;
+  margin: auto;
+}
+
+.icon-light:active {
+  opacity: 0.8;
+}
+
+.remove-select {
+  color: #880000;
+  cursor: pointer;
+  margin: auto;
+  opacity: 0.9;
+}
+
+.remove-disabled {
+  opacity: 0.2;
+  color: #880000;
+  margin: auto;
+}

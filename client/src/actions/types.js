@@ -43,6 +43,10 @@ export const GET_PERERYV_USERS = 'get_pereryv_users';
 export const GET_SLATES = 'get_slates';
 export const GET_COMPLETED_SLATES = 'get_complete_slates';
 
+export const GET_SAVED_QUIZZES = 'get_saved_quizzes';
+export const GET_STARTED_QUIZ_ROUNDS = 'get_started_quiz_rounds';
+export const GET_TOTAL_QUESTIONS = 'get_total_questions';
+
 export const SHOW_MESSAGE = 'show_message';
 export const REMOVE_MESSAGE = 'remove_message';
 

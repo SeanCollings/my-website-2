@@ -13,6 +13,7 @@ import notificationsReducer from './notificationsReducer';
 import locationReducer from './locationsReducer';
 import pereryvReducecer from './pereryvReducer';
 import diceReducer from './diceReducer';
+import quizReducer from './quizReducer';
 
 export default combineReducers({
   auth: authreducer,
@@ -28,5 +29,6 @@ export default combineReducers({
   notifications: notificationsReducer,
   locations: locationReducer,
   pereryv: pereryvReducecer,
-  dice: diceReducer
+  dice: diceReducer,
+  quizzes: quizReducer
 });

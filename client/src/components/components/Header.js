@@ -5,7 +5,12 @@ import { connect } from 'react-redux';
 import Gravatar from 'react-gravatar';
 import { returnToPreviousPage, updateHeading } from '../../actions/appActions';
 
-import { MENU_LIST } from '../../utils/constants';
+import {
+  MENU_LIST,
+  NEW_QUIZ_PATH,
+  EDIT_QUIZ_PATH,
+  VIEW_QUIZ_PATH
+} from '../../utils/constants';
 import { clearAllData } from '../../utils/utility';
 
 // import Avatar from './avatar';
@@ -235,8 +240,13 @@ class Header extends Component {
         return 'Pervytrev';
       case '/dice':
         return app.headingName ? app.headingName.heading : 'Dice Roll';
+      case '/quizzes':
+        return app.headingName ? app.headingName.heading : 'Quizzes';
       default:
         if (currentRoute.includes('profile') && auth) return `Profile`;
+        if (currentRoute.includes(NEW_QUIZ_PATH) && auth) return `Create Quiz`;
+        if (currentRoute.includes(EDIT_QUIZ_PATH) && auth) return `Edit Quiz`;
+        if (currentRoute.includes(VIEW_QUIZ_PATH) && auth) return `View Quiz`;
 
         return '';
     }

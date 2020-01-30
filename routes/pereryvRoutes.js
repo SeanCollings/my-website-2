@@ -115,7 +115,7 @@ export default app => {
       } catch (err) {
         console.log(err);
         res.send({
-          type: MessageTypeEnum.success,
+          type: MessageTypeEnum.error,
           message: 'An error occured!'
         });
       }
@@ -167,7 +167,7 @@ export default app => {
       } catch (err) {
         console.log(err);
         res.send({
-          type: MessageTypeEnum.success,
+          type: MessageTypeEnum.error,
           message: 'An error occured!'
         });
       }

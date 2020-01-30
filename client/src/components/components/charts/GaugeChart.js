@@ -45,7 +45,7 @@ const GaugeChart = ({ allAwards }) => {
           nrOfLevels={NUMBER_OF_LEVELS}
           percent={percent}
           cornerRadius={3}
-          formatTextValue={value => `${value}%`}
+          formatTextValue={value => `${(percent * 100).toFixed(0)}%`}
           textColor={textColor}
           needleColor={needleColor}
           needleBaseColor={needleColor}

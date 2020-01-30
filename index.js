@@ -22,6 +22,9 @@ import './models/LocationGroup';
 import './models/AppSettings';
 import './models/PereryvUser';
 import './models/Slate';
+import './models/QuizGroup';
+import './models/QuizContent';
+import './models/QuizRound';
 
 import keys from './config/keys';
 import authRoutes from './routes/authRoutes';
@@ -36,6 +39,7 @@ import notificationRoutes from './routes/notificationRoutes';
 import pusher from './services/pusher';
 import locationRoutes from './routes/locationRoutes';
 import pereryvRoutes from './routes/pereryvRoutes';
+import quizRoutes from './routes/quizRoutes';
 
 const mongooseParams = {
   useNewUrlParser: true,
@@ -102,6 +106,7 @@ notificationRoutes(app);
 pusher(app);
 locationRoutes(app);
 pereryvRoutes(app);
+quizRoutes(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));

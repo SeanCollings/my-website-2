@@ -6,16 +6,24 @@ export const MENU_LIST = [
   'Pereritto',
   'Maintenance',
   'Notifications',
-  'Locations'
+  'Locations',
+  'Quizzes'
 ];
 export const PERERITTO_PATH = '/pereritto';
 export const MAINTENANCE_PATH = '/maintenance';
 export const LOCATIONS_PATH = '/locations';
 export const DICE_PATH = '/dice';
+export const QUIZZES_PATH = '/quizzes';
+export const NEW_QUIZ_PATH = '/quizzes/new';
+export const EDIT_QUIZ_PATH = '/quizzes/edit/';
+export const VIEW_QUIZ_PATH = '/quizzes/view/';
+
 export const FIRST = 'first';
 export const LAST = 'last';
 
 export const MOBILE_SCREEN_SIZE = 700;
+export const MAX_ANSWER_LENGTH = 100;
+export const MAX_QUESTION_LENGTH = 200;
 
 export const MessageTypeEnum = {
   success: 'success',

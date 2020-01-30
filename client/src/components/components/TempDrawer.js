@@ -28,7 +28,8 @@ import HomeIcon from '@material-ui/icons/HomeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 import VibrationIcon from '@material-ui/icons/Vibration';
 import LocationIcon from '@material-ui/icons/ExploreOutlined';
-import LocalCafe from '@material-ui/icons/LocalCafeOutlined';
+import LocalCafeIcon from '@material-ui/icons/LocalCafeOutlined';
+import HelpIcon from '@material-ui/icons/HelpOutline';
 
 let googlePic = '';
 
@@ -109,6 +110,10 @@ class TemporaryDrawer extends React.Component {
       return null;
     }
 
+    if (page === 'Quizzes' && !this.props.auth) {
+      return null;
+    }
+
     return (
       <NavLink
         key={page}
@@ -153,7 +158,12 @@ class TemporaryDrawer extends React.Component {
           )}
           {page === 'Pervytrev' && (
             <ListItemIcon>
-              <LocalCafe />
+              <LocalCafeIcon />
+            </ListItemIcon>
+          )}
+          {page === 'Quizzes' && (
+            <ListItemIcon>
+              <HelpIcon />
             </ListItemIcon>
           )}
           <ListItemText primary={page} />

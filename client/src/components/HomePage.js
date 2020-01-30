@@ -87,7 +87,7 @@ class HomePage extends Component {
             Pereritto
           </Button>
         </NavLink>
-        <div style={{ marginBottom: '30px' }} />
+        <div style={{ marginBottom: '25px' }} />
         <NavLink to="/notifications" style={{ textDecoration: 'none' }}>
           <Button
             style={{
@@ -99,7 +99,7 @@ class HomePage extends Component {
             Notifications
           </Button>
         </NavLink>
-        <div style={{ marginBottom: '30px' }} />
+        <div style={{ marginBottom: '25px' }} />
         <NavLink to="/locations" style={{ textDecoration: 'none' }}>
           <Button
             style={{
@@ -111,7 +111,7 @@ class HomePage extends Component {
             Locations
           </Button>
         </NavLink>
-        <div style={{ marginBottom: '30px' }} />
+        <div style={{ marginBottom: '25px' }} />
         {pereryvUser && (
           <NavLink to="/pervytrev" style={{ textDecoration: 'none' }}>
             <Button
@@ -125,6 +125,18 @@ class HomePage extends Component {
             </Button>
           </NavLink>
         )}
+        <div style={{ marginBottom: '25px' }} />
+        <NavLink to="/quizzes" style={{ textDecoration: 'none' }}>
+          <Button
+            style={{
+              background: '#0055dd',
+              border: '1px solid #ffc300',
+              color: '#ffc300'
+            }}
+          >
+            Quizzes
+          </Button>
+        </NavLink>
       </Grid>
     );
   }
