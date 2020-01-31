@@ -175,4 +175,24 @@ export default app => {
       });
     }
   });
+
+  app.delete('/api/delete_quiz', requireLogin, async (req, res) => {
+    try {
+      const { groupId } = req.body;
+
+      await QuizContent.deleteMany({ _quizGroup: groupId });
+      await QuizGroup.deleteOne({ _id: groupId });
+
+      return res.send({
+        type: MessageTypeEnum.success,
+        message: 'Quiz deleted!'
+      });
+    } catch (err) {
+      console.log(err);
+      return res.send({
+        type: MessageTypeEnum.error,
+        message: 'Something went wrong...'
+      });
+    }
+  });
 };

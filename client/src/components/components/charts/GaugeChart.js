@@ -66,7 +66,7 @@ const GaugeChart = ({ allAwards }) => {
           height: '110px',
           width: '220px',
           borderRadius: '110px 110px 0px 0px',
-          background: '#40100a',
+          background: '#40100ae6',
           position: 'absolute',
           zIndex: '0',
           left: '0',

@@ -9,7 +9,7 @@ import './ListSavedQuizzes.css';
 
 const formatDate = date => date.split('T')[0];
 
-const ListSavedQuizzes = ({ group, selectGroup, editGroup }) => {
+const ListSavedQuizzes = ({ group, selectedGroup, editGroup }) => {
   return (
     <ListItem
       style={{
@@ -23,7 +23,7 @@ const ListSavedQuizzes = ({ group, selectGroup, editGroup }) => {
       }}
     >
       <div
-        onClick={selectGroup}
+        onClick={selectedGroup}
         style={{ display: 'block', cursor: 'pointer', width: '100%' }}
       >
         <Typography style={{ color: '#581845' }}>{`${group.title}`}</Typography>
@@ -34,13 +34,13 @@ const ListSavedQuizzes = ({ group, selectGroup, editGroup }) => {
           {`Created: ${formatDate(group.createdDate)}`}
         </Typography>
         {group.lastEditedDate && (
-          <Typography style={{ color: '#777777', opacity: '0.7' }}>
+          <Typography style={{ color: '#880000', opacity: '0.7' }}>
             {`Last Edited: ${formatDate(group.lastEditedDate)}`}
           </Typography>
         )}
       </div>
       <div
-        onClick={selectGroup}
+        onClick={selectedGroup}
         style={{ color: '#581845', padding: '0 12px' }}
       >
         {group.isPublic ? <LockOpenIcon /> : <LockClosedIcon />}

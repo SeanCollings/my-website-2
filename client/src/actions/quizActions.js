@@ -52,3 +52,11 @@ export const getTotalQuestions = () => async dispatch => {
 
   dispatch({ type: GET_TOTAL_QUESTIONS, payload: res.data });
 };
+
+export const deleteQuiz = groupId => async dispatch => {
+  const res = await axios.delete('/api/delete_quiz', {
+    data: { groupId }
+  });
+
+  dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};

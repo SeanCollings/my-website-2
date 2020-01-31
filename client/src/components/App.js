@@ -264,7 +264,7 @@ class App extends Component {
       backgroundRepeat: 'no-repeat',
       // backgroundImage: 'linear-gradient(#900C3F, #FF5733)'
       // backgroundImage: 'linear-gradient(155deg, #581845, #900C3F, #FF5733)'
-      backgroundImage: 'linear-gradient(155deg, #581845, #900C3F, #880000)'
+      backgroundImage: 'linear-gradient(155deg, #581845, #900C3F, #bf2323)'
     };
   }
 

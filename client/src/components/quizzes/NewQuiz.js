@@ -1,16 +1,13 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState } from 'react';
 
-import ConfirmActionModal from '../modals/ConfirmActionModal';
 import { MAX_QUESTION_LENGTH, MAX_ANSWER_LENGTH } from '../../utils/constants';
+import ConfirmActionModal from '../modals/ConfirmActionModal';
+import EditQuestionAnswerList from './EditQuestionAnswerList';
 import './NewQuiz.css';
 
-import { Grid, Button, ListItem, List, Typography } from '@material-ui/core';
+import { Grid, Button, List, Typography } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
-import UpdateIcon from '@material-ui/icons/Create';
 import CloseIcon from '@material-ui/icons/Close';
-import ConfirmIcon from '@material-ui/icons/Done';
-import UnselectedIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import SelectedIcon from '@material-ui/icons/CheckBox';
 import LockClosedIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 
@@ -46,117 +43,6 @@ const handleQuestionChange = setQuizQuestion => e => {
 const handleAnswerChange = setQuizAnswer => e => {
   const text = e.target.value;
   setQuizAnswer(text);
-};
-
-const renderQuestionAnswers = (
-  allQuestionsAnswers,
-  toDeleteArrayQA,
-  toggleDeleteQA,
-  updateQuestionAnswer,
-  updateQA,
-  setUpdateQA,
-  enableUpdate,
-  deleting
-) => {
-  if (!allQuestionsAnswers.length) {
-    return (
-      <Typography style={{ padding: '12px 20px' }}>
-        Add some questions...
-      </Typography>
-    );
-  }
-
-  return allQuestionsAnswers.map((content, i) => {
-    const originalQuestion = content.question;
-    const originalAnswer = content.answer;
-
-    return (
-      <ListItem
-        key={i}
-        style={{
-          padding: '4px 12px 2px 12px',
-          display: 'flex',
-          borderBottom:
-            allQuestionsAnswers.length !== i + 1 ? '1px dotted #dedede' : ''
-        }}
-      >
-        <div style={{ display: 'block', width: '100%' }}>
-          <div style={{ display: 'flex' }}>
-            <Typography style={{ fontWeight: '500', paddingRight: '6px' }}>
-              Q:
-            </Typography>
-            {updateQA.includes(i) && (
-              <textarea
-                className="update-textarea"
-                defaultValue={content.question}
-                onChange={updateQuestionAnswer(i, true, null, originalAnswer)}
-                maxLength={MAX_QUESTION_LENGTH}
-              ></textarea>
-            )}
-            {!updateQA.includes(i) && (
-              <Typography>{`${content.question}`}</Typography>
-            )}
-          </div>
-          <div style={{ display: 'flex' }}>
-            <Typography style={{ fontWeight: '500', paddingRight: '6px' }}>
-              A:
-            </Typography>
-            {updateQA.includes(i) && (
-              <textarea
-                className="update-textarea"
-                defaultValue={content.answer}
-                onChange={updateQuestionAnswer(i, true, originalQuestion, null)}
-                maxLength={MAX_ANSWER_LENGTH}
-              ></textarea>
-            )}
-            {!updateQA.includes(i) && (
-              <Typography
-                style={{ fontWeight: '100' }}
-              >{`${content.answer}`}</Typography>
-            )}
-          </div>
-        </div>
-        <div style={{ display: 'flex', width: '55px' }}>
-          {!updateQA.includes(i) && (
-            <Fragment>
-              <UpdateIcon
-                className="icon"
-                onClick={() =>
-                  enableUpdate(i, originalQuestion, originalAnswer)
-                }
-              />
-              {!toDeleteArrayQA.includes(i) && (
-                <UnselectedIcon
-                  className={`${
-                    deleting ? 'remove-select' : 'remove-disabled'
-                  }`}
-                  onClick={() => toggleDeleteQA(i)}
-                />
-              )}
-              {deleting && toDeleteArrayQA.includes(i) && (
-                <SelectedIcon
-                  className={`remove-select`}
-                  onClick={() => toggleDeleteQA(i)}
-                />
-              )}
-            </Fragment>
-          )}
-          {updateQA.includes(i) && (
-            <Fragment>
-              <ConfirmIcon
-                className="icon"
-                onClick={updateQuestionAnswer(i, false, null, originalQuestion)}
-              />
-              <CloseIcon
-                className="icon-remove"
-                onClick={() => setUpdateQA([])}
-              />
-            </Fragment>
-          )}
-        </div>
-      </ListItem>
-    );
-  });
 };
 
 const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
@@ -290,11 +176,15 @@ const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
         direction="column"
         justify="center"
         alignItems="center"
-        style={{ maxWidth: '900px', margin: '12px auto auto' }}
+        style={{
+          maxWidth: '900px',
+          margin: '12px auto auto',
+          borderTop: '1px solid #dedede'
+        }}
       >
         <div
           onClick={() => handleQuizPublicClick()}
-          style={{ display: 'flex', marginBottom: '4px' }}
+          style={{ display: 'flex', margin: '12px 0 8px' }}
         >
           <Typography
             className="icon-light"
@@ -411,16 +301,16 @@ const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
               marginBottom: '40px'
             }}
           >
-            {renderQuestionAnswers(
-              allQuestionsAnswers,
-              toDeleteArrayQA,
-              toggleDeleteQA,
-              updateQuestionAnswer,
-              updateQA,
-              setUpdateQA,
-              enableUpdate,
-              deleting
-            )}
+            <EditQuestionAnswerList
+              allQuestionsAnswers={allQuestionsAnswers}
+              toDeleteArrayQA={toDeleteArrayQA}
+              toggleDeleteQA={toggleDeleteQA}
+              updateQuestionAnswer={updateQuestionAnswer}
+              updateQA={updateQA}
+              setUpdateQA={setUpdateQA}
+              enableUpdate={enableUpdate}
+              deleting={deleting}
+            />
           </List>
         </div>
       </Grid>

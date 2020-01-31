@@ -10,7 +10,8 @@ import {
   getTotalQuestions,
   saveQuiz,
   updateQuiz,
-  getStartedQuizRounds
+  getStartedQuizRounds,
+  deleteQuiz
 } from '../actions/quizActions';
 import { updateHeading } from '../actions/appActions';
 import {
@@ -19,12 +20,13 @@ import {
   VIEW_QUIZ_PATH,
   EDIT_QUIZ_PATH
 } from '../utils/constants';
+import ConfirmActionModal from './modals/ConfirmActionModal';
+import DisplayQuizContents from './quizzes/DisplayQuizContents';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button, Fab, Typography, List } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import ConfirmActionModal from './modals/ConfirmActionModal';
-import DisplayQuizContents from './quizzes/DisplayQuizContents';
+import DeleteIcon from '@material-ui/icons/DeleteForever';
 
 const styles = theme => ({
   pageFill: {
@@ -38,19 +40,18 @@ const styles = theme => ({
 const buttonStyle = {
   color: '#ffc300',
   width: '105px',
-  // marginBottom: '12px',
   border: '1px solid #ffc300'
 };
-const linkStyle = { textDecoration: 'none', color: '#ffc300', width: '100%' };
 
 class QuizzesPage extends Component {
   state = {
     creatingNewQuiz: false,
     newQuiz: null,
     showModal: false,
-    savingQuiz: false,
+    loading: false,
     selectedGroup: null,
-    editGroup: null
+    editGroup: null,
+    deleting: false
   };
 
   componentDidMount() {
@@ -75,7 +76,7 @@ class QuizzesPage extends Component {
           history.push(QUIZZES_PATH);
         } else {
           const groupId = pathname.split('view/')[1];
-          this.setState({ selectGroup: groupId });
+          this.setState({ selectedGroup: groupId });
         }
       } else if (pathname.includes(EDIT_QUIZ_PATH)) {
         updateHeading(null);
@@ -88,7 +89,7 @@ class QuizzesPage extends Component {
         this.setState({ createNewQuiz: true });
       } else if (pathname.includes(VIEW_QUIZ_PATH)) {
         const groupId = pathname.split('view/')[1];
-        this.setState({ selectGroup: groupId });
+        this.setState({ selectedGroup: groupId });
       } else if (pathname.includes(EDIT_QUIZ_PATH)) {
         updateHeading(null);
         history.push(QUIZZES_PATH);
@@ -102,10 +103,10 @@ class QuizzesPage extends Component {
   shouldComponentUpdate(nextProps) {
     const { history } = this.props;
 
-    if (nextProps.snackBar.open && this.state.savingQuiz) {
+    if (nextProps.snackBar.open && this.state.loading) {
       this.setState({
         ...this.state,
-        savingQuiz: false,
+        loading: false,
         editGroup: null,
         newQuiz: null
       });
@@ -117,36 +118,37 @@ class QuizzesPage extends Component {
     return true;
   }
 
-  componentDidUpdate(props) {
+  componentDidUpdate(props, nextState) {
     const { location, updateHeading } = this.props;
-    const { createNewQuiz, selectGroup } = this.state;
+    const { createNewQuiz, selectedGroup, editGroup } = nextState;
 
     if (props.location.pathname !== location.pathname) {
       if (
         location.pathname === QUIZZES_PATH &&
-        (createNewQuiz || selectGroup)
+        (createNewQuiz || selectedGroup || editGroup)
       ) {
         updateHeading(null);
         this.setState({
           ...this.state,
           createNewQuiz: false,
-          selectGroup: null
+          selectedGroup: null,
+          editGroup: null
         });
       } else if (location.pathname.includes(VIEW_QUIZ_PATH)) {
         const groupId = location.pathname.split('view/')[1];
-        this.setState({ selectGroup: groupId });
+        this.setState({ selectedGroup: groupId });
       } else if (location.pathname === NEW_QUIZ_PATH) {
         this.setState({ createNewQuiz: true });
       }
     }
   }
 
-  resetQuiz = savingQuiz => {
+  resetQuiz = loading => {
     const { history } = this.props;
 
-    if (savingQuiz) {
+    if (loading) {
       this.setState({
-        savingQuiz
+        loading
       });
     } else {
       history.push(QUIZZES_PATH);
@@ -156,7 +158,7 @@ class QuizzesPage extends Component {
         newQuiz: null,
         createNewQuiz: false,
         showModal: false,
-        savingQuiz: false,
+        loading: false,
         editGroup: null
       });
     }
@@ -172,21 +174,16 @@ class QuizzesPage extends Component {
     const { newQuiz, editGroup, createNewQuiz } = this.state;
 
     if (createNewQuiz) {
-      console.log('newQuiz', {
-        ...newQuiz,
-        createdDate: new Date().toString()
-      });
       this.props.saveQuiz({ ...newQuiz, createdDate: new Date().toString() });
       this.resetQuiz(true);
     } else if (editGroup) {
       const groupId = editGroup[0].group._id;
-      console.log('newQuiz', { ...newQuiz, groupId });
       this.props.updateQuiz({ ...newQuiz, groupId });
       this.resetQuiz(true);
     }
   };
 
-  startQuiz = () => {
+  startQuizClicked = () => {
     const { createNewQuiz } = this.state;
 
     if (createNewQuiz) {
@@ -194,7 +191,7 @@ class QuizzesPage extends Component {
     }
   };
 
-  createNewQuiz = () => {
+  createNewQuizClick = () => {
     const { createNewQuiz } = this.state;
     this.setState({ createNewQuiz: !createNewQuiz });
   };
@@ -203,10 +200,10 @@ class QuizzesPage extends Component {
     this.setState({ newQuiz });
   };
 
-  selectGroupClick = groupId => {
+  selectedGroupClick = groupId => {
     const { history } = this.props;
 
-    this.setState({ selectGroup: groupId });
+    this.setState({ selectedGroup: groupId });
     history.push(`${VIEW_QUIZ_PATH}${groupId}`);
   };
 
@@ -222,6 +219,19 @@ class QuizzesPage extends Component {
     history.push(`${EDIT_QUIZ_PATH}${groupId}`);
   };
 
+  deleteGroupClick = () => {
+    const { editGroup } = this.state;
+
+    if (editGroup && editGroup.length > 0) {
+      this.setState({
+        ...this.state,
+
+        showModal: true,
+        deleting: true
+      });
+    }
+  };
+
   renderSavedQuizzes = () => {
     const {
       quizzes: { savedQuizzes }
@@ -235,7 +245,7 @@ class QuizzesPage extends Component {
         <ListSavedQuizzes
           key={group._id}
           group={updatedGroup}
-          selectGroup={() => this.selectGroupClick(group._id)}
+          selectedGroup={() => this.selectedGroupClick(group._id)}
           editGroup={() => this.editgroupClick(group._id)}
         />
       );
@@ -251,9 +261,10 @@ class QuizzesPage extends Component {
       createNewQuiz,
       newQuiz,
       showModal,
-      savingQuiz,
-      selectGroup,
-      editGroup
+      loading,
+      selectedGroup,
+      editGroup,
+      deleting
     } = this.state;
 
     const disableSaveButton =
@@ -268,30 +279,33 @@ class QuizzesPage extends Component {
       !createNewQuiz && !editGroup && quizzes.savedQuizzes.length > 0;
 
     const selectedQuiz = quizzes.savedQuizzes.filter(
-      quiz => quiz.group._id === selectGroup
+      quiz => quiz.group._id === selectedGroup
     );
 
     return (
       <div style={{ marginTop: '12px' }}>
-        <Loader showLoader={savingQuiz} spinnerColor={'#ffc300'} hideSpinner>
+        <Loader showLoader={loading} spinnerColor={'#ffc300'} hideSpinner>
           <Grid
             container
             direction="column"
             justify="center"
             alignItems="center"
-            style={{ opacity: savingQuiz ? '0.7' : '1' }}
+            style={{ opacity: loading ? '0.7' : '1' }}
           >
-            {selectGroup ? (
+            {selectedGroup ? (
               <DisplayQuizContents quiz={selectedQuiz} />
             ) : (
               <Fragment>
                 {!createNewQuiz && !editGroup && (
                   <Button
-                    onClick={this.startQuiz}
+                    onClick={this.startQuizClicked}
                     style={{
                       ...buttonStyle,
-                      background: '#581845',
-                      marginBottom: '12px'
+                      background: '#fffaf0',
+                      marginBottom: '12px',
+                      color: '#721342',
+                      borderColor: '#581845',
+                      height: '70px'
                     }}
                   >
                     Start Quiz
@@ -305,27 +319,20 @@ class QuizzesPage extends Component {
                     alignItems="center"
                   >
                     <Button
+                      onClick={this.cancelClicked}
                       style={{
                         ...buttonStyle,
                         background: '#fffaf0',
                         marginRight: '12px',
-                        borderColor: 'pink'
+                        borderColor: 'pink',
+                        color: '#9198e5'
                       }}
                     >
-                      <NavLink
-                        to={newQuiz ? NEW_QUIZ_PATH : QUIZZES_PATH}
-                        onClick={this.cancelClicked}
-                        style={{ ...linkStyle, color: '#9198e5' }}
-                      >
-                        Cancel
-                      </NavLink>
+                      Cancel
                     </Button>
-                    <Loader
-                      showLoader={savingQuiz}
-                      spinnerColor={'#ffc300'}
-                      small
-                    >
+                    <Loader showLoader={loading} spinnerColor={'#ffc300'} small>
                       <Button
+                        onClick={this.saveUpdateQuizClicked}
                         style={{
                           ...buttonStyle,
                           background: '#fffaf0',
@@ -333,25 +340,35 @@ class QuizzesPage extends Component {
                             disableUpdateButton && disableSaveButton
                               ? '0.6'
                               : '1',
-                          borderColor: 'pink'
+                          borderColor: 'pink',
+                          color: '#9198e5'
                         }}
                         disabled={disableUpdateButton && disableSaveButton}
                       >
-                        <NavLink
-                          to={NEW_QUIZ_PATH}
-                          onClick={this.saveUpdateQuizClicked}
-                          style={{ ...linkStyle, color: '#9198e5' }}
-                        >
-                          {createNewQuiz ? 'Save Quiz' : 'Update Quiz'}
-                        </NavLink>
+                        {createNewQuiz ? 'Save Quiz' : 'Update Quiz'}
                       </Button>
                     </Loader>
+                    {editGroup && (
+                      <div
+                        title={`Delete '${editGroup[0].group.title}'`}
+                        style={{
+                          position: 'absolute',
+                          right: '0',
+                          padding: '0 5%'
+                        }}
+                      >
+                        <DeleteIcon
+                          onClick={this.deleteGroupClick}
+                          style={{ color: '#dedede', cursor: 'pointer' }}
+                        />
+                      </div>
+                    )}
                   </Grid>
                 )}
                 {(createNewQuiz || editGroup) && (
                   <NewQuiz
                     updateNewQuiz={newQuiz => this.handleQuizUpdate(newQuiz)}
-                    savingQuiz={savingQuiz}
+                    loading={loading}
                     editGroup={editGroup}
                   />
                 )}
@@ -366,7 +383,7 @@ class QuizzesPage extends Component {
                     ></div>
                     <div
                       style={{
-                        borderBottom: '1px solid #DEDEDE',
+                        borderBottom: '1px solid pink',
                         width: '100%'
                       }}
                     ></div>
@@ -384,7 +401,7 @@ class QuizzesPage extends Component {
                     </Typography>
                   ) : (
                     <Typography style={{ marginTop: '12px', color: '#DEDEDE' }}>
-                      Start a new qizz above. Have fun!
+                      Start a new quiz above. Have fun!
                     </Typography>
                   ))}
                 {showSavedQuizzes > 0 && (
@@ -402,10 +419,10 @@ class QuizzesPage extends Component {
             )}
           </Grid>
         </Loader>
-        {!createNewQuiz && !editGroup && !selectGroup && pererittoUser && (
+        {!createNewQuiz && !editGroup && !selectedGroup && pererittoUser && (
           <NavLink to={'/quizzes/new'}>
             <Fab
-              onClick={this.createNewQuiz}
+              onClick={this.createNewQuizClick}
               aria-label="add"
               style={{
                 color: '#581845',
@@ -424,15 +441,27 @@ class QuizzesPage extends Component {
         )}
         <ConfirmActionModal
           showModal={showModal}
-          title={'Cancel Quiz?'}
-          message={`Are you sure you want to cancel the current quiz? You may have unsaved changes.`}
+          title={deleting ? 'Warning!' : 'Cancel Quiz?'}
+          message={
+            deleting
+              ? 'Are you sure you want to delete the current quiz? It will be permanently removed.'
+              : `Are you sure you want to cancel the current quiz? You may have unsaved changes.`
+          }
           confirmClick={() => {
-            this.resetQuiz();
+            deleting
+              ? this.props.deleteQuiz(editGroup[0].group._id) &&
+                this.setState({
+                  ...this.state,
+                  loading: true,
+                  showModal: false
+                })
+              : this.resetQuiz();
           }}
           cancelClick={() =>
             this.setState({
               ...this.state,
-              showModal: false
+              showModal: false,
+              loading: false
             })
           }
         />
@@ -451,5 +480,6 @@ export default connect(mapStateToProps, {
   getStartedQuizRounds,
   updateHeading,
   getTotalQuestions,
-  updateQuiz
+  updateQuiz,
+  deleteQuiz
 })(withRouter(withStyles(styles)(QuizzesPage)));
