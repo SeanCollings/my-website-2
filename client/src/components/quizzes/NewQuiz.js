@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 
-import { MAX_QUESTION_LENGTH, MAX_ANSWER_LENGTH } from '../../utils/constants';
+import {
+  MAX_QUESTION_LENGTH,
+  MAX_ANSWER_LENGTH,
+  EDIT_DELETE_CONTENT,
+  EDIT_UPDATE_CONTENT
+} from '../../utils/constants';
 import ConfirmActionModal from '../modals/ConfirmActionModal';
 import EditQuestionAnswerList from './EditQuestionAnswerList';
 import './NewQuiz.css';
@@ -22,17 +27,6 @@ const inputDivContainer = {
   display: 'flex'
 };
 
-const handleTitleChange = (setQuizTitle, updateQuizSignature) => e => {
-  const text = e.target.value;
-  const match = /\r|\n/.exec(text);
-
-  if (match && match.length) e.preventDefault();
-  else {
-    setQuizTitle(text);
-    updateQuizSignature(text);
-  }
-};
-
 const handleQuestionChange = setQuizQuestion => e => {
   const text = e.target.value;
   const match = /\r|\n/.exec(text);
@@ -45,7 +39,7 @@ const handleAnswerChange = setQuizAnswer => e => {
   setQuizAnswer(text);
 };
 
-const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
+const NewQuiz = ({ updateNewQuiz, editGroup }) => {
   let editTitle;
   let editAllQuestionAnswers;
   let editPublic = true;
@@ -69,6 +63,10 @@ const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
   const [allQuestionsAnswers, setAllQuestionsAnswers] = useState(
     editAllQuestionAnswers || []
   );
+  const [updatedItems, setUpdatedItems] = useState({
+    [EDIT_DELETE_CONTENT]: [],
+    [EDIT_UPDATE_CONTENT]: []
+  });
 
   const addQuestionClicked = () => {
     const newQuestionsAnswers = [...allQuestionsAnswers];
@@ -94,6 +92,8 @@ const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
   };
 
   const updateQuestionAnswer = (index, updating, question, answer) => e => {
+    const newUpdatedItems = { ...updatedItems };
+
     if (updating) {
       const tempContent = temp;
       const text = e.target.value;
@@ -104,7 +104,23 @@ const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
       });
     } else {
       const newQuestionsAnswers = [...allQuestionsAnswers];
-      newQuestionsAnswers[index] = temp;
+      newQuestionsAnswers[index] = {
+        ...newQuestionsAnswers[index],
+        ...temp
+      };
+
+      if (
+        newQuestionsAnswers[index]._id &&
+        !newUpdatedItems[EDIT_UPDATE_CONTENT].includes(
+          newQuestionsAnswers[index]._id
+        )
+      ) {
+        newUpdatedItems[EDIT_UPDATE_CONTENT].push(
+          newQuestionsAnswers[index]._id
+        );
+      }
+
+      setUpdatedItems(newUpdatedItems);
       setAllQuestionsAnswers(newQuestionsAnswers);
       setUpdateQA([]);
       updateQuizSignature(null, newQuestionsAnswers, null);
@@ -142,13 +158,21 @@ const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
   const deleteQuestionAnswers = () => {
     const newQuestionsAnswers = [...allQuestionsAnswers];
     const toDeleteIndices = [...toDeleteArrayQA];
+    const newUpdatedItems = { ...updatedItems };
 
     toDeleteIndices.sort((a, b) => b - a);
 
     for (let i = 0; i < toDeleteIndices.length; i++) {
+      if (newQuestionsAnswers[toDeleteIndices[i]]._id) {
+        newUpdatedItems[EDIT_DELETE_CONTENT].push(
+          newQuestionsAnswers[toDeleteIndices[i]]._id
+        );
+      }
+
       newQuestionsAnswers.splice(toDeleteIndices[i], 1);
     }
 
+    setUpdatedItems(newUpdatedItems);
     setAllQuestionsAnswers(newQuestionsAnswers);
     updateQuizSignature(null, newQuestionsAnswers, null);
 
@@ -161,11 +185,26 @@ const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
     updateQuizSignature(null, null, !quizPublic);
   };
 
+  const handleTitleChange = updateQuizSignature => e => {
+    const text = e.target.value;
+    const match = /\r|\n/.exec(text);
+
+    if (match && match.length) e.preventDefault();
+    else {
+      setQuizTitle(text, null, null);
+      updateQuizSignature(text, null, null);
+    }
+  };
+
   const updateQuizSignature = (title, contents, isPublic) => {
+    const setUpdatedItems = editGroup ? updatedItems : null;
+
     updateNewQuiz({
       title: title || quizTitle,
       contents: contents || allQuestionsAnswers,
-      isPublic: isPublic !== null ? isPublic : quizPublic
+      isPublic:
+        isPublic !== undefined && isPublic !== null ? isPublic : quizPublic,
+      updatedItems: setUpdatedItems
     });
   };
 
@@ -214,7 +253,7 @@ const NewQuiz = ({ updateNewQuiz, savingQuiz, editGroup }) => {
             type="text"
             className="quiz-input"
             value={quizTitle}
-            onChange={handleTitleChange(setQuizTitle, updateQuizSignature)}
+            onChange={handleTitleChange(updateQuizSignature)}
             placeholder="Quiz title..."
             maxLength="50"
             rows="1"

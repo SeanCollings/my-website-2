@@ -26,7 +26,9 @@ const ListSavedQuizzes = ({ group, selectedGroup, editGroup }) => {
         onClick={selectedGroup}
         style={{ display: 'block', cursor: 'pointer', width: '100%' }}
       >
-        <Typography style={{ color: '#581845' }}>{`${group.title}`}</Typography>
+        <Typography
+          style={{ color: '#581845', fontSize: '15px' }}
+        >{`${group.title}`}</Typography>
         <Typography
           style={{ opacity: '0.7' }}
         >{`Questions: ${group.count}`}</Typography>

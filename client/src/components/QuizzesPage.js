@@ -11,14 +11,16 @@ import {
   saveQuiz,
   updateQuiz,
   getStartedQuizRounds,
-  deleteQuiz
+  deleteQuiz,
+  updateQuestionRead
 } from '../actions/quizActions';
 import { updateHeading } from '../actions/appActions';
 import {
   NEW_QUIZ_PATH,
   QUIZZES_PATH,
   VIEW_QUIZ_PATH,
-  EDIT_QUIZ_PATH
+  EDIT_QUIZ_PATH,
+  START_QUIZ_PATH
 } from '../utils/constants';
 import ConfirmActionModal from './modals/ConfirmActionModal';
 import DisplayQuizContents from './quizzes/DisplayQuizContents';
@@ -27,6 +29,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button, Fab, Typography, List } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
+import StartQuizRound from './quizzes/StartQuizRound';
 
 const styles = theme => ({
   pageFill: {
@@ -43,6 +46,9 @@ const buttonStyle = {
   border: '1px solid #ffc300'
 };
 
+const getRandomContent = round =>
+  round[Math.floor(Math.random() * round.length)];
+
 class QuizzesPage extends Component {
   state = {
     creatingNewQuiz: false,
@@ -51,7 +57,10 @@ class QuizzesPage extends Component {
     loading: false,
     selectedGroup: null,
     editGroup: null,
-    deleting: false
+    deleting: false,
+    startQuiz: false,
+    startedRound: null,
+    randomContent: null
   };
 
   componentDidMount() {
@@ -82,6 +91,9 @@ class QuizzesPage extends Component {
         updateHeading(null);
         history.push(QUIZZES_PATH);
       }
+    } else if (pathname === START_QUIZ_PATH) {
+      updateHeading(null);
+      history.push(QUIZZES_PATH);
     }
 
     if (pererittoUser) {
@@ -91,6 +103,9 @@ class QuizzesPage extends Component {
         const groupId = pathname.split('view/')[1];
         this.setState({ selectedGroup: groupId });
       } else if (pathname.includes(EDIT_QUIZ_PATH)) {
+        updateHeading(null);
+        history.push(QUIZZES_PATH);
+      } else if (pathname === START_QUIZ_PATH) {
         updateHeading(null);
         history.push(QUIZZES_PATH);
       }
@@ -120,26 +135,68 @@ class QuizzesPage extends Component {
 
   componentDidUpdate(props, nextState) {
     const { location, updateHeading } = this.props;
-    const { createNewQuiz, selectedGroup, editGroup } = nextState;
+    const {
+      createNewQuiz,
+      selectedGroup,
+      editGroup,
+      startQuiz,
+      startedRound
+    } = nextState;
 
     if (props.location.pathname !== location.pathname) {
       if (
         location.pathname === QUIZZES_PATH &&
-        (createNewQuiz || selectedGroup || editGroup)
+        (createNewQuiz || selectedGroup || editGroup || startQuiz)
       ) {
         updateHeading(null);
         this.setState({
           ...this.state,
           createNewQuiz: false,
           selectedGroup: null,
-          editGroup: null
+          editGroup: null,
+          startQuiz: false
         });
       } else if (location.pathname.includes(VIEW_QUIZ_PATH)) {
         const groupId = location.pathname.split('view/')[1];
         this.setState({ selectedGroup: groupId });
       } else if (location.pathname === NEW_QUIZ_PATH) {
         this.setState({ createNewQuiz: true });
+      } else if (location.pathname.includes(EDIT_QUIZ_PATH)) {
+      } else if (location.pathname === START_QUIZ_PATH) {
       }
+    }
+
+    const oldPropsStartedRound = props.quizzes.startedRound;
+    const newPropsStartedRound = this.props.quizzes.startedRound;
+
+    if (!oldPropsStartedRound && newPropsStartedRound) {
+      const randomContent = getRandomContent(newPropsStartedRound);
+      this.setState({
+        ...this.state,
+        startedRound: newPropsStartedRound,
+        randomContent
+      });
+    }
+
+    if (startedRound && startedRound.length === 0) {
+      this.setState({
+        ...this.state,
+        startedRound: oldPropsStartedRound,
+        randomContent: getRandomContent(oldPropsStartedRound)
+      });
+    }
+
+    if (
+      !props.quizzes.updatedQuestions &&
+      this.props.quizzes.updatedQuestions
+    ) {
+      const round = this.props.quizzes.updatedQuestions;
+      const randomContent = getRandomContent(round);
+      this.setState({
+        ...this.state,
+        startedRound: round,
+        randomContent
+      });
     }
   }
 
@@ -184,10 +241,27 @@ class QuizzesPage extends Component {
   };
 
   startQuizClicked = () => {
-    const { createNewQuiz } = this.state;
+    const { history } = this.props;
 
-    if (createNewQuiz) {
-      this.setState({ createNewQuiz: false });
+    this.setState({ startQuiz: true });
+    history.push(`${START_QUIZ_PATH}`);
+    this.props.getStartedQuizRounds();
+  };
+
+  nextQuestionClicked = id => {
+    const { startedRound } = this.state;
+
+    const newStartedRound = startedRound.filter(content => content._id !== id);
+    const questionsLeft = newStartedRound.length;
+    const randomContent = getRandomContent(newStartedRound);
+    this.props.updateQuestionRead(id, newStartedRound.length);
+
+    if (questionsLeft > 0) {
+      this.setState({
+        ...this.state,
+        randomContent,
+        startedRound: newStartedRound
+      });
     }
   };
 
@@ -264,7 +338,10 @@ class QuizzesPage extends Component {
       loading,
       selectedGroup,
       editGroup,
-      deleting
+      deleting,
+      startQuiz,
+      startedRound,
+      randomContent
     } = this.state;
 
     const disableSaveButton =
@@ -281,6 +358,23 @@ class QuizzesPage extends Component {
     const selectedQuiz = quizzes.savedQuizzes.filter(
       quiz => quiz.group._id === selectedGroup
     );
+
+    if (startQuiz) {
+      const completed = startedRound
+        ? quizzes.totalQuestions.all - startedRound.length + 1
+        : 0;
+
+      return (
+        <div style={{ marginTop: '12px' }}>
+          <StartQuizRound
+            randomContent={randomContent}
+            nextQuestion={this.nextQuestionClicked}
+            completed={completed}
+            totalQuestions={quizzes.totalQuestions}
+          />
+        </div>
+      );
+    }
 
     return (
       <div style={{ marginTop: '12px' }}>
@@ -390,9 +484,16 @@ class QuizzesPage extends Component {
                   </Fragment>
                 )}
                 {!createNewQuiz && !editGroup && (
-                  <Typography
-                    style={{ marginTop: '12px', color: '#DEDEDe' }}
-                  >{`Total app questions: ${quizzes.totalQuestions}`}</Typography>
+                  <div style={{ display: 'block', textAlign: 'center' }}>
+                    <Typography
+                      style={{ marginTop: '12px', color: '#DEDEDe' }}
+                    >{`Total public questions: ${quizzes.totalQuestions.all}`}</Typography>
+                    {pererittoUser && (
+                      <Typography
+                        style={{ color: '#DEDEDe' }}
+                      >{`Your public questions: ${quizzes.totalQuestions.you.public} / ${quizzes.totalQuestions.you.all}`}</Typography>
+                    )}
+                  </div>
                 )}
                 {noQuizzesToShow &&
                   (pererittoUser ? (
@@ -481,5 +582,6 @@ export default connect(mapStateToProps, {
   updateHeading,
   getTotalQuestions,
   updateQuiz,
-  deleteQuiz
+  deleteQuiz,
+  updateQuestionRead
 })(withRouter(withStyles(styles)(QuizzesPage)));

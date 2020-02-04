@@ -4,7 +4,8 @@ import {
   GET_SAVED_QUIZZES,
   GET_STARTED_QUIZ_ROUNDS,
   SHOW_MESSAGE,
-  GET_TOTAL_QUESTIONS
+  GET_TOTAL_QUESTIONS,
+  UPDATED_QUESTION
 } from './types';
 
 export const saveQuiz = quiz => async dispatch => {
@@ -59,4 +60,13 @@ export const deleteQuiz = groupId => async dispatch => {
   });
 
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
+};
+
+export const updateQuestionRead = (readId, questionsLeft) => async dispatch => {
+  const res = await axios.post('/api/update_question_read', {
+    readId,
+    questionsLeft
+  });
+
+  dispatch({ type: UPDATED_QUESTION, payload: res.data });
 };

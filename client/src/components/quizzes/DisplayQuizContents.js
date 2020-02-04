@@ -4,6 +4,8 @@ import { Typography, List, ListItem, Grid } from '@material-ui/core';
 const textContentStyle = { paddingLeft: '4px', width: '90%' };
 
 const DisplayQuizContents = ({ quiz }) => {
+  const isFirefoxBrowser = typeof InstallTrigger !== 'undefined';
+
   if (!quiz || quiz.length === 0) {
     return (
       <Grid
@@ -16,8 +18,8 @@ const DisplayQuizContents = ({ quiz }) => {
           width: '90%',
           backgroundColor: '#fffaf0',
           background:
-            'repeating-linear-gradient(#fffaf0, white 18px, #9198e5 20px, #9198e5 16px)',
-          backgroundPosition: '0px 16px'
+            'repeating-linear-gradient(#fffaf0, white 19px, #9198e5 20px, #9198e5 16px)',
+          backgroundPosition: `0px ${isFirefoxBrowser ? '0px' : '16px'}`
         }}
       >
         <Typography
@@ -65,8 +67,9 @@ const DisplayQuizContents = ({ quiz }) => {
         width: '90%',
         backgroundColor: '#fffaf0',
         background:
-          'repeating-linear-gradient(#fffaf0, white 18px, #9198e5 20px, #9198e5 16px)',
-        backgroundPosition: '0px 16px'
+          'repeating-linear-gradient(#fffaf0, white 19px, #9198e5 20px, #9198e5 16px)',
+        backgroundPosition: `0px ${isFirefoxBrowser ? '0px' : '16px'}`,
+        filter: 'drop-shadow(2px 2px 6px black)'
       }}
     >
       <Typography
@@ -80,7 +83,7 @@ const DisplayQuizContents = ({ quiz }) => {
       </Typography>
       <List
         style={{
-          margin: '-42px 0px 0px',
+          margin: `${isFirefoxBrowser ? '-40px' : '-42px'} 0px 0px`,
           width: '100%',
           maxWidth: '700px',
           padding: '0px'
@@ -106,7 +109,8 @@ const DisplayQuizContents = ({ quiz }) => {
                             width: questionsOver100 ? '60px' : '90%',
                             textAlign: 'end',
                             height: '58px',
-                            color: 'transparent'
+                            color: 'transparent',
+                            lineHeight: '1.43'
                           }}
                         >
                           {`Q${i}:`}
@@ -132,7 +136,7 @@ const DisplayQuizContents = ({ quiz }) => {
             if (content.last) {
               return (
                 <ListItem
-                  key={content.first}
+                  key={content.last}
                   style={{ padding: '0px 12px 0 0' }}
                 >
                   <div style={{ display: 'block', width: '100%' }}>
@@ -146,7 +150,8 @@ const DisplayQuizContents = ({ quiz }) => {
                             paddingRight: '6px',
                             width: questionsOver100 ? '60px' : '90%',
                             textAlign: 'end',
-                            color: 'transparent'
+                            color: 'transparent',
+                            lineHeight: '1.43'
                           }}
                         >
                           {`Q${i}:`}
@@ -156,7 +161,8 @@ const DisplayQuizContents = ({ quiz }) => {
                         style={{
                           width: '90%',
                           padding: '0px 0 0 4px',
-                          color: 'transparent'
+                          color: 'transparent',
+                          lineHeight: '1.43'
                         }}
                       >
                         sneak
@@ -179,14 +185,15 @@ const DisplayQuizContents = ({ quiz }) => {
                           fontWeight: '500',
                           paddingRight: '6px',
                           width: questionsOver100 ? '60px' : '90%',
-                          textAlign: 'end'
+                          textAlign: 'end',
+                          lineHeight: '1.43'
                         }}
                       >
                         {`Q${i}:`}
                       </Typography>
                     </div>
                     <Typography
-                      style={{ ...textContentStyle }}
+                      style={{ ...textContentStyle, lineHeight: '1.43' }}
                     >{`${content.question}`}</Typography>
                   </div>
                   <div style={{ display: 'flex' }}>
@@ -198,14 +205,19 @@ const DisplayQuizContents = ({ quiz }) => {
                           fontWeight: '400',
                           paddingRight: '6px',
                           width: questionsOver100 ? '60px' : '90%',
-                          textAlign: 'end'
+                          textAlign: 'end',
+                          lineHeight: '1.43'
                         }}
                       >
                         A:
                       </Typography>
                     </div>
                     <Typography
-                      style={{ ...textContentStyle, fontWeight: '100' }}
+                      style={{
+                        ...textContentStyle,
+                        fontWeight: '100',
+                        lineHeight: '1.43'
+                      }}
                     >{`${content.answer}`}</Typography>
                   </div>
                 </div>

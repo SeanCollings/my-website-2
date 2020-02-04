@@ -78,7 +78,7 @@ class ConfirmActionModal extends Component {
             </li>
             <li>
               <Typography>
-                Double a roll of 3 and rool of 5 ie. 3=6, 5=10
+                Double a roll of 3 and roll of 5 ie. 3=6, 5=10
               </Typography>
             </li>
             {/* <li>

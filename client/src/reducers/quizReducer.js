@@ -1,13 +1,15 @@
 import {
   GET_SAVED_QUIZZES,
   GET_STARTED_QUIZ_ROUNDS,
-  GET_TOTAL_QUESTIONS
+  GET_TOTAL_QUESTIONS,
+  UPDATED_QUESTION
 } from '../actions/types';
 
 const initialState = {
   savedQuizzes: [],
   startedRound: null,
-  totalQuestions: 0
+  totalQuestions: { all: 0, you: { all: 0, public: 0 } },
+  updatedQuestions: null
 };
 
 export default function(state = initialState, action) {
@@ -15,10 +17,14 @@ export default function(state = initialState, action) {
     case GET_SAVED_QUIZZES:
       return { ...state, savedQuizzes: action.payload };
     case GET_STARTED_QUIZ_ROUNDS:
-      return { ...state, startedRound: action.payload };
+      const { startedRound } = action.payload;
+      return { ...state, startedRound };
     case GET_TOTAL_QUESTIONS:
       const { totalQuestions } = action.payload;
       return { ...state, totalQuestions };
+    case UPDATED_QUESTION:
+      const { newRound } = action.payload;
+      return { ...state, updatedQuestions: newRound };
     default:
       return state;
   }

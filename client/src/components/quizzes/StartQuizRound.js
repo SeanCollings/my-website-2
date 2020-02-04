@@ -1,8 +1,229 @@
-import React from 'react';
-import { Typography } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import MiniLoader from 'react-loader-spinner';
+import { Typography, Grid, Button } from '@material-ui/core';
 
-const StartQuizRound = () => {
-  return <Typography>StartQuizRound</Typography>;
+import './StartQuizRound.css';
+
+const nextButtonStyle = {
+  background: 'pink',
+  color: '#581845',
+  border: '1px solid #fffaf0',
+  height: '52px',
+  width: '105px'
+};
+
+const getPunchHoleLeft = Math.random() * (7 - 3) + 3;
+const getPunchHoleTop = Math.random() * (51 - 26) + 26;
+const getFirefoxBrowser = typeof InstallTrigger !== 'undefined';
+
+const NextButton = ({ nextQuestion }) => (
+  <Button
+    onClick={nextQuestion}
+    style={{
+      ...nextButtonStyle
+    }}
+  >
+    Next
+  </Button>
+);
+
+const StartQuizRound = ({
+  nextQuestion,
+  randomContent,
+  completed,
+  totalQuestions
+}) => {
+  const [showFront, setShowFront] = useState(true);
+  const [quickTransition, setQuickTransition] = useState(false);
+  const [hideContent, setHideContent] = useState(false);
+  const [punchHoleLeft] = useState(getPunchHoleLeft);
+  const [punchHoleTop] = useState(getPunchHoleTop);
+  const [isBrowserFirefox] = useState(getFirefoxBrowser);
+
+  useEffect(() => {
+    setHideContent(false);
+  }, [randomContent]);
+
+  if (!randomContent || (randomContent && !randomContent.content))
+    return (
+      <Grid container direction="column" justify="center" alignItems="center">
+        <Typography style={{ color: '#DEDEDE' }}>Loading content...</Typography>
+        <div style={{ marginTop: '24px' }}>
+          <MiniLoader type="ThreeDots" color="#fffaf0" height={60} width={60} />
+        </div>
+      </Grid>
+    );
+
+  const handleNextQuestionClick = () => {
+    setHideContent(true);
+    nextQuestion(randomContent._id);
+    setShowFront(true);
+    setQuickTransition(true);
+  };
+
+  const handleCardClick = () => {
+    setQuickTransition(false);
+    setShowFront(!showFront);
+  };
+
+  const {
+    content: { question, answer },
+    name
+  } = randomContent;
+
+  const questionContent = `${hideContent ? 'refreshing...' : question}`;
+  const answerContent = `${hideContent ? '' : answer}`;
+  const userName = name && !hideContent ? `- ${name}` : '';
+
+  return (
+    <Grid container direction="column" justify="center" alignItems="center">
+      <NextButton nextQuestion={handleNextQuestionClick} />
+      <Typography
+        style={{ color: '#dedede', marginTop: '12px' }}
+      >{`Question: ${completed}/${totalQuestions.all}`}</Typography>
+      <div className="line" style={{ marginTop: '12px' }}></div>
+
+      <div className={`scene scene--card no-select`} onClick={handleCardClick}>
+        <div
+          className={`card no-select`}
+          style={{
+            transition: `transform ${quickTransition ? '0s' : '0.6s'}`,
+            WebkitTransition: `transform ${quickTransition ? '0s' : '0.6s'}`,
+            transform: !showFront ? 'rotateY(180deg)' : ''
+          }}
+        >
+          <div
+            className="card__face card__face--front no-select"
+            style={{
+              background:
+                'repeating-linear-gradient(#fffaf0, white 24px, #9198e5 26px, #9198e5 16px)',
+              backgroundPosition: '0px 13px',
+              overflow: 'auto',
+              backfaceVisibility: isBrowserFirefox ? 'hidden' : ''
+            }}
+          >
+            <div className="card-content-container">
+              <div className="left-margin">.</div>
+              <div className="right-margin">.</div>
+              <div
+                className="punch-hole"
+                style={{ left: `${punchHoleLeft}%`, top: `${punchHoleTop}%` }}
+              ></div>
+              <div style={{ display: 'block', width: '85%' }}>
+                <div style={{ display: 'flex' }}>
+                  <Typography
+                    variant={'h5'}
+                    className="card-title"
+                    style={{ fontFamily: 'cursive', fontSize: '26px' }}
+                  >
+                    Question:
+                  </Typography>
+                  <Typography
+                    variant={'h6'}
+                    style={{
+                      fontFamily: 'cursive',
+                      fontSize: '22px',
+                      textDecoration: 'underline',
+                      position: 'absolute',
+                      right: '16%',
+                      transform: 'rotateY(-180deg)',
+                      opacity: '0.04',
+                      paddingTop: '12px'
+                    }}
+                  >
+                    Answer:
+                  </Typography>
+                </div>
+                <Typography
+                  className="card-content"
+                  style={{ fontSize: '16px', lineHeight: '1.63' }}
+                >
+                  {questionContent}
+                </Typography>
+                <Typography
+                  style={{
+                    position: 'absolute',
+                    right: '0',
+                    float: 'right',
+                    bottom: '2px',
+                    width: '25%',
+                    fontWeight: '100'
+                  }}
+                >
+                  {userName}
+                </Typography>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="card__face card__face--back no-select"
+            style={{
+              width: '100%',
+              position: 'absolute',
+              transform: 'rotateY(180deg)',
+              background:
+                'repeating-linear-gradient(#fffaf0, white 24px, #9198e5 26px, #9198e5 16px)',
+              backgroundPosition: '0px 13px',
+              overflow: 'auto',
+              backfaceVisibility: isBrowserFirefox ? 'hidden' : ''
+            }}
+          >
+            <div className="card-content-container">
+              <div className="left-margin">.</div>
+              <div className="right-margin">.</div>
+              <div
+                className="punch-hole"
+                style={{ right: `${punchHoleLeft}%`, top: `${punchHoleTop}%` }}
+              ></div>
+              <div style={{ display: 'block', width: '85%' }}>
+                <div style={{ display: 'flex' }}>
+                  <Typography
+                    variant={'h6'}
+                    className="card-title"
+                    style={{
+                      paddingTop: '12px',
+                      fontSize: '22px',
+                      fontFamily: 'cursive'
+                    }}
+                  >
+                    Answer:
+                  </Typography>
+                  <Typography
+                    variant={'h5'}
+                    style={{
+                      fontFamily: 'cursive',
+                      fontSize: '26px',
+                      textDecoration: 'underline',
+                      position: 'absolute',
+                      right: '16%',
+                      transform: 'rotateY(-180deg)',
+                      opacity: '0.04',
+                      paddingTop: '10px'
+                    }}
+                  >
+                    Question:
+                  </Typography>
+                </div>
+                <Typography
+                  className="card-content"
+                  style={{
+                    fontSize: '16px',
+                    lineHeight: '1.63',
+                    paddingTop: '22px'
+                  }}
+                >
+                  {answerContent}
+                </Typography>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="line" style={{ marginBottom: '24px' }}></div>
+      <NextButton nextQuestion={handleNextQuestionClick} />
+    </Grid>
+  );
 };
 
 export default StartQuizRound;

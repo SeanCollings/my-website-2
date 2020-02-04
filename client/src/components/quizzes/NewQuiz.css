@@ -13,6 +13,7 @@
   font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
   resize: none;
   overflow: auto;
+  font-weight: 100;
 }
 
 .quiz-input {

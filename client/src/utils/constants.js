@@ -17,9 +17,12 @@ export const QUIZZES_PATH = '/quizzes';
 export const NEW_QUIZ_PATH = '/quizzes/new';
 export const EDIT_QUIZ_PATH = '/quizzes/edit/';
 export const VIEW_QUIZ_PATH = '/quizzes/view/';
+export const START_QUIZ_PATH = '/quizzes/start';
 
 export const FIRST = 'first';
 export const LAST = 'last';
+export const EDIT_DELETE_CONTENT = 'edit_delete_content';
+export const EDIT_UPDATE_CONTENT = 'edit_update_content';
 
 export const MOBILE_SCREEN_SIZE = 700;
 export const MAX_ANSWER_LENGTH = 100;

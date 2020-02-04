@@ -9,7 +9,8 @@ import {
   MENU_LIST,
   NEW_QUIZ_PATH,
   EDIT_QUIZ_PATH,
-  VIEW_QUIZ_PATH
+  VIEW_QUIZ_PATH,
+  START_QUIZ_PATH
 } from '../../utils/constants';
 import { clearAllData } from '../../utils/utility';
 
@@ -247,6 +248,8 @@ class Header extends Component {
         if (currentRoute.includes(NEW_QUIZ_PATH) && auth) return `Create Quiz`;
         if (currentRoute.includes(EDIT_QUIZ_PATH) && auth) return `Edit Quiz`;
         if (currentRoute.includes(VIEW_QUIZ_PATH) && auth) return `View Quiz`;
+        if (currentRoute.includes(START_QUIZ_PATH) && auth)
+          return `Let's Get Quizzical`;
 
         return '';
     }
