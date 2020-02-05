@@ -12,10 +12,12 @@ export const DB_TABLES = [
   'group-members',
   'location-groups',
   'slates',
-  'completed-slates'
+  'completed-slates',
+  'saved-quizzes',
+  'total-questions'
 ];
 
-const seanDB = idb.openDB('sean-db', 3, {
+const seanDB = idb.openDB('sean-db', 4, {
   upgrade(db) {
     DB_TABLES.forEach(table => {
       if (!db.objectStoreNames.contains(table)) {

@@ -1,5 +1,5 @@
 import axios from '../utils/axios';
-// import { readAllData } from '../utils/utility';
+import { readAllData } from '../utils/utility';
 import {
   GET_SAVED_QUIZZES,
   GET_STARTED_QUIZ_ROUNDS,
@@ -29,11 +29,11 @@ export const getSavedQuizzes = () => async dispatch => {
     dispatch({ type: GET_SAVED_QUIZZES, payload: res.data });
   });
 
-  // if ('indexedDB' in window) {
-  //   readAllData('saved-quizzes').then(data => {
-  //     dispatch({ type: GET_SAVED_QUIZZES, payload: data });
-  //   });
-  // }
+  if ('indexedDB' in window) {
+    readAllData('saved-quizzes').then(data => {
+      dispatch({ type: GET_SAVED_QUIZZES, payload: data });
+    });
+  }
 };
 
 export const getStartedQuizRounds = () => async dispatch => {
@@ -49,9 +49,15 @@ export const getStartedQuizRounds = () => async dispatch => {
 };
 
 export const getTotalQuestions = () => async dispatch => {
-  const res = await axios.get('/api/get_total_questions');
+  axios.get('/api/get_total_questions').then(res => {
+    dispatch({ type: GET_TOTAL_QUESTIONS, payload: res.data });
+  });
 
-  dispatch({ type: GET_TOTAL_QUESTIONS, payload: res.data });
+  if ('indexedDB' in window) {
+    readAllData('total-questions').then(data => {
+      dispatch({ type: GET_TOTAL_QUESTIONS, payload: data[0] });
+    });
+  }
 };
 
 export const deleteQuiz = groupId => async dispatch => {

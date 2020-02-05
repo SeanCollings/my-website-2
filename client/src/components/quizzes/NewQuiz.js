@@ -31,12 +31,12 @@ const handleQuestionChange = setQuizQuestion => e => {
   const text = e.target.value;
   const match = /\r|\n/.exec(text);
 
-  if (!match || (match && match.index !== 0)) setQuizQuestion(text.trim());
+  if (!match || (match && match.index !== 0)) setQuizQuestion(text);
 };
 
 const handleAnswerChange = setQuizAnswer => e => {
   const text = e.target.value;
-  setQuizAnswer(text.trim());
+  setQuizAnswer(text);
 };
 
 const NewQuiz = ({ updateNewQuiz, editGroup, uploadedFile }) => {
@@ -87,8 +87,8 @@ const NewQuiz = ({ updateNewQuiz, editGroup, uploadedFile }) => {
 
     if (quizQuestion.length && quizAnswer.length) {
       newQuestionsAnswers.push({
-        question: quizQuestion,
-        answer: quizAnswer
+        question: quizQuestion.trim(),
+        answer: quizAnswer.trim()
       });
       setAllQuestionsAnswers(newQuestionsAnswers);
       setQuizQuestion('');
@@ -113,8 +113,8 @@ const NewQuiz = ({ updateNewQuiz, editGroup, uploadedFile }) => {
       const text = e.target.value;
 
       setTemp({
-        question: question ? tempContent.question : text,
-        answer: answer ? tempContent.answer : text
+        question: question ? tempContent.question.trim() : text.trim(),
+        answer: answer ? tempContent.answer.trim() : text.trim()
       });
     } else {
       const newQuestionsAnswers = [...allQuestionsAnswers];
@@ -205,7 +205,7 @@ const NewQuiz = ({ updateNewQuiz, editGroup, uploadedFile }) => {
 
     if (match && match.length) e.preventDefault();
     else {
-      setQuizTitle(text.trim());
+      setQuizTitle(text);
       updateQuizSignature(text, null, null);
     }
   };
@@ -214,7 +214,7 @@ const NewQuiz = ({ updateNewQuiz, editGroup, uploadedFile }) => {
     const setUpdatedItems = editGroup || uploadedFile ? updatedItems : null;
 
     updateNewQuiz({
-      title: title || quizTitle,
+      title: title || quizTitle.trim(),
       contents: contents || allQuestionsAnswers,
       isPublic:
         isPublic !== undefined && isPublic !== null ? isPublic : quizPublic,
