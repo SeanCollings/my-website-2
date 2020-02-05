@@ -23,13 +23,15 @@ import {
   START_QUIZ_PATH
 } from '../utils/constants';
 import ConfirmActionModal from './modals/ConfirmActionModal';
+import UploadQuizModal from './modals/UploadQuizModal';
 import DisplayQuizContents from './quizzes/DisplayQuizContents';
+import StartQuizRound from './quizzes/StartQuizRound';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button, Fab, Typography, List } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/DeleteForever';
-import StartQuizRound from './quizzes/StartQuizRound';
+import UploadIcon from '@material-ui/icons/CloudUpload';
 
 const styles = theme => ({
   pageFill: {
@@ -60,7 +62,9 @@ class QuizzesPage extends Component {
     deleting: false,
     startQuiz: false,
     startedRound: null,
-    randomContent: null
+    randomContent: null,
+    showQuizModal: false,
+    uploadedFile: null
   };
 
   componentDidMount() {
@@ -123,7 +127,8 @@ class QuizzesPage extends Component {
         ...this.state,
         loading: false,
         editGroup: null,
-        newQuiz: null
+        newQuiz: null,
+        uploadedFile: null
       });
       history.push(QUIZZES_PATH);
       this.props.getSavedQuizzes();
@@ -154,7 +159,8 @@ class QuizzesPage extends Component {
           createNewQuiz: false,
           selectedGroup: null,
           editGroup: null,
-          startQuiz: false
+          startQuiz: false,
+          uploadedFile: null
         });
       } else if (location.pathname.includes(VIEW_QUIZ_PATH)) {
         const groupId = location.pathname.split('view/')[1];
@@ -216,14 +222,14 @@ class QuizzesPage extends Component {
         createNewQuiz: false,
         showModal: false,
         loading: false,
-        editGroup: null
+        editGroup: null,
+        uploadedFile: null
       });
     }
   };
 
   cancelClicked = () => {
     const { newQuiz } = this.state;
-
     if (newQuiz) this.setState({ showModal: true });
     else this.resetQuiz();
   };
@@ -271,7 +277,7 @@ class QuizzesPage extends Component {
   };
 
   handleQuizUpdate = newQuiz => {
-    this.setState({ newQuiz });
+    this.setState({ ...this.setState, newQuiz, uploadedFile: null });
   };
 
   selectedGroupClick = groupId => {
@@ -291,6 +297,67 @@ class QuizzesPage extends Component {
 
     this.setState({ editGroup: groupToEdit });
     history.push(`${EDIT_QUIZ_PATH}${groupId}`);
+  };
+
+  handleFileUpload = e => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const { name, size } = file;
+      if (size > 1024 * 20) return null;
+
+      const reader = new FileReader();
+      reader.readAsText(file, 'UTF-8');
+
+      reader.onload = evt => {
+        const text = evt.target.result;
+
+        if (text && text.length > 0) {
+          const splitLines = text.split('\n');
+
+          const content = splitLines.reduce((result, line) => {
+            const split = line.split('?');
+
+            if (
+              split.length === 2 &&
+              split[0].trim().length > 1 &&
+              split[1].trim().length > 1
+            ) {
+              result.push({
+                question: `${split[0].trim()}?`,
+                answer: split[1].trim()
+              });
+            }
+            return result;
+          }, []);
+
+          const uploadedFile = [
+            {
+              group: {
+                title: name.split('.txt')[0],
+                isPublic: true
+              },
+              content
+            }
+          ];
+
+          this.setState({ uploadedFile });
+        }
+      };
+    }
+  };
+
+  confirmUploadQuizClick = () => {
+    this.setState({ ...this.state, showQuizModal: false });
+    const fileUpload = document.getElementById('upload-quiz-file');
+
+    if (fileUpload) {
+      fileUpload.addEventListener('change', this.handleFileUpload);
+      fileUpload.click();
+      fileUpload.onclick = event => {
+        event.target.value = '';
+      };
+    }
   };
 
   deleteGroupClick = () => {
@@ -341,13 +408,17 @@ class QuizzesPage extends Component {
       deleting,
       startQuiz,
       startedRound,
-      randomContent
+      randomContent,
+      uploadedFile,
+      showQuizModal
     } = this.state;
 
     const disableSaveButton =
-      !newQuiz ||
-      (newQuiz && !newQuiz.contents) ||
-      (newQuiz.contents && newQuiz.contents.length === 0);
+      !uploadedFile &&
+      (!newQuiz ||
+        (newQuiz && !newQuiz.contents) ||
+        (newQuiz.contents && newQuiz.contents.length === 0));
+
     const disableUpdateButton = !editGroup || !newQuiz;
 
     const noQuizzesToShow =
@@ -442,6 +513,27 @@ class QuizzesPage extends Component {
                         {createNewQuiz ? 'Save Quiz' : 'Update Quiz'}
                       </Button>
                     </Loader>
+                    {createNewQuiz && (
+                      <div
+                        title={`Upload quiz`}
+                        style={{
+                          position: 'absolute',
+                          right: '0',
+                          padding: '0 5.5%'
+                        }}
+                      >
+                        <UploadIcon
+                          onClick={() => this.setState({ showQuizModal: true })}
+                          style={{ color: '#dedede', cursor: 'pointer' }}
+                        />
+                        <input
+                          id="upload-quiz-file"
+                          type="file"
+                          accept={'.txt'}
+                          style={{ display: 'none' }}
+                        />
+                      </div>
+                    )}
                     {editGroup && (
                       <div
                         title={`Delete '${editGroup[0].group.title}'`}
@@ -464,6 +556,7 @@ class QuizzesPage extends Component {
                     updateNewQuiz={newQuiz => this.handleQuizUpdate(newQuiz)}
                     loading={loading}
                     editGroup={editGroup}
+                    uploadedFile={uploadedFile}
                   />
                 )}
                 {!createNewQuiz && !editGroup && (
@@ -564,6 +657,13 @@ class QuizzesPage extends Component {
               showModal: false,
               loading: false
             })
+          }
+        />
+        <UploadQuizModal
+          showModal={showQuizModal}
+          confirmClick={this.confirmUploadQuizClick}
+          cancelClick={() =>
+            this.setState({ ...this.state, showQuizModal: false })
           }
         />
       </div>

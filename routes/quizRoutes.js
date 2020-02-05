@@ -27,16 +27,19 @@ export default app => {
       } = req.body;
       const { _id } = req.user;
 
-      const incorrectPayload = contents.some(content => {
-        const { question, answer } = content;
+      const incorrectPayload =
+        !contents ||
+        contents.length === 0 ||
+        contents.some(content => {
+          const { question, answer } = content;
 
-        return (
-          !question ||
-          !answer ||
-          answer.length > MAX_ANSWER_LENGTH ||
-          question.length > MAX_QUESTION_LENGTH
-        );
-      });
+          return (
+            !question ||
+            !answer ||
+            answer.length > MAX_ANSWER_LENGTH ||
+            question.length > MAX_QUESTION_LENGTH
+          );
+        });
 
       if (incorrectPayload) {
         return res.send({

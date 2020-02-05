@@ -145,9 +145,10 @@ const StartQuizRound = ({
                     position: 'absolute',
                     right: '0',
                     float: 'right',
-                    bottom: '2px',
+                    bottom: '3px',
                     width: '25%',
-                    fontWeight: '100'
+                    fontWeight: '100',
+                    fontStyle: 'italic'
                   }}
                 >
                   {userName}

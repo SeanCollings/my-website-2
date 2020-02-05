@@ -1,7 +1,35 @@
 import React from 'react';
 import { Typography, List, ListItem, Grid } from '@material-ui/core';
+import DownloadIcon from '@material-ui/icons/CloudDownload';
 
 const textContentStyle = { paddingLeft: '4px', width: '90%' };
+
+const downloadQuiz = quiz => {
+  if (quiz && quiz.length > 0) {
+    const content = quiz[0].content.map(c => {
+      const endsInQuestionMark =
+        c.question.charAt(c.question.length - 1) === '?';
+
+      return `${c.question.trim()}${
+        endsInQuestionMark ? '' : '?'
+      } ${c.answer.trim()}\n`;
+    });
+
+    const element = document.createElement('a');
+    element.setAttribute(
+      'href',
+      'data:text/plain;charset=utf-8,' + encodeURIComponent(content.join(''))
+    );
+    element.setAttribute('download', quiz[0].group.title);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+};
 
 const DisplayQuizContents = ({ quiz }) => {
   const isFirefoxBrowser = typeof InstallTrigger !== 'undefined';
@@ -99,6 +127,16 @@ const DisplayQuizContents = ({ quiz }) => {
                 >
                   <div style={{ display: 'block', width: '100%' }}>
                     <div style={{ display: 'flex' }}>
+                      <DownloadIcon
+                        onClick={() => downloadQuiz(quiz)}
+                        style={{
+                          position: 'absolute',
+                          left: '16px',
+                          top: '16px',
+                          color: '#777777b3',
+                          cursor: 'pointer'
+                        }}
+                      />
                       <div
                         style={{ width: '66px', borderRight: '1px solid pink' }}
                       >

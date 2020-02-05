@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   MAX_QUESTION_LENGTH,
@@ -31,15 +31,15 @@ const handleQuestionChange = setQuizQuestion => e => {
   const text = e.target.value;
   const match = /\r|\n/.exec(text);
 
-  if (!match || (match && match.index !== 0)) setQuizQuestion(text);
+  if (!match || (match && match.index !== 0)) setQuizQuestion(text.trim());
 };
 
 const handleAnswerChange = setQuizAnswer => e => {
   const text = e.target.value;
-  setQuizAnswer(text);
+  setQuizAnswer(text.trim());
 };
 
-const NewQuiz = ({ updateNewQuiz, editGroup }) => {
+const NewQuiz = ({ updateNewQuiz, editGroup, uploadedFile }) => {
   let editTitle;
   let editAllQuestionAnswers;
   let editPublic = true;
@@ -67,6 +67,20 @@ const NewQuiz = ({ updateNewQuiz, editGroup }) => {
     [EDIT_DELETE_CONTENT]: [],
     [EDIT_UPDATE_CONTENT]: []
   });
+
+  useEffect(() => {
+    if (uploadedFile && uploadedFile.length > 0) {
+      const { group, content } = uploadedFile[0];
+      setQuizTitle(group.title.trim());
+      setAllQuestionsAnswers(content);
+
+      updateNewQuiz({
+        title: group.title,
+        contents: content,
+        isPublic: true
+      });
+    }
+  }, [uploadedFile, updateNewQuiz]);
 
   const addQuestionClicked = () => {
     const newQuestionsAnswers = [...allQuestionsAnswers];
@@ -191,13 +205,13 @@ const NewQuiz = ({ updateNewQuiz, editGroup }) => {
 
     if (match && match.length) e.preventDefault();
     else {
-      setQuizTitle(text, null, null);
+      setQuizTitle(text.trim());
       updateQuizSignature(text, null, null);
     }
   };
 
   const updateQuizSignature = (title, contents, isPublic) => {
-    const setUpdatedItems = editGroup ? updatedItems : null;
+    const setUpdatedItems = editGroup || uploadedFile ? updatedItems : null;
 
     updateNewQuiz({
       title: title || quizTitle,
