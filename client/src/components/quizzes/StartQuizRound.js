@@ -31,7 +31,7 @@ const StartQuizRound = ({
   nextQuestion,
   randomContent,
   completed,
-  totalQuestions
+  allRoundQuestions
 }) => {
   const [showFront, setShowFront] = useState(true);
   const [quickTransition, setQuickTransition] = useState(false);
@@ -80,7 +80,7 @@ const StartQuizRound = ({
       <NextButton nextQuestion={handleNextQuestionClick} />
       <Typography
         style={{ color: '#dedede', marginTop: '12px' }}
-      >{`Question: ${completed}/${totalQuestions.all}`}</Typography>
+      >{`Question: ${completed}/${allRoundQuestions}`}</Typography>
       <div className="line" style={{ marginTop: '12px' }}></div>
 
       <div className={`scene scene--card no-select`} onClick={handleCardClick}>

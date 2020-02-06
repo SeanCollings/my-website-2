@@ -8,7 +8,16 @@ import {
 const initialState = {
   savedQuizzes: [],
   startedRound: null,
-  totalQuestions: { all: 0, you: { all: 0, public: 0 } },
+  totalRoundQuestions: 0,
+  totalQuestions: {
+    all: 0,
+    you: {
+      all: 0,
+      public: 0,
+      roundCompletedQuestions: 0,
+      totalRoundQuestions: 0
+    }
+  },
   updatedQuestions: null
 };
 
@@ -17,8 +26,8 @@ export default function(state = initialState, action) {
     case GET_SAVED_QUIZZES:
       return { ...state, savedQuizzes: action.payload };
     case GET_STARTED_QUIZ_ROUNDS:
-      const { startedRound } = action.payload;
-      return { ...state, startedRound };
+      const { startedRound, totalRoundQuestions } = action.payload;
+      return { ...state, startedRound, totalRoundQuestions };
     case GET_TOTAL_QUESTIONS:
       const { totalQuestions } = action.payload;
       return { ...state, totalQuestions };

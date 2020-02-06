@@ -5,6 +5,12 @@ import { withRouter, NavLink } from 'react-router-dom';
 import Loader from '../components/components/loader';
 import NewQuiz from './quizzes/NewQuiz';
 import ListSavedQuizzes from './quizzes/ListSavedQuizzes';
+import ConfirmActionModal from './modals/ConfirmActionModal';
+import UploadQuizModal from './modals/UploadQuizModal';
+import SelectStartQuizModal from './modals/SelectStartQuizModal';
+import DisplayQuizContents from './quizzes/DisplayQuizContents';
+import StartQuizRound from './quizzes/StartQuizRound';
+
 import {
   getSavedQuizzes,
   getTotalQuestions,
@@ -12,7 +18,8 @@ import {
   updateQuiz,
   getStartedQuizRounds,
   deleteQuiz,
-  updateQuestionRead
+  updateQuestionRead,
+  resetQuizRound
 } from '../actions/quizActions';
 import { updateHeading } from '../actions/appActions';
 import {
@@ -20,12 +27,10 @@ import {
   QUIZZES_PATH,
   VIEW_QUIZ_PATH,
   EDIT_QUIZ_PATH,
-  START_QUIZ_PATH
+  START_QUIZ_PATH,
+  DEFAULT_QUIZ,
+  CONTINUE_QUIZ
 } from '../utils/constants';
-import ConfirmActionModal from './modals/ConfirmActionModal';
-import UploadQuizModal from './modals/UploadQuizModal';
-import DisplayQuizContents from './quizzes/DisplayQuizContents';
-import StartQuizRound from './quizzes/StartQuizRound';
 
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Button, Fab, Typography, List } from '@material-ui/core';
@@ -64,6 +69,7 @@ class QuizzesPage extends Component {
     startedRound: null,
     randomContent: null,
     showQuizModal: false,
+    showStartModal: false,
     uploadedFile: null
   };
 
@@ -229,6 +235,7 @@ class QuizzesPage extends Component {
     if (newQuiz) this.setState({ showModal: true });
     else this.resetQuiz();
   };
+
   saveUpdateQuizClicked = () => {
     const { newQuiz, editGroup, createNewQuiz } = this.state;
 
@@ -243,11 +250,31 @@ class QuizzesPage extends Component {
   };
 
   startQuizClicked = () => {
+    const { auth, quizzes } = this.props;
+
+    if (auth.pererittoUser && quizzes && quizzes.savedQuizzes.length > 0) {
+      this.setState({ showStartModal: true });
+    } else {
+      this.selectQuizTypeClick(DEFAULT_QUIZ);
+    }
+  };
+
+  selectQuizTypeClick = selection => {
     const { history } = this.props;
 
-    this.setState({ startQuiz: true });
+    if (selection !== CONTINUE_QUIZ && selection !== DEFAULT_QUIZ) {
+      this.setState({
+        ...this.state,
+        showStartModal: false,
+        startQuiz: true,
+        randomContent: null
+      });
+      this.props.resetQuizRound();
+    } else {
+      this.setState({ ...this.state, showStartModal: false, startQuiz: true });
+    }
     history.push(`${START_QUIZ_PATH}`);
-    this.props.getStartedQuizRounds();
+    this.props.getStartedQuizRounds(selection);
   };
 
   nextQuestionClicked = id => {
@@ -300,7 +327,7 @@ class QuizzesPage extends Component {
 
     if (file) {
       const { name, size } = file;
-      if (size > 1024 * 20) return null;
+      if (size > 1024 * 30) return null;
 
       const reader = new FileReader();
       reader.readAsText(file, 'UTF-8');
@@ -403,7 +430,8 @@ class QuizzesPage extends Component {
       startedRound,
       randomContent,
       uploadedFile,
-      showQuizModal
+      showQuizModal,
+      showStartModal
     } = this.state;
 
     const disableSaveButton =
@@ -425,7 +453,7 @@ class QuizzesPage extends Component {
 
     if (startQuiz) {
       const completed = startedRound
-        ? quizzes.totalQuestions.all - startedRound.length + 1
+        ? quizzes.totalRoundQuestions - startedRound.length + 1
         : 0;
 
       return (
@@ -434,7 +462,7 @@ class QuizzesPage extends Component {
             randomContent={randomContent}
             nextQuestion={this.nextQuestionClicked}
             completed={completed}
-            totalQuestions={quizzes.totalQuestions}
+            allRoundQuestions={quizzes.totalRoundQuestions}
           />
         </div>
       );
@@ -619,7 +647,7 @@ class QuizzesPage extends Component {
                   color: '#581845',
                   background: '#fffaf0',
                   position: 'fixed',
-                  bottom: '50px',
+                  bottom: '30px',
                   right: '-1px',
                   borderRadius: '50% 0 0 50%',
                   zIndex: '10',
@@ -663,6 +691,14 @@ class QuizzesPage extends Component {
             this.setState({ ...this.state, showQuizModal: false })
           }
         />
+        <SelectStartQuizModal
+          showModal={showStartModal}
+          savedQuizzes={quizzes.savedQuizzes}
+          selectQuizTypeClick={selection => this.selectQuizTypeClick(selection)}
+          cancelClick={() =>
+            this.setState({ ...this.state, showStartModal: false })
+          }
+        />
       </div>
     );
   }
@@ -680,5 +716,6 @@ export default connect(mapStateToProps, {
   getTotalQuestions,
   updateQuiz,
   deleteQuiz,
-  updateQuestionRead
+  updateQuestionRead,
+  resetQuizRound
 })(withRouter(withStyles(styles)(QuizzesPage)));

@@ -23,6 +23,10 @@ export const FIRST = 'first';
 export const LAST = 'last';
 export const EDIT_DELETE_CONTENT = 'edit_delete_content';
 export const EDIT_UPDATE_CONTENT = 'edit_update_content';
+export const CONTINUE_QUIZ = 'continue_quiz';
+export const DEFAULT_QUIZ = 'default_quiz';
+export const ALL_PUBLIC_QUIZ = 'all_public_quiz';
+export const ALL_OWN_QUIZ = 'all_own_quiz';
 
 export const MOBILE_SCREEN_SIZE = 700;
 export const MAX_ANSWER_LENGTH = 100;

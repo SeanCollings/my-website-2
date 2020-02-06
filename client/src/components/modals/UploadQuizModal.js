@@ -60,6 +60,9 @@ const UploadQuizModal = ({ classes, showModal, cancelClick, confirmClick }) => {
           <li>
             <Typography>The question must end in a '?'</Typography>
           </li>
+          <li>
+            <Typography>The file should be less than 30 KBs</Typography>
+          </li>
         </ul>
         <Typography>
           This allows for the questions to be read in correctly.

@@ -36,8 +36,8 @@ export const getSavedQuizzes = () => async dispatch => {
   }
 };
 
-export const getStartedQuizRounds = () => async dispatch => {
-  axios.get(`/api/get_started_quiz_rounds`).then(res => {
+export const getStartedQuizRounds = selection => async dispatch => {
+  axios.get(`/api/get_started_quiz_rounds?selection=${selection}`).then(res => {
     dispatch({ type: GET_STARTED_QUIZ_ROUNDS, payload: res.data });
   });
 
@@ -46,6 +46,10 @@ export const getStartedQuizRounds = () => async dispatch => {
   //     dispatch({ type: GET_STARTED_QUIZ_ROUNDS, payload: data });
   //   });
   // }
+};
+
+export const resetQuizRound = () => dispatch => {
+  dispatch({ type: GET_STARTED_QUIZ_ROUNDS, payload: { startedRound: null } });
 };
 
 export const getTotalQuestions = () => async dispatch => {
@@ -64,7 +68,9 @@ export const getTotalQuestions = () => async dispatch => {
               all: 0,
               you: {
                 all: 0,
-                public: 0
+                public: 0,
+                roundCompletedQuestions: 0,
+                totalRoundQuestions: 0
               }
             }
           }

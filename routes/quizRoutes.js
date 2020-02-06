@@ -4,7 +4,11 @@ import {
   MAX_ANSWER_LENGTH,
   MAX_QUESTION_LENGTH,
   EDIT_DELETE_CONTENT,
-  EDIT_UPDATE_CONTENT
+  EDIT_UPDATE_CONTENT,
+  CONTINUE_QUIZ,
+  ALL_PUBLIC_QUIZ,
+  ALL_OWN_QUIZ,
+  DEFAULT_QUIZ
 } from '../client/src/utils/constants';
 
 const mongoose = require('mongoose');
@@ -122,13 +126,25 @@ export default app => {
       const userPublicContent = userTotalContent.filter(
         content => content.isPublic
       );
+      const currentUserRound = await QuizRound.find({ _user: _id });
+
+      let roundCompletedQuestions = 0;
+      let totalRoundQuestions = 0;
+      if (currentUserRound.length > 0) {
+        roundCompletedQuestions = currentUserRound[0].round.filter(
+          round => round.read
+        ).length;
+        totalRoundQuestions = currentUserRound[0].round.length;
+      }
 
       return res.send({
         totalQuestions: {
           all: allContent.length,
           you: {
             all: userTotalContent.length,
-            public: userPublicContent.length
+            public: userPublicContent.length,
+            roundCompletedQuestions,
+            totalRoundQuestions
           }
         }
       });
@@ -252,16 +268,59 @@ export default app => {
   app.get('/api/get_started_quiz_rounds', requireLogin, async (req, res) => {
     try {
       const { _id } = req.user;
+      const { selection } = req.query;
       const allGroupCreators = {};
 
       const allUsers = await Users.find({}, { givenName: 1, familyName: 1 });
       const allGroups = await QuizGroup.find({}, { _user: 1 });
 
-      const startedRound = await QuizRound.find({ _user: _id }).lean();
-      const allPublicContent = await QuizContent.find(
-        { isPublic: true },
-        { _id: 1, _quizGroup: 1 }
-      ).lean();
+      let startedRound = [];
+      let selectedQuizContent = [];
+      let totalQuestions;
+
+      if (selection === CONTINUE_QUIZ) {
+        startedRound = await QuizRound.find({ _user: _id }).lean();
+
+        if (startedRound.length === 0) {
+          selectedQuizContent = await QuizContent.find(
+            { isPublic: true },
+            { _id: 1, _quizGroup: 1 }
+          ).lean();
+        } else {
+          selectedQuizContent = startedRound[0].round.filter(
+            content => !content.read
+          );
+          totalQuestions = startedRound[0].round.length;
+        }
+      } else if (selection === DEFAULT_QUIZ) {
+        startedRound = await QuizRound.find({ _user: _id }).lean();
+
+        selectedQuizContent = await QuizContent.find(
+          { isPublic: true },
+          { _id: 1, _quizGroup: 1 }
+        ).lean();
+      } else if (selection === ALL_PUBLIC_QUIZ) {
+        await QuizRound.deleteOne({ _user: _id });
+
+        selectedQuizContent = await QuizContent.find(
+          { isPublic: true },
+          { _id: 1, _quizGroup: 1 }
+        ).lean();
+      } else if (selection === ALL_OWN_QUIZ) {
+        await QuizRound.deleteOne({ _user: _id });
+
+        selectedQuizContent = await QuizContent.find(
+          { _user: _id },
+          { _id: 1, _quizGroup: 1 }
+        ).lean();
+      } else {
+        await QuizRound.deleteOne({ _user: _id });
+
+        selectedQuizContent = await QuizContent.find(
+          { _quizGroup: selection },
+          { _id: 1, _quizGroup: 1 }
+        ).lean();
+      }
 
       allGroups.forEach(group => {
         if (!allGroupCreators[group._id])
@@ -273,14 +332,15 @@ export default app => {
           .filter(user => user._id.toString() === id.toString())
           .map(user => user.givenName);
 
+      // No round has been started
       if (startedRound.length === 0) {
         await new QuizRound({
-          round: allPublicContent,
+          round: selectedQuizContent,
           _user: _id
         }).save();
 
         const formattedRound = await Promise.all(
-          allPublicContent.map(async el => ({
+          selectedQuizContent.map(async el => ({
             _id: el._id,
             name: getUserName(allGroupCreators[el._quizGroup])[0],
             content: await QuizContent.findOne(
@@ -290,17 +350,24 @@ export default app => {
           }))
         );
 
-        res.send({ startedRound: formattedRound });
+        res.send({
+          startedRound: formattedRound,
+          totalRoundQuestions: totalQuestions
+            ? totalQuestions
+            : selectedQuizContent.length
+        });
       } else {
         const { round, requiresUpdate } = startedRound[0];
 
         if (round) {
           const roundIdArray = round.map(r => r._id.toString());
-          const allPublicIdArray = allPublicContent.map(c => c._id.toString());
+          const allPublicIdArray = selectedQuizContent.map(c =>
+            c._id.toString()
+          );
           const commonContent = round.filter(r =>
             allPublicIdArray.includes(r._id.toString())
           );
-          const missingContent = allPublicContent
+          const missingContent = selectedQuizContent
             .filter(c => !roundIdArray.includes(c._id.toString()))
             .map(content => ({ ...content, read: false }));
 
@@ -340,9 +407,14 @@ export default app => {
             );
           }
 
-          return res.send({ startedRound: formattedReadRound });
+          return res.send({
+            startedRound: formattedReadRound,
+            totalRoundQuestions: totalQuestions
+              ? totalQuestions
+              : selectedQuizContent.length
+          });
         }
-        return res.send({ startedRound: [] });
+        return res.send({ startedRound: [], totalRoundQuestions: 0 });
       }
     } catch (err) {
       console.log(err);
