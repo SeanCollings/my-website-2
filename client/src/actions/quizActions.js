@@ -55,7 +55,23 @@ export const getTotalQuestions = () => async dispatch => {
 
   if ('indexedDB' in window) {
     readAllData('total-questions').then(data => {
-      dispatch({ type: GET_TOTAL_QUESTIONS, payload: data[0] });
+      let udpatedData = data;
+
+      if (!data.length) {
+        udpatedData = [
+          {
+            totalQuestions: {
+              all: 0,
+              you: {
+                all: 0,
+                public: 0
+              }
+            }
+          }
+        ];
+      }
+
+      dispatch({ type: GET_TOTAL_QUESTIONS, payload: udpatedData[0] });
     });
   }
 };

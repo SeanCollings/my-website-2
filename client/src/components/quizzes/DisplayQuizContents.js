@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, List, ListItem, Grid } from '@material-ui/core';
+import { Typography, Grid } from '@material-ui/core';
 import DownloadIcon from '@material-ui/icons/CloudDownload';
 
 const textContentStyle = { paddingLeft: '4px', width: '90%' };
@@ -53,10 +53,9 @@ const DisplayQuizContents = ({ quiz }) => {
         <Typography
           variant="h6"
           style={{
-            fontFamily: 'cursive',
             textDecoration: 'underline',
             width: '90%',
-            lineHeight: '20px',
+            lineHeight: `20px`,
             padding: '16px 0 22px 4px',
             marginLeft: '66px',
             borderLeft: '1px solid pink'
@@ -94,9 +93,6 @@ const DisplayQuizContents = ({ quiz }) => {
         maxWidth: '700px',
         width: '90%',
         backgroundColor: '#fffaf0',
-        background:
-          'repeating-linear-gradient(#fffaf0, white 19px, #9198e5 20px, #9198e5 16px)',
-        backgroundPosition: `0px ${isFirefoxBrowser ? '0px' : '16px'}`,
         filter: 'drop-shadow(2px 2px 6px black)'
       }}
     >
@@ -109,110 +105,92 @@ const DisplayQuizContents = ({ quiz }) => {
       >
         Sneak
       </Typography>
-      <List
+      <ul
         style={{
           margin: `${isFirefoxBrowser ? '-40px' : '-42px'} 0px 0px`,
           width: '100%',
           maxWidth: '700px',
-          padding: '0px'
+          padding: '1px 0px 0px 0px',
+          listStyle: 'none'
         }}
       >
-        {[{ first: 'first' }, ...contents, { last: 'last' }].map(
-          (content, i) => {
-            if (content.first)
-              return (
-                <ListItem
-                  key={content.first}
-                  style={{ padding: '0px 12px 0 0' }}
-                >
-                  <div style={{ display: 'block', width: '100%' }}>
-                    <div style={{ display: 'flex' }}>
-                      <DownloadIcon
-                        onClick={() => downloadQuiz(quiz)}
-                        style={{
-                          position: 'absolute',
-                          left: '16px',
-                          top: '16px',
-                          color: '#777777b3',
-                          cursor: 'pointer'
-                        }}
-                      />
-                      <div
-                        style={{ width: '66px', borderRight: '1px solid pink' }}
-                      >
-                        <Typography
-                          style={{
-                            fontWeight: '500',
-                            paddingRight: '6px',
-                            width: questionsOver100 ? '60px' : '90%',
-                            textAlign: 'end',
-                            height: '58px',
-                            color: 'transparent',
-                            lineHeight: '1.43'
-                          }}
-                        >
-                          {`Q${i}:`}
-                        </Typography>
-                      </div>
-                      <Typography
-                        variant="h6"
-                        style={{
-                          fontFamily: 'cursive',
-                          textDecoration: 'underline',
-                          width: '90%',
-                          lineHeight: '20px',
-                          padding: '16px 0 0 4px'
-                        }}
-                      >
-                        {group.title}
-                      </Typography>
-                    </div>
-                  </div>
-                </ListItem>
-              );
-
-            if (content.last) {
-              return (
-                <ListItem
-                  key={content.last}
-                  style={{ padding: '0px 12px 0 0' }}
-                >
-                  <div style={{ display: 'block', width: '100%' }}>
-                    <div style={{ display: 'flex' }}>
-                      <div
-                        style={{ width: '66px', borderRight: '1px solid pink' }}
-                      >
-                        <Typography
-                          style={{
-                            fontWeight: '500',
-                            paddingRight: '6px',
-                            width: questionsOver100 ? '60px' : '90%',
-                            textAlign: 'end',
-                            color: 'transparent',
-                            lineHeight: '1.43'
-                          }}
-                        >
-                          {`Q${i}:`}
-                        </Typography>
-                      </div>
-                      <Typography
-                        style={{
-                          width: '90%',
-                          padding: '0px 0 0 4px',
-                          color: 'transparent',
-                          lineHeight: '1.43'
-                        }}
-                      >
-                        sneak
-                      </Typography>
-                    </div>
-                  </div>
-                </ListItem>
-              );
-            }
-
+        {[
+          { first: 'first' },
+          { second: 'second' },
+          ...contents,
+          { last: 'last' }
+        ].map((content, i) => {
+          if (content.first)
             return (
-              <ListItem key={content._id} style={{ padding: '0px 12px 0 0' }}>
+              <li
+                key={content.first}
+                style={{
+                  padding: '0px 12px 0 0',
+                  background:
+                    'repeating-linear-gradient(#fffaf0, #fffaf2 24px, #9198e5 26px, #9198e5 26px)',
+                  backgroundPosition: '0px 22px'
+                }}
+              >
+                <div style={{ display: 'block', width: '100%' }}>
+                  <div style={{ display: 'flex', height: '49px' }}>
+                    <DownloadIcon
+                      onClick={() => downloadQuiz(quiz)}
+                      style={{
+                        position: 'absolute',
+                        left: '16px',
+                        top: '28px',
+                        color: '#777777b3',
+                        cursor: 'pointer'
+                      }}
+                    />
+                    <div
+                      style={{
+                        width: '66px',
+                        borderRight: '1px solid pink',
+                        height: '70px'
+                      }}
+                    >
+                      <Typography
+                        style={{
+                          fontWeight: '500',
+                          paddingRight: '6px',
+                          width: questionsOver100 ? '60px' : '90%',
+                          textAlign: 'end',
+                          height: '58px',
+                          color: 'transparent',
+                          lineHeight: `20px`,
+                          fontSize: '0.875rem'
+                        }}
+                      >
+                        {`Q${i}:`}
+                      </Typography>
+                    </div>
+                    <Typography
+                      variant="h6"
+                      style={{
+                        textDecoration: 'underline',
+                        width: '90%',
+                        lineHeight: `20px`,
+                        padding: '28px 0 0 4px'
+                      }}
+                    >
+                      {group.title}
+                    </Typography>
+                  </div>
+                </div>
+              </li>
+            );
+
+          if (content.second) {
+            return (
+              <li
+                key={content.second}
+                style={{
+                  padding: '0px 12px 0 0',
+                  background:
+                    'repeating-linear-gradient(#fffaf0, #fffaf2 18px, #9198e5 20px, #9198e5 20px)'
+                }}
+              >
                 <div style={{ display: 'block', width: '100%' }}>
                   <div style={{ display: 'flex' }}>
                     <div
@@ -224,46 +202,141 @@ const DisplayQuizContents = ({ quiz }) => {
                           paddingRight: '6px',
                           width: questionsOver100 ? '60px' : '90%',
                           textAlign: 'end',
-                          lineHeight: '1.43'
+                          color: 'transparent',
+                          lineHeight: `20px`,
+                          fontSize: '0.875rem'
                         }}
                       >
                         {`Q${i}:`}
                       </Typography>
                     </div>
                     <Typography
-                      style={{ ...textContentStyle, lineHeight: '1.43' }}
-                    >{`${content.question}`}</Typography>
+                      style={{
+                        width: '90%',
+                        padding: '0px 0 0 4px',
+                        color: 'transparent',
+                        lineHeight: `20px`,
+                        fontSize: '0.875rem'
+                      }}
+                    >
+                      sneak
+                    </Typography>
                   </div>
+                </div>
+              </li>
+            );
+          }
+
+          if (content.last) {
+            return (
+              <li
+                key={content.last}
+                style={{
+                  padding: '0px 12px 0 0',
+                  background:
+                    'repeating-linear-gradient(#fffaf0, #fffaf2 18px, #9198e5 20px, #9198e5 20px)'
+                }}
+              >
+                <div style={{ display: 'block', width: '100%' }}>
                   <div style={{ display: 'flex' }}>
                     <div
                       style={{ width: '66px', borderRight: '1px solid pink' }}
                     >
                       <Typography
                         style={{
-                          fontWeight: '400',
+                          fontWeight: '500',
                           paddingRight: '6px',
                           width: questionsOver100 ? '60px' : '90%',
                           textAlign: 'end',
-                          lineHeight: '1.43'
+                          color: 'transparent',
+                          lineHeight: `20px`,
+                          fontSize: '0.875rem'
                         }}
                       >
-                        A:
+                        {`Q${i}:`}
                       </Typography>
                     </div>
                     <Typography
                       style={{
-                        ...textContentStyle,
-                        fontWeight: '100',
-                        lineHeight: '1.43'
+                        width: '90%',
+                        padding: '0px 0 0 4px',
+                        color: 'transparent',
+                        lineHeight: `20px`,
+                        fontSize: '0.875rem'
                       }}
-                    >{`${content.answer}`}</Typography>
+                    >
+                      sneak
+                    </Typography>
                   </div>
                 </div>
-              </ListItem>
+              </li>
             );
           }
-        )}
-      </List>
+
+          return (
+            <li
+              key={content._id}
+              style={{
+                padding: '0px 12px 0 0',
+                background:
+                  'repeating-linear-gradient(#fffaf0, #fffaf2 18px, #9198e5 20px, #9198e5 20px)'
+              }}
+            >
+              <div style={{ display: 'block', width: '100%' }}>
+                <div style={{ display: 'flex' }}>
+                  <div style={{ width: '66px', borderRight: '1px solid pink' }}>
+                    <Typography
+                      style={{
+                        fontWeight: '500',
+                        padding: '3px 6px 0px 0px',
+                        width: questionsOver100 ? '60px' : '90%',
+                        textAlign: 'end',
+                        lineHeight: `20px`,
+                        fontSize: '14px'
+                      }}
+                    >
+                      {`Q${i - 1}:`}
+                    </Typography>
+                  </div>
+                  <Typography
+                    style={{
+                      ...textContentStyle,
+                      lineHeight: `20px`,
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      paddingTop: '3px'
+                    }}
+                  >{`${content.question}`}</Typography>
+                </div>
+                <div style={{ display: 'flex' }}>
+                  <div style={{ width: '66px', borderRight: '1px solid pink' }}>
+                    <Typography
+                      style={{
+                        fontWeight: '300',
+                        paddingRight: '6px',
+                        width: questionsOver100 ? '60px' : '90%',
+                        textAlign: 'end',
+                        lineHeight: `20px`,
+                        fontSize: '14px'
+                      }}
+                    >
+                      A:
+                    </Typography>
+                  </div>
+                  <Typography
+                    style={{
+                      ...textContentStyle,
+                      fontWeight: '100',
+                      lineHeight: `20px`,
+                      fontSize: '14px'
+                    }}
+                  >{`${content.answer}`}</Typography>
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </Grid>
   );
 };

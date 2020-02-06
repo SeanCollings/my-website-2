@@ -68,23 +68,19 @@ class QuizzesPage extends Component {
   };
 
   componentDidMount() {
-    const {
-      updateHeading,
-      history,
-      auth: { pererittoUser }
-    } = this.props;
+    const { updateHeading, history, auth } = this.props;
     const { pathname } = this.props.location;
 
-    if (!pererittoUser && pathname !== QUIZZES_PATH) {
+    if (auth && !auth.pererittoUser && pathname !== QUIZZES_PATH) {
       if (pathname === NEW_QUIZ_PATH) {
-        if (!pererittoUser) {
+        if (!auth.pererittoUser) {
           updateHeading(null);
           history.push(QUIZZES_PATH);
         } else {
           this.setState({ createNewQuiz: true });
         }
       } else if (pathname.includes(VIEW_QUIZ_PATH)) {
-        if (!pererittoUser) {
+        if (!auth.pererittoUser) {
           updateHeading(null);
           history.push(QUIZZES_PATH);
         } else {
@@ -100,7 +96,7 @@ class QuizzesPage extends Component {
       history.push(QUIZZES_PATH);
     }
 
-    if (pererittoUser) {
+    if (auth && auth.pererittoUser) {
       if (pathname === NEW_QUIZ_PATH) {
         this.setState({ createNewQuiz: true });
       } else if (pathname.includes(VIEW_QUIZ_PATH)) {
@@ -394,10 +390,7 @@ class QuizzesPage extends Component {
   };
 
   render() {
-    const {
-      auth: { pererittoUser },
-      quizzes
-    } = this.props;
+    const { auth, quizzes } = this.props;
     const {
       createNewQuiz,
       newQuiz,
@@ -581,7 +574,7 @@ class QuizzesPage extends Component {
                     <Typography
                       style={{ marginTop: '12px', color: '#DEDEDe' }}
                     >{`Total public questions: ${quizzes.totalQuestions.all}`}</Typography>
-                    {pererittoUser && (
+                    {auth && auth.pererittoUser && (
                       <Typography
                         style={{ color: '#DEDEDe' }}
                       >{`Your public questions: ${quizzes.totalQuestions.you.public} / ${quizzes.totalQuestions.you.all}`}</Typography>
@@ -589,7 +582,7 @@ class QuizzesPage extends Component {
                   </div>
                 )}
                 {noQuizzesToShow &&
-                  (pererittoUser ? (
+                  (auth && auth.pererittoUser ? (
                     <Typography style={{ marginTop: '12px', color: '#DEDEDE' }}>
                       Looks like there are no quizzes to show, yet...
                     </Typography>
@@ -613,26 +606,30 @@ class QuizzesPage extends Component {
             )}
           </Grid>
         </Loader>
-        {!createNewQuiz && !editGroup && !selectedGroup && pererittoUser && (
-          <NavLink to={'/quizzes/new'}>
-            <Fab
-              onClick={this.createNewQuizClick}
-              aria-label="add"
-              style={{
-                color: '#581845',
-                background: '#fffaf0',
-                position: 'fixed',
-                bottom: '50px',
-                right: '-1px',
-                borderRadius: '50% 0 0 50%',
-                zIndex: '10',
-                border: '1px solid #581845'
-              }}
-            >
-              <AddIcon />
-            </Fab>
-          </NavLink>
-        )}
+        {!createNewQuiz &&
+          !editGroup &&
+          !selectedGroup &&
+          auth &&
+          auth.pererittoUser && (
+            <NavLink to={'/quizzes/new'}>
+              <Fab
+                onClick={this.createNewQuizClick}
+                aria-label="add"
+                style={{
+                  color: '#581845',
+                  background: '#fffaf0',
+                  position: 'fixed',
+                  bottom: '50px',
+                  right: '-1px',
+                  borderRadius: '50% 0 0 50%',
+                  zIndex: '10',
+                  border: '1px solid #581845'
+                }}
+              >
+                <AddIcon />
+              </Fab>
+            </NavLink>
+          )}
         <ConfirmActionModal
           showModal={showModal}
           title={deleting ? 'Warning!' : 'Cancel Quiz?'}
