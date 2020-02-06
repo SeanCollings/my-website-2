@@ -127,7 +127,7 @@ const DisplayQuizContents = ({ quiz }) => {
                 style={{
                   padding: '0px 12px 0 0',
                   background:
-                    'repeating-linear-gradient(#fffaf0, #fffaf2 24px, #9198e5 26px, #9198e5 26px)',
+                    'repeating-linear-gradient(#fffaf0, white 24px, #9198e5 26px, #9198e5 26px)',
                   backgroundPosition: '0px 22px'
                 }}
               >
@@ -188,7 +188,7 @@ const DisplayQuizContents = ({ quiz }) => {
                 style={{
                   padding: '0px 12px 0 0',
                   background:
-                    'repeating-linear-gradient(#fffaf0, #fffaf2 18px, #9198e5 20px, #9198e5 20px)'
+                    'repeating-linear-gradient(#fffaf0, white 19px, #9198e5 20px, #9198e5 20px)'
                 }}
               >
                 <div style={{ display: 'block', width: '100%' }}>
@@ -234,7 +234,7 @@ const DisplayQuizContents = ({ quiz }) => {
                 style={{
                   padding: '0px 12px 0 0',
                   background:
-                    'repeating-linear-gradient(#fffaf0, #fffaf2 18px, #9198e5 20px, #9198e5 20px)'
+                    'repeating-linear-gradient(#fffaf0, white 19px, #9198e5 20px, #9198e5 20px)'
                 }}
               >
                 <div style={{ display: 'block', width: '100%' }}>
@@ -279,7 +279,7 @@ const DisplayQuizContents = ({ quiz }) => {
               style={{
                 padding: '0px 12px 0 0',
                 background:
-                  'repeating-linear-gradient(#fffaf0, #fffaf2 18px, #9198e5 20px, #9198e5 20px)'
+                  'repeating-linear-gradient(#fffaf0, white 19px, #9198e5 20px, #9198e5 20px)'
               }}
             >
               <div style={{ display: 'block', width: '100%' }}>
