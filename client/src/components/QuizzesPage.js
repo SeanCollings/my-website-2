@@ -672,7 +672,8 @@ class QuizzesPage extends Component {
                 this.setState({
                   ...this.state,
                   loading: true,
-                  showModal: false
+                  showModal: false,
+                  deleting: false
                 })
               : this.resetQuiz();
           }}
@@ -680,7 +681,8 @@ class QuizzesPage extends Component {
             this.setState({
               ...this.state,
               showModal: false,
-              loading: false
+              loading: false,
+              deleting: false
             })
           }
         />
