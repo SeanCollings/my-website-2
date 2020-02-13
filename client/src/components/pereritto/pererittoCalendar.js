@@ -237,7 +237,7 @@ class PererittoCalendar extends Component {
     }
 
     return (
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', textAlign: 'center' }}>
         <div style={{ paddingTop: resizeScreen ? '8px' : '24px' }} />
         <Grid item style={{ textAlign: 'center' }}>
           <Button

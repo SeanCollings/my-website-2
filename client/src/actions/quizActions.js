@@ -5,8 +5,10 @@ import {
   GET_STARTED_QUIZ_ROUNDS,
   SHOW_MESSAGE,
   GET_TOTAL_QUESTIONS,
-  UPDATED_QUESTION
+  UPDATED_QUESTION,
+  PREVIOUS_QUESTION
 } from './types';
+import { FIRST_PART, LAST_PART } from '../utils/constants';
 
 export const saveQuiz = quiz => async dispatch => {
   const res = await axios.post(`/api/save_quiz`, {
@@ -37,19 +39,23 @@ export const getSavedQuizzes = () => async dispatch => {
 };
 
 export const getStartedQuizRounds = selection => async dispatch => {
-  axios.get(`/api/get_started_quiz_rounds?selection=${selection}`).then(res => {
-    dispatch({ type: GET_STARTED_QUIZ_ROUNDS, payload: res.data });
-  });
+  const resFirst = await axios.get(
+    `/api/get_started_quiz_rounds?selection=${selection}&batch=${FIRST_PART}`
+  );
+  dispatch({ type: GET_STARTED_QUIZ_ROUNDS, payload: resFirst.data });
 
-  // if ('indexedDB' in window) {
-  //   readAllData('started-quiz-rounds').then(data => {
-  //     dispatch({ type: GET_STARTED_QUIZ_ROUNDS, payload: data });
-  //   });
-  // }
+  const resLast = await axios.get(
+    `/api/get_started_quiz_rounds?selection=${selection}&batch=${LAST_PART}`
+  );
+
+  dispatch({ type: GET_STARTED_QUIZ_ROUNDS, payload: resLast.data });
 };
 
 export const resetQuizRound = () => dispatch => {
-  dispatch({ type: GET_STARTED_QUIZ_ROUNDS, payload: { startedRound: null } });
+  dispatch({
+    type: GET_STARTED_QUIZ_ROUNDS,
+    payload: { startedRound: null, batch: FIRST_PART }
+  });
 };
 
 export const getTotalQuestions = () => async dispatch => {
@@ -91,10 +97,27 @@ export const deleteQuiz = groupId => async dispatch => {
 };
 
 export const updateQuestionRead = (readId, questionsLeft) => async dispatch => {
-  const res = await axios.post('/api/update_question_read', {
+  const resFirst = await axios.post('/api/update_question_read', {
     readId,
-    questionsLeft
+    questionsLeft,
+    batch: FIRST_PART
+  });
+  dispatch({ type: UPDATED_QUESTION, payload: resFirst.data });
+
+  if (resFirst.data.newRound) {
+    const resLast = await axios.post('/api/update_question_read', {
+      readId,
+      questionsLeft,
+      batch: LAST_PART
+    });
+    dispatch({ type: UPDATED_QUESTION, payload: resLast.data });
+  }
+};
+
+export const updatePreviousQuestion = readId => async dispatch => {
+  await axios.post('/api/update_previous_read', {
+    readId
   });
 
-  dispatch({ type: UPDATED_QUESTION, payload: res.data });
+  dispatch({ type: PREVIOUS_QUESTION });
 };

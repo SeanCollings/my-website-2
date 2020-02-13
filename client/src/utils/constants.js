@@ -27,6 +27,10 @@ export const CONTINUE_QUIZ = 'continue_quiz';
 export const DEFAULT_QUIZ = 'default_quiz';
 export const ALL_PUBLIC_QUIZ = 'all_public_quiz';
 export const ALL_OWN_QUIZ = 'all_own_quiz';
+export const FIRST_PART = 'first';
+export const SECOND_PART = 'second';
+export const LAST_PART = 'last';
+export const INITIAL_BATCH_SIZE = 80;
 
 export const MOBILE_SCREEN_SIZE = 700;
 export const MAX_ANSWER_LENGTH = 100;

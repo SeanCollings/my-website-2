@@ -16,11 +16,27 @@ const getPunchHoleLeft = Math.random() * (7 - 3) + 3;
 const getPunchHoleTop = Math.random() * (51 - 26) + 26;
 const getFirefoxBrowser = typeof InstallTrigger !== 'undefined';
 
-const NextButton = ({ nextQuestion }) => (
+const PreviousButton = ({ previousQuestion, disable }) => (
   <Button
+    disabled={disable}
+    onClick={previousQuestion}
+    style={{
+      ...nextButtonStyle,
+      opacity: disable ? '0.6' : '1',
+      marginRight: '24px'
+    }}
+  >
+    Back
+  </Button>
+);
+
+const NextButton = ({ nextQuestion, disable }) => (
+  <Button
+    disabled={disable}
     onClick={nextQuestion}
     style={{
-      ...nextButtonStyle
+      ...nextButtonStyle,
+      opacity: disable ? '0.6' : '1'
     }}
   >
     Next
@@ -29,9 +45,11 @@ const NextButton = ({ nextQuestion }) => (
 
 const StartQuizRound = ({
   nextQuestion,
+  previousQuestion,
   randomContent,
   completed,
-  allRoundQuestions
+  allRoundQuestions,
+  completedQuestions
 }) => {
   const [showFront, setShowFront] = useState(true);
   const [quickTransition, setQuickTransition] = useState(false);
@@ -47,8 +65,10 @@ const StartQuizRound = ({
   if (!randomContent || (randomContent && !randomContent.content))
     return (
       <Grid container direction="column" justify="center" alignItems="center">
-        <Typography style={{ color: '#DEDEDE' }}>Loading content...</Typography>
-        <div style={{ marginTop: '24px' }}>
+        <Typography style={{ color: '#DEDEDE', marginTop: '12px' }}>
+          Loading content...
+        </Typography>
+        <div style={{ marginTop: '12px' }}>
           <MiniLoader type="ThreeDots" color="#fffaf0" height={60} width={60} />
         </div>
       </Grid>
@@ -57,6 +77,12 @@ const StartQuizRound = ({
   const handleNextQuestionClick = () => {
     setHideContent(true);
     nextQuestion(randomContent._id);
+    setShowFront(true);
+    setQuickTransition(true);
+  };
+
+  const handlePreviousQuestionClick = () => {
+    previousQuestion();
     setShowFront(true);
     setQuickTransition(true);
   };
@@ -77,7 +103,6 @@ const StartQuizRound = ({
 
   return (
     <Grid container direction="column" justify="center" alignItems="center">
-      <NextButton nextQuestion={handleNextQuestionClick} />
       <Typography
         style={{ color: '#dedede', marginTop: '12px' }}
       >{`Question: ${completed}/${allRoundQuestions}`}</Typography>
@@ -114,20 +139,19 @@ const StartQuizRound = ({
                   <Typography
                     variant={'h5'}
                     className="card-title"
-                    style={{ fontFamily: 'cursive', fontSize: '26px' }}
+                    style={{ fontSize: '26px' }}
                   >
                     Question:
                   </Typography>
                   <Typography
                     variant={'h6'}
                     style={{
-                      fontFamily: 'cursive',
                       fontSize: '22px',
                       textDecoration: 'underline',
                       position: 'absolute',
                       right: '16%',
                       transform: 'rotateY(-180deg)',
-                      opacity: '0.04',
+                      opacity: '0.1',
                       paddingTop: '12px'
                     }}
                   >
@@ -184,8 +208,7 @@ const StartQuizRound = ({
                     className="card-title"
                     style={{
                       paddingTop: '12px',
-                      fontSize: '22px',
-                      fontFamily: 'cursive'
+                      fontSize: '22px'
                     }}
                   >
                     Answer:
@@ -193,13 +216,12 @@ const StartQuizRound = ({
                   <Typography
                     variant={'h5'}
                     style={{
-                      fontFamily: 'cursive',
                       fontSize: '26px',
                       textDecoration: 'underline',
                       position: 'absolute',
                       right: '16%',
                       transform: 'rotateY(-180deg)',
-                      opacity: '0.04',
+                      opacity: '0.1',
                       paddingTop: '10px'
                     }}
                   >
@@ -222,7 +244,16 @@ const StartQuizRound = ({
         </div>
       </div>
       <div className="line" style={{ marginBottom: '24px' }}></div>
-      <NextButton nextQuestion={handleNextQuestionClick} />
+      <div style={{ display: 'flex' }}>
+        <PreviousButton
+          previousQuestion={handlePreviousQuestionClick}
+          disable={completedQuestions < 1}
+        />
+        <NextButton
+          nextQuestion={handleNextQuestionClick}
+          disable={hideContent}
+        />
+      </div>
     </Grid>
   );
 };

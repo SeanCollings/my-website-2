@@ -494,7 +494,8 @@ class PererittoPlayers extends Component {
       <div
         style={{
           width: resizeScreen ? '' : '600px',
-          display: 'table'
+          display: 'table',
+          margin: 'auto'
         }}
       >
         <Grid

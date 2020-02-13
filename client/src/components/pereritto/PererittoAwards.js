@@ -204,7 +204,7 @@ class PererittoAwards extends Component {
         style={{
           width: '300px',
           maxWidth: '90%',
-          marginTop: '-34px'
+          margin: '-34px auto 0px'
         }}
       >
         <div className="plaque-border">

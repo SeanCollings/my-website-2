@@ -8,7 +8,10 @@ import {
   CONTINUE_QUIZ,
   ALL_PUBLIC_QUIZ,
   ALL_OWN_QUIZ,
-  DEFAULT_QUIZ
+  DEFAULT_QUIZ,
+  FIRST_PART,
+  INITIAL_BATCH_SIZE,
+  LAST_PART
 } from '../client/src/utils/constants';
 
 const mongoose = require('mongoose');
@@ -72,6 +75,10 @@ export default app => {
             _quizGroup: newGroup._id
           }).save();
         });
+      }
+
+      if (isPublic) {
+        await QuizRound.updateMany({}, { $set: { requiresUpdate: true } });
       }
 
       return res.send({
@@ -155,6 +162,7 @@ export default app => {
 
   app.post('/api/update_quiz', requireLogin, async (req, res) => {
     try {
+      const { _id } = req.user;
       const {
         quiz: { title, contents, isPublic, groupId, updatedItems }
       } = req.body;
@@ -208,6 +216,20 @@ export default app => {
               { $set: { question, answer } }
             );
           }
+        });
+      }
+
+      if (contents.some(content => !content._id)) {
+        const newContent = contents.filter(content => !content._id);
+
+        newContent.forEach(content => {
+          new QuizContent({
+            question: content.question,
+            answer: content.answer,
+            isPublic,
+            _user: _id,
+            _quizGroup: groupId
+          }).save();
         });
       }
 
@@ -268,59 +290,38 @@ export default app => {
   app.get('/api/get_started_quiz_rounds', requireLogin, async (req, res) => {
     try {
       const { _id } = req.user;
-      const { selection } = req.query;
-      const allGroupCreators = {};
-
-      const allUsers = await Users.find({}, { givenName: 1, familyName: 1 });
-      const allGroups = await QuizGroup.find({}, { _user: 1 });
+      const { selection, batch } = req.query;
 
       let startedRound = [];
       let selectedQuizContent = [];
-      let totalQuestions;
+      const allGroupCreators = {};
+      let searchCondition;
 
-      if (selection === CONTINUE_QUIZ) {
-        startedRound = await QuizRound.find({ _user: _id }).lean();
+      const firstPass = batch === FIRST_PART;
+      const lastPass = batch === LAST_PART;
 
-        if (startedRound.length === 0) {
-          selectedQuizContent = await QuizContent.find(
-            { isPublic: true },
-            { _id: 1, _quizGroup: 1 }
-          ).lean();
-        } else {
-          selectedQuizContent = startedRound[0].round.filter(
-            content => !content.read
-          );
-          totalQuestions = startedRound[0].round.length;
-        }
-      } else if (selection === DEFAULT_QUIZ) {
-        startedRound = await QuizRound.find({ _user: _id }).lean();
-
-        selectedQuizContent = await QuizContent.find(
-          { isPublic: true },
-          { _id: 1, _quizGroup: 1 }
-        ).lean();
-      } else if (selection === ALL_PUBLIC_QUIZ) {
-        await QuizRound.deleteOne({ _user: _id });
-
-        selectedQuizContent = await QuizContent.find(
-          { isPublic: true },
-          { _id: 1, _quizGroup: 1 }
-        ).lean();
-      } else if (selection === ALL_OWN_QUIZ) {
-        await QuizRound.deleteOne({ _user: _id });
-
-        selectedQuizContent = await QuizContent.find(
-          { _user: _id },
-          { _id: 1, _quizGroup: 1 }
-        ).lean();
-      } else {
-        await QuizRound.deleteOne({ _user: _id });
-
-        selectedQuizContent = await QuizContent.find(
-          { _quizGroup: selection },
-          { _id: 1, _quizGroup: 1 }
-        ).lean();
+      switch (selection) {
+        case CONTINUE_QUIZ:
+        case DEFAULT_QUIZ:
+          startedRound = await QuizRound.find({ _user: _id }).lean();
+          searchCondition = { isPublic: true };
+          break;
+        case ALL_PUBLIC_QUIZ:
+          if (firstPass) await QuizRound.deleteOne({ _user: _id });
+          searchCondition = { isPublic: true };
+          break;
+        case ALL_OWN_QUIZ:
+          if (firstPass) await QuizRound.deleteOne({ _user: _id });
+          searchCondition = { _user: _id };
+          break;
+        default:
+          if (firstPass) await QuizRound.deleteOne({ _user: _id });
+          searchCondition = { _quizGroup: selection };
+          break;
       }
+
+      const allUsers = await Users.find({}, { givenName: 1, familyName: 1 });
+      const allGroups = await QuizGroup.find({}, { _user: 1 });
 
       allGroups.forEach(group => {
         if (!allGroupCreators[group._id])
@@ -334,13 +335,34 @@ export default app => {
 
       // No round has been started
       if (startedRound.length === 0) {
-        await new QuizRound({
-          round: selectedQuizContent,
-          _user: _id
-        }).save();
+        const totalDocumentCount = await QuizContent.countDocuments(
+          searchCondition
+        );
+
+        if (lastPass && INITIAL_BATCH_SIZE > totalDocumentCount) {
+          return res.send({ startedRound: [], totalRoundQuestions: 0, batch });
+        }
+
+        selectedQuizContent = await QuizContent.find(searchCondition, {
+          _id: 1,
+          _quizGroup: 1
+        })
+          .sort({ _id: 1 })
+          .lean();
+
+        if (firstPass) {
+          await new QuizRound({
+            round: selectedQuizContent,
+            _user: _id
+          }).save();
+        }
+
+        const slicedQuizContent = firstPass
+          ? selectedQuizContent.slice(0, INITIAL_BATCH_SIZE)
+          : selectedQuizContent.slice(INITIAL_BATCH_SIZE);
 
         const formattedRound = await Promise.all(
-          selectedQuizContent.map(async el => ({
+          slicedQuizContent.map(async el => ({
             _id: el._id,
             name: getUserName(allGroupCreators[el._quizGroup])[0],
             content: await QuizContent.findOne(
@@ -350,38 +372,82 @@ export default app => {
           }))
         );
 
-        res.send({
+        return res.send({
           startedRound: formattedRound,
-          totalRoundQuestions: totalQuestions
-            ? totalQuestions
-            : selectedQuizContent.length
+          totalRoundQuestions: totalDocumentCount,
+          batch
         });
       } else {
         const { round, requiresUpdate } = startedRound[0];
 
         if (round) {
-          const roundIdArray = round.map(r => r._id.toString());
-          const allPublicIdArray = selectedQuizContent.map(c =>
-            c._id.toString()
-          );
-          const commonContent = round.filter(r =>
-            allPublicIdArray.includes(r._id.toString())
-          );
-          const missingContent = selectedQuizContent
-            .filter(c => !roundIdArray.includes(c._id.toString()))
-            .map(content => ({ ...content, read: false }));
+          let currentQuestion = 1;
+          let allPublicIdArray = [];
+          let combinedContent = [];
+          let updatedQuizContent = [];
+          let totalDocumentCount = round.length;
 
-          const combinedContent = [...commonContent, ...missingContent];
+          if (lastPass && INITIAL_BATCH_SIZE > totalDocumentCount) {
+            return res.send({
+              startedRound: [],
+              totalRoundQuestions: totalDocumentCount,
+              batch
+            });
+          }
 
-          if (requiresUpdate) {
+          if (requiresUpdate && firstPass) {
+            allPublicIdArray = await QuizContent.find(
+              { isPublic: true },
+              {
+                _id: 1,
+                _quizGroup: 1
+              }
+            )
+              .sort({ _id: 1 })
+              .lean();
+
+            const mappedPublicIdArray = allPublicIdArray.map(({ _id }) =>
+              _id.toString()
+            );
+            const updatedRoundContent = round.filter(content =>
+              mappedPublicIdArray.includes(content._id.toString())
+            );
+            const updatedRoundContentIds = updatedRoundContent.map(({ _id }) =>
+              _id.toString()
+            );
+
+            const missingContent = allPublicIdArray
+              .filter(el => !updatedRoundContentIds.includes(el._id.toString()))
+              .map(content => ({
+                ...content,
+                read: false
+              }));
+
+            combinedContent = [...updatedRoundContent, ...missingContent];
+
+            currentQuestion =
+              updatedRoundContent.filter(content => content.read).length + 1;
+            totalDocumentCount = combinedContent.length;
+
             await QuizRound.updateOne(
               { _user: _id },
               { $set: { round: combinedContent, requiresUpdate: false } }
             );
+
+            updatedQuizContent = combinedContent.filter(
+              content => !content.read
+            );
+          } else {
+            currentQuestion = round.filter(content => content.read).length + 1;
+            updatedQuizContent = round.filter(content => !content.read);
           }
 
+          const slicedQuizContent = firstPass
+            ? updatedQuizContent.slice(0, INITIAL_BATCH_SIZE)
+            : updatedQuizContent.slice(INITIAL_BATCH_SIZE);
+
           const formattedRound = await Promise.all(
-            combinedContent.map(async cc => ({
+            slicedQuizContent.map(async cc => ({
               _id: cc._id,
               name: getUserName(allGroupCreators[cc._quizGroup])[0],
               read: cc.read,
@@ -392,29 +458,15 @@ export default app => {
             }))
           );
 
-          const formattedReadRound = formattedRound.filter(cc => !cc.read);
-
-          if (formattedReadRound.length === 0) {
-            const reflaggedRound = combinedContent.map(content => ({
-              ...content,
-              read: false,
-              name: null
-            }));
-
-            await QuizRound.updateOne(
-              { _user: _id },
-              { $set: { round: reflaggedRound } }
-            );
-          }
-
           return res.send({
-            startedRound: formattedReadRound,
-            totalRoundQuestions: totalQuestions
-              ? totalQuestions
-              : selectedQuizContent.length
+            startedRound: formattedRound,
+            totalRoundQuestions: totalDocumentCount,
+            currentQuestion,
+            batch
           });
         }
-        return res.send({ startedRound: [], totalRoundQuestions: 0 });
+
+        return res.send({ startedRound: [], totalRoundQuestions: 0, batch });
       }
     } catch (err) {
       console.log(err);
@@ -423,8 +475,11 @@ export default app => {
 
   app.post('/api/update_question_read', requireLogin, async (req, res) => {
     try {
-      const { readId, questionsLeft } = req.body;
+      const { readId, questionsLeft, batch } = req.body;
       const { _id } = req.user;
+
+      const firstPass = batch === FIRST_PART;
+      const lastPass = batch === LAST_PART;
 
       if (questionsLeft === 0) {
         const allGroupCreators = {};
@@ -448,13 +503,21 @@ export default app => {
             read: false
           }));
 
-          await QuizRound.updateOne(
-            { _user: _id },
-            { $set: { round: reflaggedRound } }
-          );
+          if (firstPass) {
+            await QuizRound.updateOne(
+              { _user: _id },
+              { $set: { round: reflaggedRound } }
+            );
+          } else if (lastPass && reflaggedRound.length <= INITIAL_BATCH_SIZE) {
+            return res.send({ newRound: [], batch });
+          }
+
+          const slicedReflaggedRound = firstPass
+            ? reflaggedRound.slice(0, INITIAL_BATCH_SIZE)
+            : reflaggedRound.slice(INITIAL_BATCH_SIZE);
 
           const formattedRound = await Promise.all(
-            reflaggedRound.map(async cc => ({
+            slicedReflaggedRound.map(async cc => ({
               _id: cc._id,
               name: getUserName(allGroupCreators[cc._quizGroup])[0],
               content: await QuizContent.findOne(
@@ -464,7 +527,7 @@ export default app => {
             }))
           );
 
-          return res.send({ newRound: formattedRound });
+          return res.send({ newRound: formattedRound, batch });
         }
 
         return res.send({ newRound: null });
@@ -479,6 +542,23 @@ export default app => {
     } catch (err) {
       console.log(err);
       return res.send({ newRound: null });
+    }
+  });
+
+  app.post('/api/update_previous_read', requireLogin, async (req, res) => {
+    try {
+      const { readId } = req.body;
+      const { _id } = req.user;
+
+      await QuizRound.updateOne(
+        { _user: _id, 'round._id': readId },
+        { $set: { 'round.$.read': false } }
+      );
+
+      return res.sendStatus(200);
+    } catch (err) {
+      console.log(err);
+      return res.sendStatus(503);
     }
   });
 };

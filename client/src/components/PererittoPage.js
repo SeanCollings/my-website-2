@@ -71,10 +71,16 @@ class ProjectsPage extends Component {
   };
 
   render() {
-    const { classes, superUser, resizeScreen, auth } = this.props;
+    const {
+      classes,
+      superUser,
+      resizeScreen,
+      auth,
+      pererittoUsers
+    } = this.props;
     const { value } = this.state;
 
-    if (!this.props.pererittoUsers || this.props.pererittoUsers.length === 0) {
+    if (!pererittoUsers || pererittoUsers.length === 0) {
       return (
         <div
           style={{
@@ -157,7 +163,7 @@ class ProjectsPage extends Component {
           >
             <PererittoPlayers />
             <TabContainer children={<PererittoCalendar />} />
-            {auth && <PererittoAwards />}
+            {auth && auth.pererittoUser && <PererittoAwards />}
             {superUser && <TabContainer children={<UpdatePererittoPlayer />} />}
           </Slider>
         </div>

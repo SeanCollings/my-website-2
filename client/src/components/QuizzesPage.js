@@ -19,6 +19,7 @@ import {
   getStartedQuizRounds,
   deleteQuiz,
   updateQuestionRead,
+  updatePreviousQuestion,
   resetQuizRound
 } from '../actions/quizActions';
 import { updateHeading } from '../actions/appActions';
@@ -70,7 +71,10 @@ class QuizzesPage extends Component {
     randomContent: null,
     showQuizModal: false,
     showStartModal: false,
-    uploadedFile: null
+    uploadedFile: null,
+    completedQuestions: [],
+    nextQuestions: [],
+    selection: null
   };
 
   componentDidMount() {
@@ -147,7 +151,9 @@ class QuizzesPage extends Component {
       selectedGroup,
       editGroup,
       startQuiz,
-      startedRound
+      startedRound,
+      randomContent,
+      completedQuestions
     } = nextState;
 
     if (props.location.pathname !== location.pathname) {
@@ -162,7 +168,10 @@ class QuizzesPage extends Component {
           selectedGroup: null,
           editGroup: null,
           startQuiz: false,
-          uploadedFile: null
+          uploadedFile: null,
+          completedQuestions: [],
+          nextQuestions: [],
+          selection: null
         });
       } else if (location.pathname.includes(VIEW_QUIZ_PATH)) {
         const groupId = location.pathname.split('view/')[1];
@@ -176,6 +185,29 @@ class QuizzesPage extends Component {
 
     const oldPropsStartedRound = props.quizzes.startedRound;
     const newPropsStartedRound = this.props.quizzes.startedRound;
+
+    // Received updated batch startedRound
+    if (
+      oldPropsStartedRound &&
+      newPropsStartedRound &&
+      !!newPropsStartedRound.length &&
+      oldPropsStartedRound.length !== newPropsStartedRound.length
+    ) {
+      const completedIds = completedQuestions.map(content => content._id);
+      const updatedRound = newPropsStartedRound.filter(
+        content => !completedIds.includes(content._id)
+      );
+      const newState = { ...this.state, startedRound: updatedRound };
+
+      if (!randomContent) {
+        this.setState({
+          ...newState,
+          randomContent: getRandomContent(newPropsStartedRound)
+        });
+      } else {
+        this.setState(newState);
+      }
+    }
 
     if (!oldPropsStartedRound && newPropsStartedRound) {
       const randomContent = getRandomContent(newPropsStartedRound);
@@ -194,6 +226,27 @@ class QuizzesPage extends Component {
       });
     }
 
+    const oldUpdatedRound = props.quizzes.updatedQuestions;
+    const newUpdatedRound = this.props.quizzes.updatedQuestions;
+
+    if (
+      oldUpdatedRound &&
+      newUpdatedRound &&
+      !!newUpdatedRound.length &&
+      oldUpdatedRound.length !== newUpdatedRound.length
+    ) {
+      const newState = { ...this.state, startedRound: newUpdatedRound };
+
+      if (!randomContent) {
+        this.setState({
+          ...newState,
+          randomContent: getRandomContent(newUpdatedRound)
+        });
+      } else {
+        this.setState(newState);
+      }
+    }
+
     if (
       !props.quizzes.updatedQuestions &&
       this.props.quizzes.updatedQuestions
@@ -203,7 +256,9 @@ class QuizzesPage extends Component {
       this.setState({
         ...this.state,
         startedRound: round,
-        randomContent
+        randomContent,
+        completedQuestions: [],
+        nextQuestions: []
       });
     }
   }
@@ -267,30 +322,83 @@ class QuizzesPage extends Component {
         ...this.state,
         showStartModal: false,
         startQuiz: true,
-        randomContent: null
+        randomContent: null,
+        startedRound: null,
+        completedQuestions: [],
+        selection: null
       });
       this.props.resetQuizRound();
     } else {
-      this.setState({ ...this.state, showStartModal: false, startQuiz: true });
+      this.setState({
+        ...this.state,
+        showStartModal: false,
+        startQuiz: true,
+        selection,
+        completedQuestions: []
+      });
     }
     history.push(`${START_QUIZ_PATH}`);
     this.props.getStartedQuizRounds(selection);
   };
 
   nextQuestionClicked = id => {
-    const { startedRound } = this.state;
+    const { startedRound, completedQuestions, randomContent } = this.state;
+    const nextQuestions = [...this.state.nextQuestions];
+    const updatedCompletedQuestions = [...completedQuestions];
 
     const newStartedRound = startedRound.filter(content => content._id !== id);
-    const questionsLeft = newStartedRound.length;
-    const randomContent = getRandomContent(newStartedRound);
-    this.props.updateQuestionRead(id, newStartedRound.length);
+    const postPopNextQuestionsLength = !!nextQuestions.length
+      ? nextQuestions.length - 1
+      : 0;
+    const questionsLeft = newStartedRound.length + postPopNextQuestionsLength;
 
-    if (questionsLeft > 0) {
+    updatedCompletedQuestions.push(randomContent);
+    this.props.updateQuestionRead(id, questionsLeft);
+
+    if (nextQuestions.length > 0) {
+      const nextQuestion = nextQuestions.pop();
+
       this.setState({
         ...this.state,
-        randomContent,
-        startedRound: newStartedRound
+        nextQuestions,
+        randomContent: nextQuestion,
+        startedRound: newStartedRound,
+        completedQuestions: updatedCompletedQuestions
       });
+    } else if (questionsLeft > 0) {
+      const newRandomContent = getRandomContent(newStartedRound);
+
+      this.setState({
+        ...this.state,
+        randomContent: newRandomContent,
+        startedRound: newStartedRound,
+        completedQuestions: updatedCompletedQuestions
+      });
+    } else {
+      this.setState({
+        ...this.state,
+        selection: null,
+        completedQuestions: []
+      });
+    }
+  };
+  previousQuestionClicked = () => {
+    const { randomContent } = this.state;
+
+    const nextQuestions = [...this.state.nextQuestions];
+    const completedQuestions = [...this.state.completedQuestions];
+
+    if (!!completedQuestions.length) {
+      const previousQuestion = completedQuestions.pop();
+      nextQuestions.push(randomContent);
+
+      this.setState({
+        ...this.state,
+        completedQuestions,
+        randomContent: previousQuestion,
+        nextQuestions
+      });
+      this.props.updatePreviousQuestion(previousQuestion._id);
     }
   };
 
@@ -343,8 +451,8 @@ class QuizzesPage extends Component {
 
             if (
               split.length === 2 &&
-              split[0].trim().length > 1 &&
-              split[1].trim().length > 1
+              split[0].trim().length > 0 &&
+              split[1].trim().length > 0
             ) {
               result.push({
                 question: `${split[0].trim()}?`,
@@ -427,11 +535,12 @@ class QuizzesPage extends Component {
       editGroup,
       deleting,
       startQuiz,
-      startedRound,
       randomContent,
       uploadedFile,
       showQuizModal,
-      showStartModal
+      showStartModal,
+      completedQuestions,
+      selection
     } = this.state;
 
     const disableSaveButton =
@@ -452,17 +561,20 @@ class QuizzesPage extends Component {
     );
 
     if (startQuiz) {
-      const completed = startedRound
-        ? quizzes.totalRoundQuestions - startedRound.length + 1
-        : 0;
+      const completed =
+        selection && quizzes.currentQuestion
+          ? quizzes.currentQuestion + completedQuestions.length
+          : completedQuestions.length + 1;
 
       return (
         <div style={{ marginTop: '12px' }}>
           <StartQuizRound
             randomContent={randomContent}
             nextQuestion={this.nextQuestionClicked}
+            previousQuestion={this.previousQuestionClicked}
             completed={completed}
             allRoundQuestions={quizzes.totalRoundQuestions}
+            completedQuestions={completedQuestions.length}
           />
         </div>
       );
@@ -503,6 +615,12 @@ class QuizzesPage extends Component {
                     direction="row"
                     justify="center"
                     alignItems="center"
+                    id="top-button-grid"
+                    style={{
+                      maxWidth: '900px',
+                      width: '90%',
+                      position: 'relative'
+                    }}
                   >
                     <Button
                       onClick={this.cancelClicked}
@@ -539,8 +657,7 @@ class QuizzesPage extends Component {
                         title={`Upload quiz`}
                         style={{
                           position: 'absolute',
-                          right: '0',
-                          padding: '0 5.5%'
+                          right: '0'
                         }}
                       >
                         <UploadIcon
@@ -560,8 +677,7 @@ class QuizzesPage extends Component {
                         title={`Delete '${editGroup[0].group.title}'`}
                         style={{
                           position: 'absolute',
-                          right: '0',
-                          padding: '0 5%'
+                          right: '0'
                         }}
                       >
                         <DeleteIcon
@@ -719,5 +835,6 @@ export default connect(mapStateToProps, {
   updateQuiz,
   deleteQuiz,
   updateQuestionRead,
+  updatePreviousQuestion,
   resetQuizRound
 })(withRouter(withStyles(styles)(QuizzesPage)));
