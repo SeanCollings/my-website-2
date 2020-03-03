@@ -161,6 +161,7 @@ class UpdateUser extends Component {
                 align="left"
                 className={classes.tableCellLeft}
                 classes={{ root: classes.table }}
+                style={{ textAlign: 'center' }}
               >
                 {`${loginDate}`}
               </TableCell>
@@ -351,7 +352,4 @@ class UpdateUser extends Component {
   }
 }
 
-export default connect(
-  null,
-  actions
-)(withStyles(styles)(UpdateUser));
+export default connect(null, actions)(withStyles(styles)(UpdateUser));

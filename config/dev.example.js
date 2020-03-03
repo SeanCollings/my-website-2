@@ -8,5 +8,7 @@ export default {
   pusherAppId: 'some_pusher_app_id',
   pusherKey: 'some_pusher_key',
   pusherSecret: 'some_pusher_secret',
-  pusherCluster: 'some_pusher_cluster'
+  pusherCluster: 'some_pusher_cluster',
+  sendgridKey: 'some_sendgrid_key',
+  secretJWT: 'some_secret_jwt'
 };

@@ -8,7 +8,7 @@ const Users = mongoose.model('users');
 
 export default app => {
   app.get('/api/get_usersettings', requireLogin, async (req, res) => {
-    let err, settings;
+    let err, settings, newSettings;
 
     [err, settings] = await to(Settings.findOne({ _user: req.user._id }));
     if (err) throw new Error(err);

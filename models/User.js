@@ -4,7 +4,7 @@ const userSchema = new Schema({
   googleId: String,
   givenName: String,
   familyName: String,
-  emailAddress: String,
+  emailAddress: { type: String, unique: true, lowercase: true },
   googlePhoto: String,
   uploadedPhoto: String,
   splashes: { type: Number, default: 5 },
@@ -14,6 +14,7 @@ const userSchema = new Schema({
   pereryvUser: { type: Boolean, default: false },
   allowNotifications: { type: Boolean, default: false },
   lastLogin: { type: Date, default: new Date(0) },
+  password: String,
   _pereritto: { type: Schema.Types.ObjectId, ref: 'pererittos' },
   _pereryv: { type: Schema.Types.ObjectId, ref: 'pereryvs' }
 });

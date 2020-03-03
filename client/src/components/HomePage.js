@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../actions';
 import { NavLink } from 'react-router-dom';
@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 // import Loader from './components/loaderLinear';
 import Paper from './components/paper';
 import MediaCard from './components/MediaCard';
+import { verifyAuth } from '../utils/utility';
 // import Footer from './components/footer';
 
 const styles = theme => ({
@@ -68,7 +69,8 @@ class HomePage extends Component {
   }
 
   renderButtons() {
-    const { pereryvUser } = this.props;
+    const { pereryvUser, auth } = this.props;
+
     return (
       <Grid
         container
@@ -87,56 +89,60 @@ class HomePage extends Component {
             Pereritto
           </Button>
         </NavLink>
-        <div style={{ marginBottom: '25px' }} />
-        <NavLink to="/notifications" style={{ textDecoration: 'none' }}>
-          <Button
-            style={{
-              background: 'transaparent',
-              border: '1px solid #ffc300',
-              color: '#ffc300'
-            }}
-          >
-            Notifications
-          </Button>
-        </NavLink>
-        <div style={{ marginBottom: '25px' }} />
-        <NavLink to="/locations" style={{ textDecoration: 'none' }}>
-          <Button
-            style={{
-              background: 'transaparent',
-              border: '1px solid #ffc300',
-              color: '#ffc300'
-            }}
-          >
-            Locations
-          </Button>
-        </NavLink>
-        <div style={{ marginBottom: '25px' }} />
-        {pereryvUser && (
-          <NavLink to="/pervytrev" style={{ textDecoration: 'none' }}>
-            <Button
-              style={{
-                background: 'transaparent',
-                border: '1px solid #ffc300',
-                color: '#ffc300'
-              }}
-            >
-              Pervytrev
-            </Button>
-          </NavLink>
+        {verifyAuth(auth) && (
+          <Fragment>
+            <div style={{ marginBottom: '25px' }} />
+            <NavLink to="/notifications" style={{ textDecoration: 'none' }}>
+              <Button
+                style={{
+                  background: 'transaparent',
+                  border: '1px solid #ffc300',
+                  color: '#ffc300'
+                }}
+              >
+                Notifications
+              </Button>
+            </NavLink>
+            <div style={{ marginBottom: '25px' }} />
+            <NavLink to="/locations" style={{ textDecoration: 'none' }}>
+              <Button
+                style={{
+                  background: 'transaparent',
+                  border: '1px solid #ffc300',
+                  color: '#ffc300'
+                }}
+              >
+                Locations
+              </Button>
+            </NavLink>
+            <div style={{ marginBottom: '25px' }} />
+            {pereryvUser && (
+              <NavLink to="/pervytrev" style={{ textDecoration: 'none' }}>
+                <Button
+                  style={{
+                    background: 'transaparent',
+                    border: '1px solid #ffc300',
+                    color: '#ffc300'
+                  }}
+                >
+                  Pervytrev
+                </Button>
+              </NavLink>
+            )}
+            {pereryvUser && <div style={{ marginBottom: '25px' }} />}
+            <NavLink to="/quizzes" style={{ textDecoration: 'none' }}>
+              <Button
+                style={{
+                  background: '#0055dd',
+                  border: '1px solid #ffc300',
+                  color: '#ffc300'
+                }}
+              >
+                Quizzes
+              </Button>
+            </NavLink>
+          </Fragment>
         )}
-        <div style={{ marginBottom: '25px' }} />
-        <NavLink to="/quizzes" style={{ textDecoration: 'none' }}>
-          <Button
-            style={{
-              background: '#0055dd',
-              border: '1px solid #ffc300',
-              color: '#ffc300'
-            }}
-          >
-            Quizzes
-          </Button>
-        </NavLink>
       </Grid>
     );
   }
@@ -153,7 +159,7 @@ class HomePage extends Component {
           // content="Please, have a look around"
           content={this.renderName()}
         />
-        <Paper content={auth ? 'Where to today?' : ''} />
+        {verifyAuth(auth) && <Paper content={auth ? 'Where to today?' : ''} />}
         <div
           style={{
             alignItems: 'center',

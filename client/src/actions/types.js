@@ -25,6 +25,10 @@ export const RETURN_TO_PREVIOUS_PAGE = 'return_to_previous_page';
 export const UPDATE_HEADING = 'update_heading';
 export const SET_PAGES = 'set_pages';
 export const TOGGLE_DICE = 'toggle_dice';
+export const USER_SIGN_UP = 'user_sign_up';
+export const USER_LOGIN = 'user_login';
+export const LOCAL_TOKEN = 'token';
+export const LOCAL_USER = 'user';
 
 export const GET_GROUP_MEMBERS = 'get_group_members';
 export const GET_PUBLIC_VAPID_KEY = 'get_public_vapid_key';

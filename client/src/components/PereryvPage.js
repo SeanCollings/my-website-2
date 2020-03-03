@@ -105,7 +105,8 @@ class PereryvPage extends Component {
               marginTop: '6px',
               marginBottom: '-8px',
               color: selectedMembers.length ? '#004c0d' : '#92002a',
-              transform: 'scale(1.4)'
+              transform: 'scale(1.4)',
+              cursor: 'pointer'
             }}
           />
           <CloseIcon
@@ -123,7 +124,8 @@ class PereryvPage extends Component {
               marginLeft: '12px',
               color: '#581845',
               border: '1px solid #581845',
-              borderRadius: '6px'
+              borderRadius: '6px',
+              cursor: 'pointer'
             }}
           />
         </Fragment>
@@ -142,7 +144,12 @@ class PereryvPage extends Component {
               selectedMembers: []
             })
           }
-          style={{ marginTop: '8px', marginBottom: '-8px', color: '#581845' }}
+          style={{
+            marginTop: '8px',
+            marginBottom: '-8px',
+            color: '#581845',
+            cursor: 'pointer'
+          }}
         />
       </Fragment>
     );
@@ -237,10 +244,12 @@ class PereryvPage extends Component {
                       this.state.selectedMembers.includes(member._id) ? (
                         <SelectedIcon
                           onClick={() => this.selectPlayer(member._id)}
+                          style={{ cursor: 'pointer' }}
                         />
                       ) : (
                         <UnselectedIcon
                           onClick={() => this.selectPlayer(member._id)}
+                          style={{ cursor: 'pointer' }}
                         />
                       )
                     ) : (

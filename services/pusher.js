@@ -46,7 +46,7 @@ export default app => {
     }
   });
 
-  app.post('/api/update_location', (req, res) => {
+  app.post('/api/update_location', requireLogin, (req, res) => {
     try {
       // trigger a new post event via pusher
       console.log('/api/update_location');

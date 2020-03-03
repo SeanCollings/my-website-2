@@ -4,7 +4,8 @@ import { withRouter, NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Gravatar from 'react-gravatar';
 import { getVersion } from '../../actions/appActions';
-import { clearAllTables } from '../../utils/utility';
+import { clearAllTables, verifyAuth } from '../../utils/utility';
+import { LOCAL_TOKEN } from '../../actions/types';
 
 import { withStyles } from '@material-ui/core/styles';
 // import Drawer from '@material-ui/core/Drawer';
@@ -57,6 +58,7 @@ class TemporaryDrawer extends React.Component {
   removeUser = () => {
     if ('indexedDB' in window) {
       clearAllTables();
+      localStorage.removeItem(LOCAL_TOKEN);
     }
   };
 
@@ -75,7 +77,11 @@ class TemporaryDrawer extends React.Component {
         );
       default:
         return (
-          <Link href="/api/logout" onClick={() => this.removeUser()}>
+          <Link
+            href="/api/logout"
+            onClick={() => this.removeUser()}
+            style={{ textDecoration: 'none' }}
+          >
             <ListItem button>
               <ListItemIcon>
                 {<LogoutIcon style={{ transform: 'rotate(180deg)' }} />}
@@ -88,6 +94,7 @@ class TemporaryDrawer extends React.Component {
   }
 
   renderMenu(pages) {
+    const { auth } = this.props;
     const { page, show } = pages;
     // if (item === 'Pereritto' && !this.props.pererittoUser) {
     //   return null;
@@ -98,11 +105,11 @@ class TemporaryDrawer extends React.Component {
       return null;
     }
 
-    if (page === 'Notifications' && !this.props.auth) {
+    if (page === 'Notifications' && !verifyAuth(auth)) {
       return null;
     }
 
-    if (page === 'Locations' && !this.props.auth) {
+    if (page === 'Locations' && !verifyAuth(auth)) {
       return null;
     }
 
@@ -110,7 +117,7 @@ class TemporaryDrawer extends React.Component {
       return null;
     }
 
-    if (page === 'Quizzes' && !this.props.auth) {
+    if (page === 'Quizzes' && !verifyAuth(auth)) {
       return null;
     }
 

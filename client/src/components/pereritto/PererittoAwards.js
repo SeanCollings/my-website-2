@@ -214,6 +214,7 @@ class PererittoAwards extends Component {
                 top: '25px',
                 position: 'relative',
                 transform: 'rotateX(20deg)',
+                WebkitTransform: 'rotateX(20deg)',
                 color: '#3e0c00'
               }}
               className="plaque-text"

@@ -129,7 +129,8 @@ class UserProfilePage extends Component {
               left: '60px',
               backgroundColor: '#0074D9',
               color: 'white',
-              display: 'inline-flex'
+              display: 'inline-flex',
+              cursor: 'pointer'
             }}
             onClick={() => this.cameraMoreClick()}
           >
@@ -164,7 +165,11 @@ class UserProfilePage extends Component {
               }}
             >
               <Avatar
-                style={{ marginRight: '30px', backgroundColor: '#0074D9' }}
+                style={{
+                  marginRight: '30px',
+                  backgroundColor: '#0074D9',
+                  cursor: 'pointer'
+                }}
                 onClick={() => this.initiateCamera()}
               >
                 <CameraIcon />
@@ -180,7 +185,11 @@ class UserProfilePage extends Component {
               />
               <label htmlFor="raised-button-file">
                 <Avatar
-                  style={{ marginRight: '30px', backgroundColor: '#900C3F' }}
+                  style={{
+                    marginRight: '30px',
+                    backgroundColor: '#900C3F',
+                    cursor: 'pointer'
+                  }}
                   // onChange={() => this.uploadImage()}
                 >
                   <ImageIcon />
@@ -190,7 +199,8 @@ class UserProfilePage extends Component {
               <Avatar
                 style={{
                   backgroundColor: '#FF4136',
-                  opacity: auth.uploadedPhoto ? '1' : '0.4'
+                  opacity: auth.uploadedPhoto ? '1' : '0.4',
+                  cursor: 'pointer'
                 }}
                 onClick={() =>
                   auth.uploadedPhoto ? this.removePhotoPrompt() : null
@@ -462,7 +472,6 @@ function mapStateToProps({ auth, resizeScreen, settings, snackBar }) {
   return { auth, resizeScreen, settings, snackBar };
 }
 
-export default connect(
-  mapStateToProps,
-  { ...actions, showMessage }
-)(withStyles(styles)(UserProfilePage));
+export default connect(mapStateToProps, { ...actions, showMessage })(
+  withStyles(styles)(UserProfilePage)
+);

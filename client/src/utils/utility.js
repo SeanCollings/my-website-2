@@ -117,3 +117,5 @@ export const sortByCreatedDate = (array, ascending) => {
     (a, b) => new Date(a.createdDate) - new Date(b.createdDate)
   );
 };
+
+export const verifyAuth = auth => auth && !auth.tempUser;

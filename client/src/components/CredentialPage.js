@@ -13,7 +13,7 @@ const styles = theme => ({
   }
 });
 
-const SIGN_UP_DISABLED = true;
+const SIGN_UP_DISABLED = false;
 
 class CredentialPage extends Component {
   state = {

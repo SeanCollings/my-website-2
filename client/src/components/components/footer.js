@@ -36,7 +36,7 @@ function footer(props) {
         }}
         component="div"
       >
-        © 2019 Sean Collings. All rights reserved.
+        © 2020 Sean Collings. All rights reserved.
         {/* <Typography
           style={{
             color: '#DEDEDE',

@@ -42,9 +42,16 @@ import loadingMessages from '../utils/loadingMessages';
 // import MobileView from './components/MobileView.1';
 
 import { Typography, Toolbar } from '@material-ui/core';
+import { verifyAuth } from '../utils/utility';
+import { LOCAL_TOKEN } from '../actions/types';
 
 class App extends Component {
-  state = { pereritto: false, render: true, welcomeMessage: '' };
+  state = {
+    pereritto: false,
+    render: true,
+    welcomeMessage: '',
+    settingsCalled: false
+  };
 
   componentDidMount() {
     const welcomeMessage =
@@ -66,15 +73,32 @@ class App extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.auth !== null && this.props.app.open && this.state.render) {
+    const { auth, app, settings } = this.props;
+    const { settingsCalled, render } = this.state;
+
+    if (auth !== null && app.open && render) {
       this.props.hideLoader();
-      if (this.props.auth) {
-        // console.log('Getting release creation');
+      if (verifyAuth(auth)) {
         this.props.getReleaseCreation();
       }
     }
 
-    if (this.props.auth && !this.props.settings) {
+    if (
+      verifyAuth(auth) &&
+      !localStorage.getItem(LOCAL_TOKEN) &&
+      !settings &&
+      !settingsCalled
+    ) {
+      this.setState({ settingsCalled: true });
+      this.props.getUserSettings();
+    }
+    if (
+      verifyAuth(auth) &&
+      localStorage.getItem(LOCAL_TOKEN) &&
+      !settings &&
+      !settingsCalled
+    ) {
+      this.setState({ settingsCalled: true });
       this.props.getUserSettings();
     }
   }
@@ -135,7 +159,8 @@ class App extends Component {
   }
 
   renderSettings() {
-    if (this.props.auth) {
+    const { auth } = this.props;
+    if (verifyAuth(auth)) {
       return (
         <Route path="/settings" render={props => <SettingsPage {...props} />} />
       );
@@ -145,7 +170,8 @@ class App extends Component {
   }
 
   renderMessaging() {
-    if (this.props.auth) {
+    const { auth } = this.props;
+    if (verifyAuth(auth)) {
       return (
         <Route
           path="/notifications"
@@ -158,7 +184,8 @@ class App extends Component {
   }
 
   renderLocations() {
-    if (this.props.auth) {
+    const { auth } = this.props;
+    if (verifyAuth(auth)) {
       return (
         <Route
           path="/locations"
@@ -171,7 +198,8 @@ class App extends Component {
   }
 
   renderPereryv() {
-    if (this.props.auth && this.props.pereryvUser) {
+    const { auth } = this.props;
+    if (verifyAuth(auth) && this.props.pereryvUser) {
       return (
         <Route path="/pervytrev" render={props => <PereryvPage {...props} />} />
       );
@@ -194,7 +222,7 @@ class App extends Component {
   renderQuizzes() {
     const { auth, app, updateHeading, location } = this.props;
 
-    if (auth) {
+    if (verifyAuth(auth)) {
       if (location.pathname.includes('/quizzes/') && !app.headingName) {
         updateHeading({
           heading: 'Create Quiz',

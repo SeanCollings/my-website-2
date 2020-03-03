@@ -82,6 +82,7 @@
   top: 25px;
   position: relative;
   transform: rotateX(20deg);
+  -webkit-transform: rotateX(20deg);
   color: #3e0c00;
 }
 

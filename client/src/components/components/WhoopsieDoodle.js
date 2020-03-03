@@ -29,7 +29,7 @@ class WhoopsieDoodle extends Component {
           Please{' '}
           <span
             onClick={() => this.props.history.push('/settings')}
-            style={{ color: '#0074D9' }}
+            style={{ color: '#0074D9', cursor: 'pointer' }}
           >
             <b>Enable {toEnable}</b>
           </span>{' '}

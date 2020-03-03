@@ -36,6 +36,14 @@ export const MOBILE_SCREEN_SIZE = 700;
 export const MAX_ANSWER_LENGTH = 100;
 export const MAX_QUESTION_LENGTH = 200;
 
+export const MAX_EMAIL_LENGTH = 200;
+export const MAX_PASSWORD_LENGTH = 64;
+export const MAX_NAMES_LENGTH = 50;
+export const MIN_PASSWORD_LENGTH = 8;
+
+export const VERIFY_EMAIL_MESSAGE =
+  'Please verify your email address before continuing';
+
 export const MessageTypeEnum = {
   success: 'success',
   error: 'error',

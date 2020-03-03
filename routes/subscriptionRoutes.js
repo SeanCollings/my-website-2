@@ -75,7 +75,7 @@ export default app => {
                 };
 
                 const json = JSON.stringify({
-                  title: 'Splashed!',
+                  title: `${givenName} Splashed!`,
                   content: `${originator} is Splashing from ${group.name}!`,
                   openUrl: '/notifications'
                 });

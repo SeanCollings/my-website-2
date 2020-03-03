@@ -8,5 +8,7 @@ module.exports = {
   pusherAppId: process.env.PUSHER_APP_ID,
   pusherKey: process.env.PUSHER_KEY,
   pusherSecret: process.env.PUSHER_SECRET,
-  pusherCluster: process.env.PUSHER_CLUSTER
+  pusherCluster: process.env.PUSHER_CLUSTER,
+  sendgridKey: process.env.SENDGRID_KEY,
+  secretJWT: process.env.SECRET_JWT
 };

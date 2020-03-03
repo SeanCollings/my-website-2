@@ -12,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 // import DropDownIcon from '@material-ui/icons/ArrowDropDownCircleOutlined';
 
 import { withStyles } from '@material-ui/core/styles';
+import { LOCAL_TOKEN } from '../../actions/types';
 
 const styles = theme => ({
   button: {
@@ -25,6 +26,12 @@ const styles = theme => ({
 });
 
 const noSleep = new NoSleep();
+
+const headers = {
+  headers: {
+    authorization: localStorage.getItem(LOCAL_TOKEN)
+  }
+};
 
 class LocationsBeginEnd extends Component {
   state = {
@@ -158,13 +165,17 @@ class LocationsBeginEnd extends Component {
   };
 
   postLocationToMembers = (groupId, userId, username, location, blurred) => {
-    axios.post('/api/update_location', {
-      groupId,
-      userId,
-      username,
-      location,
-      blurred
-    });
+    axios.post(
+      '/api/update_location',
+      {
+        groupId,
+        userId,
+        username,
+        location,
+        blurred
+      },
+      headers
+    );
   };
 
   toggleLocations = () => {
@@ -183,7 +194,8 @@ class LocationsBeginEnd extends Component {
       const pusher = new Pusher(locations.pusherCreds.pusherKey, {
         authEndpoint: `/api/pusher_auth?random=${random}`,
         cluster: locations.pusherCreds.cluster,
-        encrypted: true
+        encrypted: true,
+        auth: headers
       });
 
       const groupName = `presence-${groupId}`;
@@ -319,7 +331,6 @@ function mapStateToProps({ auth, locations }) {
   return { auth, locations };
 }
 
-export default connect(
-  mapStateToProps,
-  { ...locationActions, updateHeading }
-)(withStyles(styles)(LocationsBeginEnd));
+export default connect(mapStateToProps, { ...locationActions, updateHeading })(
+  withStyles(styles)(LocationsBeginEnd)
+);

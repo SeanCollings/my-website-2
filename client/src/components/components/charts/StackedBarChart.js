@@ -24,7 +24,8 @@ const stackedBar = (first, second, colour) => {
       className="chart_horiz"
       style={{
         border: `1px solid ${BORDER_COLOUR}`,
-        height
+        height,
+        cursor: 'pointer'
       }}
     >
       <div
@@ -81,7 +82,8 @@ const renderChart = (players, showPercentage, setShowPercentage) => {
             height: '26px',
             border: `1px solid ${BORDER_COLOUR} `,
             marginRight: '8px',
-            fontSize: showPercent ? '11px' : '14px'
+            fontSize: showPercent ? '11px' : '14px',
+            cursor: 'pointer'
           }}
         >
           {avatarText}

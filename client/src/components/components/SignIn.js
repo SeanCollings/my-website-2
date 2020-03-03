@@ -1,5 +1,19 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import Loader from 'react-loader-advanced';
+import MiniLoader from 'react-loader-spinner';
+
+import { userSignUp, userLogin } from '../../actions/index';
+import { showMessage } from '../../actions/snackBarActions';
+import {
+  MessageTypeEnum,
+  MAX_PASSWORD_LENGTH,
+  MAX_EMAIL_LENGTH,
+  MAX_NAMES_LENGTH,
+  MIN_PASSWORD_LENGTH
+} from '../../utils/constants';
+
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 // import CssBaseline from '@material-ui/core/CssBaseline';
@@ -49,7 +63,6 @@ const styles = theme => ({
     width: '100%' // Fix IE 11 issue.
   },
   submit: {
-    marginTop: theme.spacing.unit * 3,
     backgroundColor: '#FF4136',
     color: 'white'
   },
@@ -79,31 +92,178 @@ const styles = theme => ({
     display: 'none'
   },
   input: {
-    color: '#FFC300'
+    color: '#FFC300',
+    paddingLeft: '4px'
   }
 });
 
 class SignIn extends Component {
   state = {
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    emailAddress: '',
+    givenName: '',
+    familyName: '',
+    passwordFocus: false,
+    signingInUser: false
+  };
+
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.snackBar.open && this.state.signingInUser) {
+      this.setState({ signingInUser: false });
+    }
+
+    return true;
+  }
+
+  validateName = name => {
+    const regex = /^[a-z ,.'-]+$/i;
+    return regex.test(String(name).toLowerCase());
+  };
+
+  validateEmail = email => {
+    const regex = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return regex.test(String(email).toLowerCase());
+  };
+
+  verifySignUp = () => {
+    const {
+      givenName,
+      familyName,
+      emailAddress,
+      password,
+      confirmPassword
+    } = this.state;
+
+    if (
+      !givenName ||
+      !familyName ||
+      !emailAddress ||
+      !password ||
+      !confirmPassword
+    ) {
+      this.props.showMessage(MessageTypeEnum.error, 'Complete all fields');
+      return false;
+    } else if (!this.validateName(givenName) || !this.validateName(givenName)) {
+      this.props.showMessage(
+        MessageTypeEnum.error,
+        'Name may not contain numeric or special characters'
+      );
+      return false;
+    } else if (!this.validateEmail(emailAddress)) {
+      this.props.showMessage(
+        MessageTypeEnum.error,
+        'Enter a valid email address'
+      );
+      return false;
+    } else if (password.length < MIN_PASSWORD_LENGTH) {
+      this.props.showMessage(MessageTypeEnum.error, `Password is too short`);
+      return false;
+    } else if (password !== confirmPassword) {
+      this.props.showMessage(MessageTypeEnum.error, `Passwords do not match`);
+      return false;
+    }
+
+    return true;
+  };
+
+  verifyLogin = () => {
+    const { emailAddress, password } = this.state;
+
+    if (!emailAddress || !password) {
+      this.props.showMessage(MessageTypeEnum.error, 'Complete all fields');
+      return false;
+    } else if (!this.validateEmail(emailAddress)) {
+      this.props.showMessage(
+        MessageTypeEnum.error,
+        'Enter a valid email address'
+      );
+      return false;
+    }
+
+    return true;
   };
 
   signInClicked = () => {
-    console.log('Sign In Clicked');
-    console.log(this);
+    const { signUpUser } = this.props;
+    const { givenName, familyName, emailAddress, password } = this.state;
+
+    if (signUpUser && this.verifySignUp()) {
+      this.setState({ signingInUser: true });
+      this.props.userSignUp(
+        givenName.trim(),
+        familyName.trim(),
+        emailAddress.trim(),
+        password.trim()
+      );
+    } else if (!signUpUser && this.verifyLogin()) {
+      this.setState({ signingInUser: true });
+      this.props.userLogin(emailAddress.trim(), password.trim());
+    }
   };
 
   handleSubmit = event => {
     event.preventDefault();
-
-    // this.props.signinUser({ username, password });
-    if (this.props.signUpUser) {
-    }
   };
+
+  handleFirstNameChange = event => {
+    const { givenName } = this.state;
+    let name = event.target.value;
+
+    if (name.length > MAX_NAMES_LENGTH) name = givenName;
+    this.setState({ givenName: name });
+  };
+  handleFamilyNameChange = event => {
+    const { familyName } = this.state;
+    let name = event.target.value;
+
+    if (name.length > MAX_NAMES_LENGTH) name = familyName;
+    this.setState({ familyName: name });
+  };
+  handleEmailAddressChange = event => {
+    const { emailAddress } = this.state;
+    let email = event.target.value;
+
+    if (email.length > MAX_EMAIL_LENGTH) email = emailAddress;
+    this.setState({ emailAddress: email });
+  };
+  handlePasswordChange = event => {
+    const { password } = this.state;
+    let passwordValue = event.target.value;
+
+    if (passwordValue.length > MAX_PASSWORD_LENGTH) passwordValue = password;
+    this.setState({ password: passwordValue });
+  };
+  handlePasswordFocus = event => {
+    this.setState({ passwordFocus: true });
+  };
+  handlePasswordBlur = event => {
+    this.setState({ passwordFocus: false });
+  };
+  handleConfirmPasswordChange = event => {
+    const confirmPassword = event.target.value;
+    this.setState({ confirmPassword });
+  };
+
+  spinner = (
+    <span>
+      <MiniLoader type="TailSpin" color="#FFC300" height={36} width={36} />
+    </span>
+  );
 
   render() {
     const { classes, signUpUser, signUpDisabled } = this.props;
+    const {
+      givenName,
+      familyName,
+      emailAddress,
+      password,
+      confirmPassword,
+      passwordFocus,
+      signingInUser
+    } = this.state;
+
+    console.log('signingInUser', this.state.signingInUser);
 
     return (
       <main className={classes.main}>
@@ -158,6 +318,8 @@ class SignIn extends Component {
               <Input
                 id="firstName"
                 name="firstName"
+                value={givenName}
+                onChange={this.handleFirstNameChange}
                 classes={{
                   underline: classes.cssUnderline,
                   input: classes.input
@@ -182,6 +344,8 @@ class SignIn extends Component {
               <Input
                 id="lastName"
                 name="lastName"
+                value={familyName}
+                onChange={this.handleFamilyNameChange}
                 classes={{
                   underline: classes.cssUnderline,
                   input: classes.input
@@ -208,6 +372,8 @@ class SignIn extends Component {
                 id="email"
                 name="email"
                 autoComplete="email"
+                value={emailAddress}
+                onChange={this.handleEmailAddressChange}
                 classes={{
                   underline: classes.cssUnderline,
                   input: classes.input
@@ -227,44 +393,79 @@ class SignIn extends Component {
                   focused: classes.cssFocused
                 }}
               >
-                Password
+                {`Password${
+                  passwordFocus && password.length < MIN_PASSWORD_LENGTH
+                    ? ` must be at least ${MIN_PASSWORD_LENGTH} characters`
+                    : ''
+                }`}
               </InputLabel>
               <Input
                 name="password"
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={password}
+                maxLength={2}
+                onChange={this.handlePasswordChange}
+                onFocus={this.handlePasswordFocus}
+                onBlur={this.handlePasswordBlur}
                 classes={{
                   underline: classes.cssUnderline,
                   input: classes.input
                 }}
               />
             </FormControl>
-            {/* <FormControlLabel
-              style={{
-                visibility: signUpUser ? 'hidden' : 'visible'
-              }}
-              control={
-                <Checkbox
-                  value="remember"
-                  color="primary"
-                  style={{
-                    color: '#FF4136'
-                  }}
-                />
-              }
-              label="Remember me"
-            /> */}
-            <Button
-              disabled={signUpDisabled}
-              type="submit"
+            <FormControl
+              margin="normal"
+              required={signUpUser ? true : false}
               fullWidth
-              variant="contained"
-              className={classes.submit}
-              onClick={() => this.signInClicked()}
+              className={signUpUser ? '' : classes.hideSignUpContent}
             >
-              {signUpUser ? 'Sign Up' : 'Log In'}
-            </Button>
+              <InputLabel
+                htmlFor="confirm-password"
+                classes={{
+                  root: classes.cssLabel,
+                  focused: classes.cssFocused
+                }}
+              >
+                Confirm Password
+              </InputLabel>
+              <Input
+                name="confirm-password"
+                type="password"
+                id="confirm-password"
+                autoComplete="none"
+                value={confirmPassword}
+                onChange={this.handleConfirmPasswordChange}
+                classes={{
+                  underline: classes.cssUnderline,
+                  input: classes.input
+                }}
+              />
+            </FormControl>
+            <div style={{ marginTop: '24px' }}>
+              <Loader
+                show={signingInUser}
+                message={this.spinner}
+                backgroundStyle={{ backgroundColor: '' }}
+              >
+                <Button
+                  disabled={signUpDisabled || signingInUser}
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  className={classes.submit}
+                  style={{
+                    backgroundColor: '#FF4136',
+                    color: 'white',
+                    opacity: signingInUser ? '0.6' : '1'
+                  }}
+                  onClick={() => this.signInClicked()}
+                >
+                  {signUpUser ? 'Sign Up' : 'Log In'}
+                </Button>
+              </Loader>
+            </div>
           </form>
         </Paper>
       </main>
@@ -276,4 +477,10 @@ SignIn.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(SignIn);
+function mapStateToProps({ snackBar, auth }) {
+  return { snackBar, auth };
+}
+
+export default connect(mapStateToProps, { showMessage, userSignUp, userLogin })(
+  withStyles(styles)(SignIn)
+);

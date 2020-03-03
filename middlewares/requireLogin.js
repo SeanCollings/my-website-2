@@ -1,12 +1,16 @@
-import { MessageTypeEnum } from '../client/src/utils/constants';
+import passport from 'passport';
 
-export default (req, res, next) => {
+const requireAuth = passport.authenticate('jwt', { session: false });
+
+const requireLogin = (req, res, next) => {
   try {
     if (!req.user) {
-      return res.status(401).send({
-        type: MessageTypeEnum.error,
-        message: 'You must log in!'
-      });
+      const { authorization } = req.headers;
+      if (authorization && authorization.length) {
+        return requireAuth(req, res, next);
+      }
+
+      throw new Error(401);
     }
 
     next();
@@ -14,3 +18,17 @@ export default (req, res, next) => {
     throw err;
   }
 };
+
+const requireRealUser = (req, res, next) => {
+  try {
+    if (req.user && req.user.tempUser) {
+      throw new Error(401);
+    }
+
+    next();
+  } catch (err) {
+    throw err;
+  }
+};
+
+export default [requireLogin, requireRealUser];

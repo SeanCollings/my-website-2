@@ -17,8 +17,47 @@ import {
   GET_SPLASHES,
   GET_NOTIFICATION_GROUPS,
   GET_GROUP_MEMBERS,
-  GET_USER_AWARDS_TOTAL
+  GET_USER_AWARDS_TOTAL,
+  LOCAL_TOKEN,
+  LOCAL_USER
 } from './types';
+
+export const userSignUp = (
+  givenName,
+  familyName,
+  emailAddress,
+  password
+) => async dispatch => {
+  const res = await axios.post('/api/signup', {
+    givenName,
+    familyName,
+    emailAddress,
+    password
+  });
+
+  dispatch({ type: FETCH_USER, payload: res.data.user });
+  localStorage.setItem(LOCAL_TOKEN, res.data.token);
+
+  if (res.data.message.type !== MessageTypeEnum.none) {
+    dispatch({ type: SHOW_MESSAGE, payload: res.data.message });
+  }
+};
+
+export const userLogin = (emailAddress, password) => async dispatch => {
+  const res = await axios.post('/api/login', { emailAddress, password });
+
+  if (res.data.message && res.data.message.type === MessageTypeEnum.error) {
+    return dispatch({ type: SHOW_MESSAGE, payload: res.data.message });
+  } else if (
+    res.data.message &&
+    res.data.message.type !== MessageTypeEnum.none
+  ) {
+    dispatch({ type: SHOW_MESSAGE, payload: res.data.message });
+  }
+
+  localStorage.setItem(LOCAL_TOKEN, res.data.token);
+  dispatch({ type: FETCH_USER, payload: res.data.user });
+};
 
 export const fetchUser = () => dispatch => {
   axios.get('/api/current_user').then(res => {
@@ -184,7 +223,14 @@ export const clearWinners = () => {
 };
 
 export const getUserSettings = () => async dispatch => {
-  axios.get(`/api/get_usersettings`).then(res => {
+  const localToken = localStorage.getItem(LOCAL_TOKEN);
+  const headers = {
+    headers: {
+      authorization: localToken ? localToken : ''
+    }
+  };
+
+  axios.get(`/api/get_usersettings`, { ...headers }).then(res => {
     dispatch({ type: GET_USER_SETTINGS, payload: res.data });
   });
 
@@ -216,7 +262,11 @@ export const removeUserPhoto = () => async dispatch => {
     data: {}
   });
 
+  localStorage.removeItem(LOCAL_USER);
+  localStorage.removeItem(LOCAL_TOKEN);
+
   dispatch({ type: SHOW_MESSAGE, payload: res.data });
+  dispatch({ type: FETCH_USER, payload: false });
 };
 
 export const getUserAwards = () => async dispatch => {

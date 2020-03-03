@@ -122,7 +122,7 @@ export default app => {
     }
   });
 
-  app.get('/api/get_total_questions', async (req, res) => {
+  app.get('/api/get_total_questions', requireLogin, async (req, res) => {
     try {
       const { _id } = req.user;
       const allContent = await QuizContent.find({ isPublic: true }, { _id: 1 });

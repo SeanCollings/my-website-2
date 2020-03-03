@@ -12,7 +12,7 @@ import {
   VIEW_QUIZ_PATH,
   START_QUIZ_PATH
 } from '../../utils/constants';
-import { clearAllData } from '../../utils/utility';
+import { clearAllData, verifyAuth } from '../../utils/utility';
 
 // import Avatar from './avatar';
 // import LongMenu from './LongMenu';
@@ -46,6 +46,8 @@ const styles = {
   },
   background: 'rgba(26,26,26,.95)'
 };
+
+const checkTempUser = auth => auth && auth.tempUser;
 
 class Header extends Component {
   state = { openDrawer: false, anchorEl: null };
@@ -131,7 +133,7 @@ class Header extends Component {
     const { settings, auth } = this.props;
     let initials = '';
 
-    if (auth === null || auth === false) return null;
+    if (!verifyAuth(auth)) return null;
 
     if (auth) {
       initials =
@@ -218,6 +220,8 @@ class Header extends Component {
   renderHeading(currentRoute) {
     const { auth, app } = this.props;
 
+    if (checkTempUser(auth)) return 'Verify your email address';
+
     switch (currentRoute) {
       case '/home':
         return 'Home';
@@ -256,6 +260,10 @@ class Header extends Component {
   }
 
   renderColor(currentRoute) {
+    const { auth } = this.props;
+
+    if (checkTempUser(auth)) return '#ffa000';
+
     switch (currentRoute) {
       case '/pereritto':
         return '#C70039';
@@ -311,20 +319,20 @@ class Header extends Component {
                 aria-label="More"
                 aria-haspopup="true"
                 onClick={() => this.toggleDrawer(true)}
-                style={{ color: '#DEDEDE' }}
+                style={{ color: verifyAuth(auth) ? '#DEDEDE' : 'white' }}
               >
                 <MenuIcon />
               </IconButton>
             )}
             <Typography
-              variant="h5"
+              variant={checkTempUser(auth) ? 'h6' : 'h5'}
               color="inherit"
               className={classes.grow}
               // align="center"
               noWrap={true}
               style={{
                 display: 'inline-block',
-                color: '#DEDEDE',
+                color: verifyAuth(auth) ? '#DEDEDE' : 'white',
                 paddingLeft: '16px'
               }}
             >
@@ -366,12 +374,16 @@ class Header extends Component {
             >
               Login
             </Button>
-            {app.headingName ? null : (
+            {app.headingName || checkTempUser(auth) ? null : (
               <IconButton
                 aria-label="More"
                 aria-haspopup="true"
                 onClick={this.toggleMenu}
-                style={{ color: '#DEDEDE', display: auth ? '' : 'none' }}
+                style={{
+                  color: '#DEDEDE',
+                  display: auth ? '' : 'none',
+                  padding: '8px'
+                }}
               >
                 {/* <VertIcon /> */}
                 {this.renderAvatar()}

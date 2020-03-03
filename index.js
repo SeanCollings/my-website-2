@@ -7,9 +7,10 @@ import path from 'path';
 import sslRedirect from 'heroku-ssl-redirect';
 import cors from 'cors';
 import webPush from 'web-push';
+import keys from './config/keys';
 
 import './models/User';
-import './services/passport';
+import './models/TempUser';
 import './models/PererittoUser';
 import './models/WinnerDates';
 import './models/Settings';
@@ -25,8 +26,8 @@ import './models/Slate';
 import './models/QuizGroup';
 import './models/QuizContent';
 import './models/QuizRound';
+import './services/passport';
 
-import keys from './config/keys';
 import authRoutes from './routes/authRoutes';
 import pereRoutes from './routes/pererittoRoutes';
 import userRoutes from './routes/userRoutes';

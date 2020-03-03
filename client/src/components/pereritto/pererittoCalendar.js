@@ -262,7 +262,7 @@ class PererittoCalendar extends Component {
         />
         <List
           style={{
-            margin: '8px auto',
+            margin: '8px auto 24px',
             maxWidth: !presentPlayers.players ? '260px' : '160px',
             padding: !presentPlayers.players ? '0px' : '8px 0 8px',
             background: !presentPlayers.players ? '' : '#DEDEDE',

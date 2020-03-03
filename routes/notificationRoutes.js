@@ -10,7 +10,7 @@ const Users = mongoose.model('users');
 /* ADD REQUIRELOGIN BEFORE DEPLOY */
 
 export default app => {
-  app.get('/api/get_notificationgroups', async (req, res) => {
+  app.get('/api/get_notificationgroups', requireLogin, async (req, res) => {
     try {
       const { _id } = req.user;
       const groups = await Groups.find().sort([['_id', -1]]);

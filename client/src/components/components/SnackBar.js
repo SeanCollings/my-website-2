@@ -38,6 +38,9 @@ const styles1 = theme => ({
   [MessageTypeEnum.warning]: {
     backgroundColor: amber[700]
   },
+  [MessageTypeEnum.none]: {
+    backgroundColor: 'transparent'
+  },
   icon: {
     fontSize: 20
   },
@@ -142,7 +145,6 @@ function mapStateToProps({ snackBar }) {
   return { snackBar };
 }
 
-export default connect(
-  mapStateToProps,
-  { removeMessage }
-)(withStyles(styles2)(CustomizedSnackbars));
+export default connect(mapStateToProps, { removeMessage })(
+  withStyles(styles2)(CustomizedSnackbars)
+);

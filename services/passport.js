@@ -1,13 +1,57 @@
 import to from '../core/to';
+import bcrypt from 'bcryptjs';
 
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const mongoose = require('mongoose');
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+const LocalStategy = require('passport-local');
 
+const User = mongoose.model('users');
+const TempUser = mongoose.model('tempusers');
 const keys = require('../config/keys');
 
-// Get users model out of mongoose
-const User = mongoose.model('users');
+// Create local strategy
+const localOptions = { usernameField: 'emailAddress' };
+const localLogin = new LocalStategy(localOptions, (email, password, done) => {
+  TempUser.findOne({ emailAddress: email }, async (err, user) => {
+    if (err) return done(err);
+    if (!user) return done(null, false);
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return done(null, false);
+
+    return done(null, user);
+  });
+});
+
+// Setup options for JWT Strategy
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+  secretOrKey: keys.secretJWT
+};
+
+// Create JWT strategy
+const jwtLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
+  try {
+    const user = await User.findById(payload.sub);
+
+    if (user) {
+      done(null, user);
+    } else {
+      const tempUser = await TempUser.findById(payload.sub);
+      if (tempUser) done(null, tempUser);
+      else done(null, false);
+    }
+  } catch (err) {
+    done(err, false);
+    throw err;
+  }
+});
+
+passport.use(jwtLogin);
+passport.use(localLogin);
 
 // encode user id inside of the cookie..
 passport.serializeUser((user, done) => {
@@ -64,12 +108,36 @@ passport.use(
           : '';
       }
 
+      const emailAddress = emails ? emails[0].value.toLowerCase() : '';
+      const alternateLoginUser = await User.findOne(
+        {
+          emailAddress,
+          password: { $ne: null }
+        },
+        { _id: 1 }
+      ).lean();
+
+      if (alternateLoginUser) {
+        await User.updateOne(
+          { _id: alternateLoginUser._id },
+          { $set: { googleId: id } }
+        );
+
+        [err, existingUser] = await to(
+          User.findOne({ _id: alternateLoginUser._id })
+        );
+
+        if (err) throw new Error(err);
+
+        return done(null, existingUser);
+      }
+
       [err, user] = await to(
         new User({
           googleId: id,
           givenName: upperGivenName,
           familyName: upperFamilyName,
-          emailAddress: emails ? emails[0].value : ''
+          emailAddress: emails ? emails[0].value.toLowerCase() : ''
         }).save()
       );
       if (err) throw new Error(err);
