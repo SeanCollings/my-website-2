@@ -5,7 +5,7 @@ import * as actions from '../../actions';
 import GaugeChart from '../components/charts/GaugeChart';
 import './PererittoAwards.css';
 
-import { Typography } from '@material-ui/core';
+import { Typography, Grid, Select, MenuItem } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -26,6 +26,15 @@ const styles = theme => ({
     zIndex: '2',
     top: '35px',
     display: 'inline-block'
+  },
+  cssUnderline: {
+    borderBottomColor: '#DEDEDE',
+    '&:before': {
+      borderColor: ''
+    },
+    '&:after': {
+      borderBottomColor: '#ffa07a'
+    }
   }
 });
 
@@ -34,11 +43,18 @@ const FIRST_CHOICE_WIN = 'First Choice Win';
 const LAST_CHOICE_WIN = 'Last Choice Win';
 const MAIN_ATTENDER = 'Main Attender';
 
+const CURRENT_YEAR = new Date().getFullYear();
+const CURRENT_YEAR_AWARDS = `${CURRENT_YEAR} Awards`;
+const PAST_YEAR_AWARDS = `Past Awards`;
+const SELECTABLE_YEARS = [CURRENT_YEAR_AWARDS, PAST_YEAR_AWARDS];
+
 class PererittoAwards extends Component {
   state = {
     awardMessage: '. Wall of Flame .',
     shelvesRendered: false,
-    randyUpdated: false
+    randyUpdated: false,
+    selectedYear: SELECTABLE_YEARS[0],
+    awardYears: SELECTABLE_YEARS
   };
 
   componentDidMount() {
@@ -49,7 +65,7 @@ class PererittoAwards extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    const { randyUpdated } = this.state;
+    const { randyUpdated, awardMessage, selectedYear } = this.state;
 
     if (nextProps.awards !== this.props.awards) {
       if (!randyUpdated && nextProps.awards.allAwards) {
@@ -58,15 +74,20 @@ class PererittoAwards extends Component {
 
       return true;
     }
-    if (this.state.awardMessage !== nextState.awardMessage) return true;
+    if (awardMessage !== nextState.awardMessage) return true;
+    if (selectedYear !== nextState.selectedYear) return true;
 
     return false;
   }
 
   renderShelves = () => {
     const { classes, awards, resizeScreen } = this.props;
-    const { randyUpdated } = this.state;
+    const { randyUpdated, selectedYear } = this.state;
     const allAwards = awards.allAwards;
+    let currentYearAwardsLength = 0;
+    let pastYearsAwardsLength = 0;
+    let maxDisplayLength = 0;
+    let displayAwards = [];
 
     if (allAwards) {
       allAwards.sort((a, b) => b.year - a.year);
@@ -83,6 +104,22 @@ class PererittoAwards extends Component {
         allAwards.splice(index, 1);
         allAwards.splice(randomPositon, 0, randy);
       }
+
+      const currentYear = selectedYear === CURRENT_YEAR_AWARDS;
+
+      displayAwards = allAwards.filter(award =>
+        currentYear ? award.year === CURRENT_YEAR : award.year !== CURRENT_YEAR
+      );
+      currentYearAwardsLength = allAwards.filter(
+        award => award.year === CURRENT_YEAR
+      ).length;
+      pastYearsAwardsLength = allAwards.filter(
+        award => award.year !== CURRENT_YEAR
+      ).length;
+      maxDisplayLength =
+        currentYearAwardsLength > pastYearsAwardsLength
+          ? currentYearAwardsLength
+          : pastYearsAwardsLength;
     }
 
     const shelfArray = [];
@@ -93,8 +130,8 @@ class PererittoAwards extends Component {
       const awardArray = [];
 
       if (allAwards) {
-        const awardsPerShelf = allAwards.length > 12 ? 4 : 3;
-        numberOfShelves = Math.ceil(allAwards.length / awardsPerShelf);
+        const awardsPerShelf = maxDisplayLength > 12 ? 4 : 3;
+        numberOfShelves = Math.ceil(maxDisplayLength / awardsPerShelf);
         numberOfShelves = numberOfShelves < 2 ? 2 : numberOfShelves;
 
         for (
@@ -102,25 +139,25 @@ class PererittoAwards extends Component {
           j < i * awardsPerShelf + awardsPerShelf;
           j++
         ) {
-          if (allAwards[j]) {
+          if (displayAwards[j]) {
             const topple = Math.random() < 0.005;
             const fallFloor = Math.random() < 0.004;
             const direction = Math.random() < 0.7 ? '' : '-';
             const pixelsTofall = 50 + 102 * (numberOfShelves - i - 1);
             const randomRandy =
-              allAwards[j].title === RANDOM_RANDY ? true : false;
-            const firstChoiceAward = allAwards[j].title.includes(
+              displayAwards[j].title === RANDOM_RANDY ? true : false;
+            const firstChoiceAward = displayAwards[j].title.includes(
               FIRST_CHOICE_WIN
             );
-            const lastChoiceAward = allAwards[j].title.includes(
+            const lastChoiceAward = displayAwards[j].title.includes(
               LAST_CHOICE_WIN
             );
-            const mainAttenderAward = allAwards[j].title.includes(
+            const mainAttenderAward = displayAwards[j].title.includes(
               MAIN_ATTENDER
             );
             let distance = null;
 
-            if (allAwards[j]._award.canFall) {
+            if (displayAwards[j]._award.canFall) {
               if (fallFloor) distance = `${pixelsTofall}px`;
               else if (topple) distance = '4px';
             }
@@ -129,12 +166,12 @@ class PererittoAwards extends Component {
                 key={`${i}${j}`}
                 style={{
                   transform:
-                    allAwards[j]._award.canFall && (fallFloor || topple)
-                      ? `rotate(${direction}${allAwards[j]._award.fallAngle}deg)`
+                    displayAwards[j]._award.canFall && (fallFloor || topple)
+                      ? `rotate(${direction}${displayAwards[j]._award.fallAngle}deg)`
                       : '',
                   marginTop: distance ? distance : '',
                   filter:
-                    allAwards[j].year !== new Date().getFullYear()
+                    displayAwards[j].year !== new Date().getFullYear()
                       ? 'sepia(5%) grayscale(50%)'
                       : ''
                 }}
@@ -143,12 +180,12 @@ class PererittoAwards extends Component {
                 } ${lastChoiceAward && resizeScreen ? 'bullet' : ''}
                 ${mainAttenderAward ? 'main-attender' : ''}
                 ${firstChoiceAward ? 'thumbs-up' : ''}`}
-                alt={allAwards[j].title}
-                src={allAwards[j]._award.image}
+                alt={displayAwards[j].title}
+                src={displayAwards[j]._award.image}
                 onClick={() =>
                   this.setState({
                     ...this.state,
-                    awardMessage: `${allAwards[j].title} - ${allAwards[j].year}`,
+                    awardMessage: `${displayAwards[j].title} - ${displayAwards[j].year}`,
                     randyUpdated: true
                   })
                 }
@@ -193,20 +230,68 @@ class PererittoAwards extends Component {
     return shelfArray;
   };
 
+  handleChange = event => {
+    const selectedYear = event.target.value;
+    this.setState({ selectedYear });
+  };
+
+  renderDates = () =>
+    this.state.awardYears.map(year => (
+      <MenuItem key={year} value={year}>
+        {year}
+      </MenuItem>
+    ));
+
   render() {
     const {
-      awards: { allAwards, userTotal }
+      awards: { allAwards, userTotal },
+      classes
     } = this.props;
-    const { awardMessage } = this.state;
+    const { awardMessage, selectedYear } = this.state;
 
     return (
       <div
         style={{
           width: '300px',
           maxWidth: '90%',
-          margin: '-34px auto 0px'
+          margin: '8px auto 0px'
         }}
       >
+        <Grid
+          item
+          style={{
+            textAlign: 'center',
+            zIndex: '2',
+            position: 'relative'
+          }}
+        >
+          <Select
+            className={classes.cssUnderline}
+            value={selectedYear}
+            onChange={this.handleChange}
+            MenuProps={{
+              anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'left'
+              },
+              transformOrigin: {
+                vertical: 'top',
+                horizontal: 'left'
+              },
+              getContentAnchorEl: null,
+              PaperProps: {
+                style: {
+                  backgroundColor: '#DEDEDE',
+                  maxHeight: '200px',
+                  overflow: 'auto'
+                }
+              }
+            }}
+            SelectDisplayProps={{ style: { borderBottom: 'red' } }}
+          >
+            {this.renderDates()}
+          </Select>
+        </Grid>
         <div className="plaque-border">
           <div className="plaque-interior">
             <Typography

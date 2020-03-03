@@ -508,7 +508,7 @@ class PererittoPlayers extends Component {
         >
           <Select
             className={classes.cssUnderline}
-            value={selectedYear ? this.state.selectedYear : ''}
+            value={selectedYear ? selectedYear : ''}
             onChange={this.handleChange}
             MenuProps={{
               anchorOrigin: {
