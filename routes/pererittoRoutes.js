@@ -1,6 +1,6 @@
 import requireLogin from '../middlewares/requireLogin';
 import requireSuperAccess from '../middlewares/requireSuperAccess';
-import { MessageTypeEnum } from '../client/src/utils/constants';
+import { MessageTypeEnum, MYSTERY } from '../client/src/utils/constants';
 import { updateAwards } from '../core/updateAwards';
 
 const mongoose = require('mongoose');
@@ -86,10 +86,12 @@ export default app => {
     async (req, res) => {
       try {
         const { id, date, presentPlayers, choseAndWon } = req.body;
+        const mysteryPlayer = id === MYSTERY;
 
-        const user = await PererittoUser.findOne({ _id: id });
+        const user =
+          !mysteryPlayer && (await PererittoUser.findOne({ _id: id }));
 
-        if (user === null) {
+        if (!mysteryPlayer && !user) {
           return res.send({
             type: MessageTypeEnum.error,
             message: 'That user does not exist!'
@@ -117,7 +119,7 @@ export default app => {
               year,
               presentPlayers,
               choseAndWon,
-              _winner: user
+              _winner: mysteryPlayer ? undefined : user
             }).save();
 
             updateAwards();

@@ -21,6 +21,7 @@ export const START_QUIZ_PATH = '/quizzes/start';
 
 export const FIRST = 'first';
 export const LAST = 'last';
+export const MYSTERY = 'Mystery';
 export const EDIT_DELETE_CONTENT = 'edit_delete_content';
 export const EDIT_UPDATE_CONTENT = 'edit_update_content';
 export const CONTINUE_QUIZ = 'continue_quiz';

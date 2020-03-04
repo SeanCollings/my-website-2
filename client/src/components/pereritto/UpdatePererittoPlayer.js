@@ -7,7 +7,7 @@ import { showMessage } from '../../actions/snackBarActions';
 
 import DatePicker from '../components/DatePicker';
 import ConfirmActionModal from '../modals/ConfirmActionModal';
-import { MessageTypeEnum, FIRST, LAST } from '../../utils/constants';
+import { MessageTypeEnum, FIRST, LAST, MYSTERY } from '../../utils/constants';
 
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -105,14 +105,33 @@ class UpdatePererittoPlayer extends Component {
   };
 
   handleChange = event => {
-    const { presentPlayers, presentUpdated } = this.state;
+    const {
+      presentPlayers,
+      presentUpdated,
+      choseFirstAndWon,
+      choseLastAndWon
+    } = this.state;
     const playerId = event.target.value;
+    const playerMystery = playerId === MYSTERY;
+    let firstAndWon = choseFirstAndWon;
+    let lastAndWon = choseLastAndWon;
 
     const newState = [...presentPlayers];
-    if (!presentPlayers.includes(playerId) && presentUpdated)
+    if (!presentPlayers.includes(playerId) && presentUpdated && !playerMystery)
       newState.push(playerId);
 
-    this.setState({ playerId, presentPlayers: newState });
+    if (playerMystery) {
+      firstAndWon = false;
+      lastAndWon = false;
+    }
+
+    this.setState({
+      ...this.state,
+      playerId,
+      presentPlayers: newState,
+      choseFirstAndWon: firstAndWon,
+      choseLastAndWon: lastAndWon
+    });
   };
 
   updatePlayerClick = () => {
@@ -131,7 +150,7 @@ class UpdatePererittoPlayer extends Component {
 
     switch (updateState) {
       case UPDATE_BOARD:
-        if (!presentPlayers.includes(playerId))
+        if (!presentPlayers.includes(playerId) && playerId !== MYSTERY)
           return this.props.showMessage(
             MessageTypeEnum.error,
             'The selected player needs to be present!'
@@ -184,8 +203,9 @@ class UpdatePererittoPlayer extends Component {
   };
 
   renderChoseAndWon = () => {
-    const { choseFirstAndWon, choseLastAndWon } = this.state;
+    const { choseFirstAndWon, choseLastAndWon, playerId } = this.state;
 
+    const playerMystery = playerId === MYSTERY;
     const iconStyles = {
       display: 'table-cell',
       verticalAlign: 'middle',
@@ -195,16 +215,28 @@ class UpdatePererittoPlayer extends Component {
     };
 
     return (
-      <div style={{ margin: '0 auto 30px', display: 'table' }}>
+      <div
+        style={{
+          margin: '0 auto 30px',
+          display: 'table',
+          opacity: playerMystery ? '0.6' : '1'
+        }}
+      >
         <div
           onClick={() =>
-            this.setState({
-              ...this.state,
-              choseFirstAndWon: !choseFirstAndWon,
-              choseLastAndWon: false
-            })
+            playerMystery
+              ? null
+              : this.setState({
+                  ...this.state,
+                  choseFirstAndWon: !choseFirstAndWon,
+                  choseLastAndWon: false
+                })
           }
-          style={{ display: 'table', marginBottom: '4px', cursor: 'pointer' }}
+          style={{
+            display: 'table',
+            marginBottom: '4px',
+            cursor: playerMystery ? '' : 'pointer'
+          }}
         >
           {choseFirstAndWon ? (
             <SelectedIcon style={iconStyles} />
@@ -223,13 +255,15 @@ class UpdatePererittoPlayer extends Component {
         </div>
         <div
           onClick={() =>
-            this.setState({
-              ...this.state,
-              choseLastAndWon: !choseLastAndWon,
-              choseFirstAndWon: false
-            })
+            playerMystery
+              ? null
+              : this.setState({
+                  ...this.state,
+                  choseLastAndWon: !choseLastAndWon,
+                  choseFirstAndWon: false
+                })
           }
-          style={{ display: 'table', cursor: 'pointer' }}
+          style={{ display: 'table', cursor: playerMystery ? '' : 'pointer' }}
         >
           {choseLastAndWon ? (
             <SelectedIcon style={iconStyles} />
@@ -339,7 +373,7 @@ class UpdatePererittoPlayer extends Component {
   renderPlayers = () => {
     const { pererittoUsers } = this.props;
     if (pererittoUsers.length > 0) {
-      return [...pererittoUsers /*, { mystery: 'Mystery', name: 'xxxxxx' }*/]
+      return [...pererittoUsers, { mystery: MYSTERY, name: 'xxxxxx' }]
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(user => {
           if (user.mystery)
@@ -428,7 +462,8 @@ class UpdatePererittoPlayer extends Component {
               style={{
                 top: '5px',
                 backgroundColor: 'transparent',
-                color: '#ffa07a'
+                color: '#ffa07a',
+                cursor: 'pointer'
               }}
             >
               <MoreIcon />

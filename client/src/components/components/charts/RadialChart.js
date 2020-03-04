@@ -27,15 +27,18 @@ const RadialChart = ({ winners, selectedYear, pererittoUsers }) => {
   const allPlayers = getAllPlayers(pererittoUsers);
 
   currentYearWinners.forEach(winner => {
-    const id = winner._winner._id;
-    const title = winner._winner.name;
-    const color = winner._winner.colour;
-    const presentPlayers = winner.presentPlayers;
+    const { _winner, presentPlayers } = winner;
 
-    if (!playerTotalWins[id]) {
-      playerTotalWins[id] = { count: 1, color, title, id };
-    } else {
-      playerTotalWins[id].count += 1;
+    if (_winner) {
+      const id = _winner._id;
+      const title = _winner.name;
+      const color = _winner.colour;
+
+      if (!playerTotalWins[id]) {
+        playerTotalWins[id] = { count: 1, color, title, id };
+      } else {
+        playerTotalWins[id].count += 1;
+      }
     }
 
     if (presentPlayers) {

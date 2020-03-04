@@ -93,21 +93,23 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
   const lastChoiceWins = {};
 
   const winnersMap = winnerDates.reduce((result, winner) => {
-    if (winner.date) {
+    const { date, presentPlayers, choseAndWon, _winner } = winner;
+
+    if (date) {
       result.push({
-        date: new Date(winner.date),
-        _winner: winner._winner,
-        presentPlayers: winner.presentPlayers,
-        choseAndWon: winner.choseAndWon
+        date: new Date(date),
+        _winner: _winner || null,
+        presentPlayers,
+        choseAndWon
       });
 
       if (
         allPresentPlayers.length <= activePlayers.length &&
-        winner.presentPlayers.length
+        presentPlayers.length
       ) {
-        for (let i = 0; i < winner.presentPlayers.length; i++) {
-          if (!allPresentPlayers.includes(winner.presentPlayers[i])) {
-            allPresentPlayers.push(winner.presentPlayers[i]);
+        for (let i = 0; i < presentPlayers.length; i++) {
+          if (!allPresentPlayers.includes(presentPlayers[i])) {
+            allPresentPlayers.push(presentPlayers[i]);
           }
         }
       }
@@ -125,36 +127,36 @@ const determineAwardTotals = (winnerDates, players, year, activePlayers) => {
   }
 
   for (let i = 0; i < winnerDates.length; i++) {
-    players[winnerDates[i]._winner] += 1;
+    const { _winner, date, choseAndWon } = winnerDates[i];
 
-    const winner = winnerDates[i]._winner.toString();
-    if (!playersDateCounts.includes(winner)) playersDateCounts.push(winner);
+    if (_winner) {
+      players[_winner] += 1;
 
-    if (winnerDates[i].date.includes(DATE_2020))
-      players2020.add(winnerDates[i]._winner.toString());
+      const winner = _winner.toString();
+      if (!playersDateCounts.includes(winner)) playersDateCounts.push(winner);
 
-    if (
-      winnerDates[i].date.includes(DATE_FRIDAY) &&
-      winnerDates[i].date.includes(DATE_13)
-    ) {
-      playersFriday13.push(winnerDates[i]._winner);
-    }
+      if (date.includes(DATE_2020)) players2020.add(_winner.toString());
 
-    participated.add(winnerDates[i]._winner.toString());
+      if (date.includes(DATE_FRIDAY) && date.includes(DATE_13)) {
+        playersFriday13.push(_winner);
+      }
 
-    let playerWinDate = new Date(winnerDates[i].date);
-    if (playerWinDate > latestDate) {
-      latestDate = new Date(winnerDates[i].date);
-      lastWinner = winnerDates[i]._winner;
-    }
+      participated.add(_winner.toString());
 
-    if (winnerDates[i].choseAndWon && winnerDates[i].choseAndWon === FIRST) {
-      if (!firstChoiceWins[winner]) firstChoiceWins[winner] = 1;
-      else firstChoiceWins[winner] += 1;
-    }
-    if (winnerDates[i].choseAndWon && winnerDates[i].choseAndWon === LAST) {
-      if (!lastChoiceWins[winner]) lastChoiceWins[winner] = 1;
-      else lastChoiceWins[winner] += 1;
+      let playerWinDate = new Date(date);
+      if (playerWinDate > latestDate) {
+        latestDate = new Date(date);
+        lastWinner = _winner;
+      }
+
+      if (choseAndWon && choseAndWon === FIRST) {
+        if (!firstChoiceWins[winner]) firstChoiceWins[winner] = 1;
+        else firstChoiceWins[winner] += 1;
+      }
+      if (choseAndWon && choseAndWon === LAST) {
+        if (!lastChoiceWins[winner]) lastChoiceWins[winner] = 1;
+        else lastChoiceWins[winner] += 1;
+      }
     }
   }
 
@@ -355,50 +357,73 @@ const determineDateCounts = async (
   );
 
   for (let i = 0; i < sortedDates.length; i++) {
-    const winnerId = sortedDates[i]._winner.toString();
-    const winnerDate = sortedDates[i].date;
-    const presentPlayers = sortedDates[i].presentPlayers;
-    const choseAndWon = sortedDates[i].choseAndWon;
+    const { _winner, date, presentPlayers, choseAndWon } = sortedDates[i];
     const defaultFirstDate = new Date('2019-06-01');
-    // const playerCreatedDate = new Date(
-    //   parseInt(winnerId.substring(0, 8), 16) * 1000
-    // );
+    let winnerId;
 
     for (let j = 0; j < presentPlayers.length; j++) {
       totalPlayerAttendance[presentPlayers[j]] += 1;
     }
 
-    if (!choseAndWon) {
-      nothingSpecialMap[winnerId] += 1;
-      bifectaMap[winnerId] = 0;
-      trifectaMap[winnerId] = 0;
-    } else {
-      nothingSpecialMap[winnerId] = 0;
-      trifectaMap[winnerId] += 1;
+    if (_winner) {
+      winnerId = _winner.toString();
 
-      if (choseAndWon === FIRST) {
-        if (bifectaMap[winnerId] > 0) {
+      if (!choseAndWon) {
+        nothingSpecialMap[winnerId] += 1;
+        bifectaMap[winnerId] = 0;
+        trifectaMap[winnerId] = 0;
+      } else {
+        nothingSpecialMap[winnerId] = 0;
+        bifectaMap[winnerId] += 1;
+        trifectaMap[winnerId] += 1;
+
+        // if (choseAndWon === FIRST) {
+        //   if (bifectaMap[winnerId] > 0) {
+        //     if (!bifecta[winnerId]) bifecta[winnerId] = 1;
+        //     else bifecta[winnerId] += 1;
+
+        //     bifectaMap[winnerId] = 0;
+        //   }
+        // } else if (choseAndWon === LAST) {
+        //   bifectaMap[winnerId] = 1;
+        // }
+
+        if (bifectaMap[winnerId] === 2) {
           if (!bifecta[winnerId]) bifecta[winnerId] = 1;
           else bifecta[winnerId] += 1;
 
           bifectaMap[winnerId] = 0;
         }
-      } else if (choseAndWon === LAST) {
-        bifectaMap[winnerId] = 1;
+
+        if (trifectaMap[winnerId] === 3) {
+          if (bifecta[winnerId] === 1) delete bifecta[winnerId];
+          else bifecta[winnerId] -= 1;
+
+          if (!trifecta[winnerId]) trifecta[winnerId] = 1;
+          else trifecta[winnerId] += 1;
+
+          trifectaMap[winnerId] = 0;
+        }
       }
 
-      if (trifectaMap[winnerId] === 3) {
-        if (!trifecta[winnerId]) trifecta[winnerId] = 1;
-        else trifecta[winnerId] += 1;
-
-        trifectaMap[winnerId] = 0;
+      if (nothingSpecialMap[winnerId] === 5) {
+        nothingSpecialMap[winnerId] = 0;
+        if (!nothingSpecial[winnerId]) nothingSpecial[winnerId] = 1;
+        else nothingSpecial[winnerId] += 1;
       }
-    }
 
-    if (nothingSpecialMap[winnerId] === 5) {
-      nothingSpecialMap[winnerId] = 0;
-      if (!nothingSpecial[winnerId]) nothingSpecial[winnerId] = 1;
-      else nothingSpecial[winnerId] += 1;
+      // Get 3 in a row
+      for (let j = 0; j < allPresentPlayers.length; j++) {
+        let playerId = allPresentPlayers[j];
+
+        if (winnerId === playerId) {
+          players3InARowMap[playerId] += 1;
+        } else {
+          players3InARowMap[playerId] = 0;
+        }
+
+        if (players3InARowMap[playerId] === 3) players3InARow.push(playerId);
+      }
     }
 
     for (let player in attendanceInARowMap) {
@@ -416,18 +441,6 @@ const determineDateCounts = async (
       }
     }
 
-    for (let j = 0; j < allPresentPlayers.length; j++) {
-      let playerId = allPresentPlayers[j];
-
-      if (winnerId === playerId) {
-        players3InARowMap[playerId] += 1;
-      } else {
-        players3InARowMap[playerId] = 0;
-      }
-
-      if (players3InARowMap[playerId] === 3) players3InARow.push(playerId);
-    }
-
     for (let playerId in allPlayers) {
       if (playerWasPresent(presentPlayers, playerId)) {
         const playerCreatedDate = new Date(
@@ -435,9 +448,8 @@ const determineDateCounts = async (
         );
 
         if (
-          playerRetiredDuring(retiredPlayers, playerId, winnerDate) ||
-          (playerCreatedDate > defaultFirstDate &&
-            playerCreatedDate > winnerDate)
+          playerRetiredDuring(retiredPlayers, playerId, date) ||
+          (playerCreatedDate > defaultFirstDate && playerCreatedDate > date)
         ) {
           continue;
         } else {

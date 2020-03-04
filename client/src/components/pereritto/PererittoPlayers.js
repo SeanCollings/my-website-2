@@ -252,16 +252,19 @@ class PererittoPlayers extends Component {
 
     if (winners.winners) {
       winners.winners.map(winner => {
+        const { _winner } = winner;
+        if (!_winner) return null;
+
         if (winner.year === selectedYear) {
           let playerWinDate = new Date(winner.date);
           if (playerWinDate > overallWinDate) overallWinDate = playerWinDate;
 
-          if (players[winner._winner._id]) {
-            if (players[winner._winner._id].lastWinDate < playerWinDate) {
-              players[winner._winner._id].lastWinDate = playerWinDate;
+          if (players[_winner._id]) {
+            if (players[_winner._id].lastWinDate < playerWinDate) {
+              players[_winner._id].lastWinDate = playerWinDate;
             }
 
-            players[winner._winner._id].count += 1;
+            players[_winner._id].count += 1;
           }
         }
         return null;

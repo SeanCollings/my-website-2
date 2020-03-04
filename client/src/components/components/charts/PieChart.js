@@ -38,14 +38,18 @@ const PieChart = ({ winners, selectedYear }) => {
   );
 
   currentYearWinners.forEach(winner => {
-    const id = winner._winner._id;
-    const title = winner._winner.name;
-    const color = winner._winner.colour;
+    const { _winner } = winner;
 
-    if (!tallyPlayers[id]) {
-      tallyPlayers[id] = { value: 1, color, title };
-    } else {
-      tallyPlayers[id].value += 1;
+    if (_winner) {
+      const id = winner._winner._id;
+      const title = winner._winner.name;
+      const color = winner._winner.colour;
+
+      if (!tallyPlayers[id]) {
+        tallyPlayers[id] = { value: 1, color, title };
+      } else {
+        tallyPlayers[id].value += 1;
+      }
     }
   });
 

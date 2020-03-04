@@ -144,7 +144,8 @@ class DatePicker extends Component {
         dateExists[0].presentPlayers &&
         dateExists[0].presentPlayers.length > 0
       ) {
-        const date = dateExists[0].date;
+        const { date, _winner, presentPlayers } = dateExists[0];
+
         const dateSelected = document.querySelector(`[aria-label="${date}"]`);
 
         if (dateSelected) {
@@ -162,8 +163,8 @@ class DatePicker extends Component {
           }
         }
 
-        const selectedPlayer = dateExists[0]._winner._id;
-        const presentPlayers = dateExists[0].presentPlayers;
+        const selectedPlayer = _winner ? _winner._id : null;
+
         // presentPlayers.sort((a, b) => (a > b ? a : b));
         const presentNames = { players: presentPlayers, selectedDate: date };
 
@@ -234,7 +235,21 @@ class DatePicker extends Component {
       if (!hideDates && winners.winners && winners.winners.length > 0) {
         for (let i = 0; i < winners.winners.length; i++) {
           if (winners.winners[i].date === dateToRender) {
-            const choseAndWon = winners.winners[i].choseAndWon;
+            const { _winner, choseAndWon } = winners.winners[i];
+
+            if (!_winner)
+              return (
+                <div
+                  style={{
+                    fontSize: '20px',
+                    color: '#c70039',
+                    fontWeight: '600'
+                  }}
+                >
+                  ??
+                </div>
+              );
+
             return (
               <div
                 style={{
@@ -249,7 +264,7 @@ class DatePicker extends Component {
                       : ''
                 }}
               >
-                {winners.winners[i]._winner.name.charAt(0).toUpperCase()}
+                {_winner.name.charAt(0).toUpperCase()}
               </div>
             );
           }
@@ -293,8 +308,10 @@ class DatePicker extends Component {
     ) {
       winners.winners.forEach(date => {
         if (date.date.length > 0) {
-          const name = date._winner.name;
-          const colour = date._winner.colour;
+          const { _winner } = date;
+
+          const name = !_winner ? '' : _winner.name;
+          const colour = !_winner ? 'white' : _winner.colour;
           const mods = `${pererittoId}|${date._id}|${name}`;
 
           modifiers[mods] = new Date(date.date);
@@ -358,7 +375,7 @@ class DatePicker extends Component {
                 : null
               : this.setMonthsBack()
           }
-          onMonthChange={this.handleMonthChange}
+          onMonthChange={preventSelection ? this.handleMonthChange : null}
         />
         {/* {showPlayers && (
           <div
