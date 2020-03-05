@@ -59,7 +59,9 @@ const styles = theme => ({
     position: 'absolute',
     left: '0',
     color: '#EAEAEA',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    border: '1px solid #ffffff4d',
+    borderRadius: '4px'
     // top: '50%',
     // transform: 'translateY(-50%)',
   },
@@ -67,9 +69,9 @@ const styles = theme => ({
     position: 'absolute',
     right: '0',
     color: '#EAEAEA',
-    cursor: 'pointer'
-    // top: '50%',
-    // transform: 'translateY(-50%)',
+    cursor: 'pointer',
+    border: '1px solid #ffffff4d',
+    borderRadius: '4px'
   }
 });
 const YEAR_2020 = 2020;

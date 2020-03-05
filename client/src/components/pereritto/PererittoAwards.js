@@ -38,6 +38,7 @@ const styles = theme => ({
   }
 });
 
+const AWARD_MESSAGE = '. Wall of Flame .';
 const RANDOM_RANDY = 'Random Randy';
 const FIRST_CHOICE_WIN = 'First Choice Win';
 const LAST_CHOICE_WIN = 'Last Choice Win';
@@ -50,7 +51,7 @@ const SELECTABLE_YEARS = [CURRENT_YEAR_AWARDS, PAST_YEAR_AWARDS];
 
 class PererittoAwards extends Component {
   state = {
-    awardMessage: '. Wall of Flame .',
+    awardMessage: AWARD_MESSAGE,
     shelvesRendered: false,
     randyUpdated: false,
     selectedYear: SELECTABLE_YEARS[0],
@@ -123,7 +124,6 @@ class PererittoAwards extends Component {
     }
 
     const shelfArray = [];
-    const originalMessage = '. Wall of Flame .';
     let numberOfShelves = 2;
 
     for (let i = 0; i < numberOfShelves; i++) {
@@ -213,11 +213,11 @@ class PererittoAwards extends Component {
         <div className="shelf" key={i}>
           <div
             className="back"
-            onClick={() => this.setState({ awardMessage: originalMessage })}
+            onClick={() => this.setState({ awardMessage: AWARD_MESSAGE })}
           />
           <div
             className="base"
-            onClick={() => this.setState({ awardMessage: originalMessage })}
+            onClick={() => this.setState({ awardMessage: AWARD_MESSAGE })}
           />
           <div className="front" />
           <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
@@ -232,7 +232,7 @@ class PererittoAwards extends Component {
 
   handleChange = event => {
     const selectedYear = event.target.value;
-    this.setState({ selectedYear });
+    this.setState({ ...this.state, selectedYear, awardMessage: AWARD_MESSAGE });
   };
 
   renderDates = () =>

@@ -2,6 +2,13 @@ import nodemailer from 'nodemailer';
 import sendgridTransport from 'nodemailer-sendgrid-transport';
 import keys from '../config/keys';
 
+let url;
+if (process.env.NODE_ENV === 'production') {
+  url = 'https://seancollings.herokuapp.com';
+} else {
+  url = 'http://localhost:5000';
+}
+
 const transporter = nodemailer.createTransport(
   sendgridTransport({
     auth: {
@@ -76,7 +83,7 @@ const htmlTemplate = (emailAddress, verificationString) => `<html>
         </h2>
         <div id="link-style" style="margin-top: 36px; padding-bottom: 36px">
           <a
-          href="http://localhost:5000/api/verify?email=${emailAddress}&id=${verificationString}"
+          href="${url}/api/verify?email=${emailAddress}&id=${verificationString}"
           id="link"
           style="text-decoration: none;
           background-color: #ff4136;

@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
+import PererittoAttendance from './PererittoAttendance';
 import { memoize } from '../components/charts/chartUtils';
 import './PererittoCalendar.css';
 import DatePicker from '../components/DatePicker';
@@ -13,7 +14,10 @@ import {
   ListItem,
   Avatar
 } from '@material-ui/core';
+import CalendarIcon from '@material-ui/icons/DateRange';
 
+const CHALK_BOARD =
+  'https://raw.github.com/mmoustafa/Chalkboard/master/img/bg.png';
 const SELECT_A_DATE = 'Select a date to see who was there...';
 
 class PererittoCalendar extends Component {
@@ -23,7 +27,8 @@ class PererittoCalendar extends Component {
     showPlayerMessage: true,
     playersClicked: [],
     playersUnclicked: [],
-    selectedPlayer: null
+    selectedPlayer: null,
+    viewAllAttendance: false
   };
 
   componentDidUpdate(props, oldState) {
@@ -226,8 +231,8 @@ class PererittoCalendar extends Component {
   };
 
   render() {
-    const { showMoreMonths, presentPlayers } = this.state;
-    const { resizeScreen, winners } = this.props;
+    const { showMoreMonths, presentPlayers, viewAllAttendance } = this.state;
+    const { resizeScreen, winners, pererittoUsers } = this.props;
     const selectedYearsArray = [];
 
     if (winners && winners.winners) {
@@ -238,39 +243,92 @@ class PererittoCalendar extends Component {
 
     return (
       <div style={{ position: 'relative', textAlign: 'center' }}>
-        <div style={{ paddingTop: resizeScreen ? '8px' : '24px' }} />
-        <Grid item style={{ textAlign: 'center' }}>
-          <Button
-            style={{
-              display: resizeScreen ? '' : 'none',
-              color: '#FFC300',
-              marginBottom: '8px',
-              border: '1px solid'
-            }}
-            size="small"
-            onClick={() => this.setState({ showMoreMonths: !showMoreMonths })}
-          >
-            {showMoreMonths ? 'View 1 month' : 'View 6 months'}
-          </Button>
-        </Grid>
-        <DatePicker
-          data={selectedYearsArray}
-          preventSelection={true}
-          showMoreMonths={showMoreMonths}
-          showPlayers={true}
-          presentPlayerNames={this.displayPresentPlayers}
-        />
-        <List
-          style={{
-            margin: '8px auto 24px',
-            maxWidth: !presentPlayers.players ? '260px' : '160px',
-            padding: !presentPlayers.players ? '0px' : '8px 0 8px',
-            background: !presentPlayers.players ? '' : '#DEDEDE',
-            borderRadius: '4px'
-          }}
-        >
-          {this.renderPresentPlayers()}
-        </List>
+        <div style={{ paddingTop: '8px' }} />
+        {viewAllAttendance && (
+          <PererittoAttendance
+            hideAllAttendance={() =>
+              this.setState({ viewAllAttendance: false })
+            }
+            pererittoUsers={pererittoUsers}
+            winners={winners}
+            chalkBoard={CHALK_BOARD}
+          />
+        )}
+        {!viewAllAttendance && (
+          <Fragment>
+            <Grid
+              item
+              style={{
+                textAlign: 'center',
+                margin: 'auto',
+                position: 'relative',
+                width: '273px',
+                marginBottom: '8px'
+              }}
+            >
+              {resizeScreen && (
+                <Button
+                  style={{
+                    color: '#FFC300',
+                    border: '1px solid'
+                  }}
+                  size="small"
+                  onClick={() =>
+                    this.setState({ showMoreMonths: !showMoreMonths })
+                  }
+                >
+                  {showMoreMonths ? 'View 1 month' : 'View 6 months'}
+                </Button>
+              )}
+              {resizeScreen && (
+                <CalendarIcon
+                  onClick={() => this.setState({ viewAllAttendance: true })}
+                  style={{
+                    right: '0px',
+                    position: 'absolute',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    padding: '4px',
+                    cursor: 'pointer',
+                    color: '#64021c',
+                    border: '1px solid #64021c66',
+                    borderRadius: '4px'
+                  }}
+                />
+              )}
+              {!resizeScreen && (
+                <Button
+                  onClick={() => this.setState({ viewAllAttendance: true })}
+                  style={{
+                    color: '#FFC300',
+                    border: '1px solid'
+                  }}
+                  size="small"
+                >
+                  View All Attendance
+                </Button>
+              )}
+            </Grid>
+            <DatePicker
+              data={selectedYearsArray}
+              preventSelection={true}
+              showMoreMonths={showMoreMonths}
+              showPlayers={true}
+              presentPlayerNames={this.displayPresentPlayers}
+            />
+            <List
+              style={{
+                margin: '8px auto 24px',
+                maxWidth: !presentPlayers.players ? '260px' : '160px',
+                padding: !presentPlayers.players ? '0px' : '8px 0 8px',
+                background: !presentPlayers.players ? '' : '#DEDEDE',
+                borderRadius: '4px'
+              }}
+            >
+              {this.renderPresentPlayers()}
+            </List>
+          </Fragment>
+        )}
       </div>
     );
   }
