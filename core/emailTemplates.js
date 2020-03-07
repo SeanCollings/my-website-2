@@ -73,7 +73,7 @@ export const htmlNoUser = htmlTemplate(
 
 export const htmlUserAlreadyVerified = htmlTemplate(
   'Acount verified',
-  'This account has already been verified',
+  'This account has been verified',
   'Head on over to the app and login with your credentials.',
   `You're good to go!`
 );

@@ -16,9 +16,19 @@ import {
 } from '@material-ui/core';
 import CalendarIcon from '@material-ui/icons/DateRange';
 
-const CHALK_BOARD =
-  'https://raw.github.com/mmoustafa/Chalkboard/master/img/bg.png';
 const SELECT_A_DATE = 'Select a date to see who was there...';
+const CURRENT_YEAR = new Date().getFullYear();
+
+const memoizedPlayers = memoize(pererittoUsers => {
+  return pererittoUsers
+    .map((user, i) => {
+      const name = user.name;
+      const colour = user.colour;
+      const id = user._id;
+      return { name, colour, id, position: i };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+});
 
 class PererittoCalendar extends Component {
   state = {
@@ -106,6 +116,11 @@ class PererittoCalendar extends Component {
     });
   });
 
+  getCurrentYearWinners = (winners, selectedYear) =>
+    winners.winners
+      .filter(winner => winner.year === selectedYear)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
   renderPresentPlayers = () => {
     const { pererittoUsers, winners } = this.props;
     const {
@@ -126,8 +141,9 @@ class PererittoCalendar extends Component {
 
     const totalAppearance = {};
     const selectedYear = new Date(presentPlayers.selectedDate).getFullYear();
-    const currentYearWinners = winners.winners.filter(
-      winner => winner.year === selectedYear
+    const currentYearWinners = this.getCurrentYearWinners(
+      winners,
+      selectedYear
     );
 
     currentYearWinners.forEach(winner => {
@@ -249,9 +265,12 @@ class PererittoCalendar extends Component {
             hideAllAttendance={() =>
               this.setState({ viewAllAttendance: false })
             }
-            pererittoUsers={pererittoUsers}
-            winners={winners}
-            chalkBoard={CHALK_BOARD}
+            allPlayers={memoizedPlayers(pererittoUsers)}
+            mobile={resizeScreen}
+            currentYearWinners={this.getCurrentYearWinners(
+              winners,
+              CURRENT_YEAR
+            )}
           />
         )}
         {!viewAllAttendance && (
