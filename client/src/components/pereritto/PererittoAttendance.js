@@ -1,6 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import { Grid, Button, Typography, ClickAwayListener } from '@material-ui/core';
 
+import './PererittoAttendance.css';
 import UnselectedIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import SelectedIcon from '@material-ui/icons/CheckBox';
 import MoreIcon from '@material-ui/icons/ExpandMore';
@@ -126,13 +127,15 @@ const PererittoAttendance = ({
           <div style={{ position: 'absolute', zIndex: '2', width: '180px' }}>
             <Button
               onClick={handleClick}
+              size="small"
               style={{
                 width: '100%',
                 borderRadius: '4px 4px 0px 0px',
                 color: '#FFC300',
                 border: '1px solid'
+                // boxShadow:
+                //   'rgb(85, 85, 85) 1px 2px 0px -6px, rgb(85, 85, 85) 0px 0px 7px -3px inset'
               }}
-              size="small"
             >
               <div>
                 {`${totalEvents} event${totalEvents === 1 ? '' : 's'}`}
@@ -154,7 +157,6 @@ const PererittoAttendance = ({
                   opacity: '0.9',
                   padding: '8px 8px 6px',
                   borderRadius: '0px 0px 8px 8px',
-                  borderTop: '6px solid #cd0939',
                   display: 'grid',
                   gridTemplateColumns: '24px 54% 18%',
                   columnGap: '10px',
@@ -217,12 +219,16 @@ const PererittoAttendance = ({
           }}
           size="small"
         >
-          Cancel
+          Back
         </Button>
+      </div>
+      <div className="hook"></div>
+      <div className="rope-container">
+        <div className="rope"></div>
       </div>
       <div
         style={{
-          margin: '8px auto',
+          margin: '32px auto',
           background: '#151515',
           backgroundImage: `url(${CHALK_BOARD})`,
           width: '80%',
